@@ -41,15 +41,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.1.5\lib\net40\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Autofac.Integration.Mvc">
-      <HintPath>..\..\packages\Autofac.Mvc4.3.1.0\lib\net40\Autofac.Integration.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Autofac.Integration.WebApi">
-      <HintPath>..\..\packages\Autofac.WebApi.3.1.0\lib\net40\Autofac.Integration.WebApi.dll</HintPath>
-    </Reference>
     <Reference Include="businesslogic">
       <HintPath>..\Dialogue.Website\bin\businesslogic.dll</HintPath>
     </Reference>
@@ -58,9 +49,6 @@
     </Reference>
     <Reference Include="controls">
       <HintPath>..\Dialogue.Website\bin\controls.dll</HintPath>
-    </Reference>
-    <Reference Include="DevTrends.MvcDonutCaching">
-      <HintPath>..\..\packages\MvcDonutCaching.1.2.3\lib\net40\DevTrends.MvcDonutCaching.dll</HintPath>
     </Reference>
     <Reference Include="EFCache">
       <HintPath>..\..\packages\EntityFramework.Cache.1.0.0-beta\lib\net45\EFCache.dll</HintPath>

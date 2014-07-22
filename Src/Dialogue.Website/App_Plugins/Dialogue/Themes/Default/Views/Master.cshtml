@@ -1,6 +1,5 @@
 ﻿@using Dialogue.Logic.Application
 @using Dialogue.Logic.Application.ExtensionMethods
-@using SquishIt.Framework
 @model Dialogue.Logic.Models.MasterModel
 @{
     Layout = null;
@@ -15,11 +14,9 @@
     <meta name="description" content="@RenderSection("MetaDescription", false)">
     @RenderSection("SocialMeta", false)
     @ViewBag.Canonical
-    @Html.Raw(Bundle.Css()
-                    .Add("~/app_plugins/dialogue/content/css/bootstrap.css")
-                    .Add("~/app_plugins/dialogue/content/css/styles.css")
-                    .Render("~/app_plugins/dialogue/content/css/cache/combined_main_#.css"))
     
+    <link href="@Url.Content("~/app_plugins/dialogue/content/css/bootstrap.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content(string.Format("~/app_plugins/dialogue/themes/{0}/content/css/styles.css", Dialogue.Logic.Dialogue.Settings().Theme))" rel="stylesheet" type="text/css" />
     
     <!--[if lt IE 9]>
               <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/html5shiv.js")"></script>
@@ -29,15 +26,14 @@
     <script type="text/javascript">
         var app_base = '@Url.Content("~/")';
     </script>
-    @Html.Raw(Bundle.JavaScript()
-            .Add("~/app_plugins/dialogue/content/scripts/jquery-1.10.2.min.js")
-            .Add("~/app_plugins/dialogue/content/scripts/bootstrap.min.js")
-            .Add("~/app_plugins/dialogue/content/scripts/jquery.unobtrusive-ajax.js")
-            .Add("~/app_plugins/dialogue/content/scripts/jquery.validate.js")
-            .Add("~/app_plugins/dialogue/content/scripts/jquery.validate.unobtrusive.js")
-            .Add("~/app_plugins/dialogue/content/scripts/slimmage.min.js")
-            .Add("~/app_plugins/dialogue/content/scripts/general.js")
-            .Render("~/app_plugins/dialogue/content/scripts/cache/combined_main_#.js"))
+    
+    <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/jquery-1.10.2.min.js")"></script>
+    <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/jquery.unobtrusive-ajax.js")"></script>
+    <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/jquery.validate.js")"></script>
+    <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/jquery.validate.unobtrusive.js")"></script>
+    <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/general.js")"></script>
+
 
     @RenderSection("scripts", false)
     @RenderSection("Head", false)

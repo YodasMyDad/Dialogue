@@ -85,13 +85,9 @@ C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.dll.config
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.pdb
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.Mvc.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.WebApi.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\businesslogic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\cms.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\controls.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\DevTrends.MvcDonutCaching.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EFCache.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.SqlServer.dll
@@ -121,14 +117,9 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\log4net.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MySql.Data.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.ApplicationBlocks.Data.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.xml
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.Mvc.xml
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.WebApi.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\businesslogic.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\cms.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\controls.xml
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\DevTrends.MvcDonutCaching.pdb
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\DevTrends.MvcDonutCaching.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.SqlServer.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\HtmlAgilityPack.xml
@@ -150,3 +141,4 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.XmlSerializers.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.pdb
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.csprojResolveAssemblyReference.cache

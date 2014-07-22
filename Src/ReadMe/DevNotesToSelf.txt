@@ -1,11 +1,15 @@
 TODO
 --------------------------
-
+No image dependants in Theme - Use bootstrap icons
+Create ReadMe.md
 
 Packaging Notes
 ------------------------
-EditorTemplates = Include. Can't figure out custom editortemplate locations yet
+EditorTemplates in Views/Shared = Include. Can't figure out custom editortemplate locations yet
+Create Tables (Package Actions)
+Create initial data for forum (As in set theme etc...)
 
-Externals
+Notes
 ------------------------
-Squishit
+Try and remove as many external dependencies as possible
+Remove all other 'play' code
