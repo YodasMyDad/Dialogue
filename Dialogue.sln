@@ -27,9 +27,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Dialogue.Website", "http://
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadMe", "ReadMe", "{ACABA814-701D-4C5E-A7A5-3AABAFD6EA25}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{ACABA814-701D-4C5E-A7A5-3AABAFD6EA25}"
 	ProjectSection(SolutionItems) = preProject
-		Src\ReadMe\README.txt = Src\ReadMe\README.txt
+		Src\ReadMe\DevNotesToSelf.txt = Src\ReadMe\DevNotesToSelf.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{389FF9D0-561B-4C10-8F2F-F30212BFBE8A}"
