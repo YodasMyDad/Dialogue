@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Imazen.SlimResponse</id>
+    <version>0.2.4936.26457</version>
+    <title>Imazen.SlimResponse - Auto-generate slimmage.js responsive images</title>
+    <authors>Imazen (http://imazen.io)</authors>
+    <owners>Imazen (http://imazen.io)</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>http://github.com/imazen/slimresponse</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Enables effortless responsive images when combined with ImageResizer and Slimmage.js. Image tags with a class of 'slimmage' will be converted into responsive images.</description>
+    <releaseNotes />
+    <copyright>Copyright 2013</copyright>
+    <tags>ResponsiveImages Slimmage SlimResponse ImageResizer</tags>
+  </metadata>
+</package>

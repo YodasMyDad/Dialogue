@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<configuration>
+  <system.web>
+    <httpModules>
+      <add name="SlimResponseModule" type="Imazen.SlimResponse.SlimResponseModule, Imazen.SlimResponse"/>
+    </httpModules>
+  </system.web>
+  <system.webServer>
+    <validation validateIntegratedModeConfiguration="false"/>
+    <modules>
+      <add name="SlimResponseModule" type="Imazen.SlimResponse.SlimResponseModule, Imazen.SlimResponse"/>
+    </modules>
+  </system.webServer>
+</configuration>
