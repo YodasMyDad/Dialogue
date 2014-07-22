@@ -1,0 +1,8 @@
+﻿<div ng-controller="PartialPicker.controller">
+    
+    <select ng-model="partialFile" ng-change="saveSelectedFile()">
+        <option value="">-- Choose --</option>
+        <option ng-repeat="partial in partials" value="{{partial.File}}" ng-selected="partial.File == model.value">{{partial.File}}</option>
+    </select>
+    
+</div>

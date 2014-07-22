@@ -1,0 +1,18 @@
+﻿@using Dialogue.Logic.Application.ExtensionMethods
+@inherits UmbracoViewPage<Dialogue.Logic.Models.RegisterModel>
+@{
+    Layout = "OneColThin.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+@Html.Action("RegisterForm", "DialogueLoginRegisterSurface")
+
+@*@Html.Partial("_SocialLoginButtons")*@

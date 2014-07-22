@@ -1,0 +1,35 @@
+{
+    propertyEditors: [
+        {
+            alias: "Our.Umbraco.FilePicker",
+            name: "File Picker",
+            editor: {
+                view: "~/App_Plugins/FilePicker/filepicker.html"
+            },
+            prevalues: {
+                fields: [
+                    {
+                        label: "Folder",
+                        description: "Pick the folder to select a file from",
+                        key: "folder",
+                        view: "~/App_Plugins/FilePicker/folderpicker.html",
+                        validation: [
+                            {
+                                type: "Required" 
+                            }
+                        ]
+                    },
+                    {
+                        label: "File filter",
+                        description: "A search string to match against the names of files in the folder",
+                        key: "filter",
+                        view: "textstring"
+                    }
+                ]
+            }
+        }
+    ],
+    javascript: [
+        '~/App_Plugins/FilePicker/filepicker.controller.js'
+    ]
+}

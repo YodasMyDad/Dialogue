@@ -1,0 +1,271 @@
+.archetypeEditor {
+  width: 98%;
+}
+.archetypeEditor .dropdown-menu {
+  top: auto;
+}
+.archetypeEditor fieldset {
+  border: 1px solid #dddddd;
+  padding: 0;
+  margin-bottom: 5px;
+  background-color: #f1f1f1;
+  clear: both;
+  display: inline-block;
+  width: 100%;
+}
+.archetypeEditor .archetypeFieldsetLabel {
+  position: relative;
+  width: 100%%;
+}
+.archetypeEditor .archetypeFieldsetLabel .label-sub {
+  padding: 8px 0;
+  display: inline-block;
+}
+.archetypeEditor .archetypeFieldsetLabel .label-sub.module-label {
+  width: 100%;
+}
+.archetypeEditor .archetypeFieldsetLabel .dropdown-menu {
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  margin-top: -10px;
+  margin-left: -200px;
+}
+.archetypeEditor .archetypeFieldsetLabel span {
+  font-weight: bold;
+}
+.archetypeEditor .archetypeFieldsetLabel span.menu-label {
+  font-weight: normal;
+}
+.archetypeEditor .archetypeFieldsetLabel label:hover {
+  cursor: default;
+}
+.archetypeEditor .archetypeFieldsetLabel.enableCollapsing:hover {
+  cursor: pointer;
+}
+.archetypeEditor .archetypeFieldsetLabel.enableCollapsing:hover label span {
+  text-decoration: underline;
+}
+.archetypeEditor .archetypeFieldsetLabel.enableCollapsing:hover label:hover {
+  cursor: pointer;
+}
+.archetypeEditor .archetypeFieldsetLabel .caret {
+  margin: 8px 1px 0 15px;
+}
+.archetypeEditor .archetypeFieldsetLabel .caret.caret-right {
+  border-bottom: 4px solid transparent;
+  border-top: 4px solid transparent;
+  border-left: 4px solid #000000;
+  content: "";
+  margin-top: 6px;
+}
+.archetypeEditor .archetypeFieldsetLabel label {
+  margin-bottom: 0;
+  margin-left: 5px;
+  padding: 0;
+}
+.archetypeEditor .archetypeFieldsetLabel label span {
+  display: inline-block;
+}
+.archetypeEditor .archetypeCollapser {
+  clear: both;
+  height: 100%;
+  padding-top: 12px;
+  background-color: #fff;
+  border-top: 1px solid silver;
+  border-radius: 0 0 0 5px;
+}
+.archetypeEditor .multiPropertyTextbox {
+  margin-bottom: 3px;
+}
+.archetypeEditor ul {
+  list-style: none;
+  margin-left: 0;
+}
+.archetypeEditor .archetypeEditorControls,
+.archetypeConfig .archetypeEditorControls {
+  float: right;
+}
+.archetypeEditor .archetypeEditorControls i,
+.archetypeConfig .archetypeEditorControls i {
+  cursor: pointer;
+}
+.archetypeEditor .archetypeEditorControls i.handle,
+.archetypeConfig .archetypeEditorControls i.handle {
+  cursor: move;
+}
+.archetypeEditor .archetypeEditorControls {
+  float: none;
+  position: absolute;
+  right: 15px;
+  top: 0;
+}
+.archetypeConfig .archetypeEditorControls {
+  float: right;
+}
+.archetypeEditor form {
+  margin-left: 20px;
+}
+.archetypeEditor form .control-label {
+  padding-top: 0 !important;
+}
+.archetypeEditor .archetypeProperty {
+  clear: both;
+  overflow: hidden;
+  margin-top: 3px;
+}
+.archetypeEditor .archetypeDeveloperModel {
+  font-family: monospace;
+  width: 98%;
+  min-height: 100px;
+  margin-bottom: 10px;
+  border: 1px solid red;
+}
+.archetypeEditor .archetypeFieldsetToolbar {
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.archetypeEditor .archetypeFieldsetToolbar li {
+  float: left;
+  padding: 2px 4px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+.archetypeEditor .archetypeFieldsetHeaderText {
+  clear: both;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+.archetypeEditor .archetypeFieldsetFooterText {
+  clear: both;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+.archetypeEditor .archetypeFieldsetHelpText {
+  clear: both;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+.archetypeConfig {
+  margin-bottom: 20px;
+}
+.archetypeConfig ul {
+  list-style: none;
+}
+.archetypeConfig li {
+  background-color: #fff;
+}
+.archetypeConfig label {
+  width: 120px;
+}
+.archetypeConfig .archetypeFieldsetWrapper {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.archetypeConfig .archetypeFieldsetOption {
+  margin-bottom: 15px;
+}
+.archetypeConfig .archetypeFieldsetOption input[type=text] {
+  max-width: 300px;
+}
+.archetypeConfig .archetypeDeveloperModel {
+  font-family: monospace;
+  width: 88%;
+  margin: 5px 10px 10px;
+  height: 130px;
+}
+.archetypeConfig .archetypePropertiesWrapper {
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin: -40px 10px 10px 140px;
+  max-width: 475px;
+}
+.archetypeConfig .archetypePropertiesWrapper ul {
+  padding: 0;
+  margin: 0;
+}
+.archetypeConfig .archetypePropertiesWrapper li {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #eee;
+}
+.archetypeConfig .archetypePropertiesWrapper li input[type=text] {
+  max-width: 190px;
+  width: auto;
+}
+.archetypeConfig .archetypePropertiesWrapper li select {
+  max-width: 160px;
+}
+.archetypeConfig .archetypePropertiesWrapper li:last-child {
+  margin-bottom: 0;
+}
+.archetypeConfig .archetypeFieldsets {
+  margin-left: 0;
+}
+.archetypeConfig .archetypeFieldsetTitle {
+  cursor: pointer;
+  overflow: hidden;
+}
+.archetypeConfig .archetypeOptions label {
+  width: 400px;
+}
+.archetypeConfig .archetypeAdvancedOptions {
+  margin-top: 15px;
+}
+.archetypeConfig .archetypeAdvancedOptions div {
+  margin-bottom: 10px;
+}
+.archetypeConfig .archetypeAdvancedOptions label {
+  width: 400px;
+}
+.archetypeConfig .archetypeMaxFieldsets {
+  border: 1px solid #ddd;
+  width: 40px;
+  text-align: right;
+}
+.archetypeConfig .archetypePropertyTitle {
+  cursor: pointer;
+  overflow: hidden;
+}
+.archetypeConfig .archetypePropertyCollapser {
+  margin-top: 10px;
+}
+.archetypeConfig .archetypePropertyCollapser div {
+  margin-bottom: 10px;
+}
+.archetypeEditor .archetypeFieldsetError {
+  border: 1px solid #b94a48;
+}
+.archetypeEditor .archetypeProperty label span {
+  color: #343434;
+}
+.archetypeEditor .archetypePropertyError {
+  margin-bottom: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.archetypeEditor .archetypePropertyError label span {
+  color: #b94a48;
+  font-weight: bold;
+}
+.archetypeEditor .archetypeAddButton:hover {
+  text-decoration: none;
+}
+.archetypeEditor .archetypeAddButton:hover .archetypeAddButtonText {
+  text-decoration: underline;
+}
+.ui-sortable-placeholder {
+  visibility: visible !important;
+  background-color: #d0e7f1 !important;
+}
+.archetypeConfig .archetypeFieldsetCollapser {
+  margin-top: 15px;
+}
+.archetypeConfig .fieldsetIcon {
+  margin-right: 10px;
+}
+.archetypeEditor .show-validation.ng-invalid .control-group.error .control-label span {
+  color: #343434;
+}

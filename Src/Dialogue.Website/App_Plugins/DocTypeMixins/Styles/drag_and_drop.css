@@ -1,0 +1,23 @@
+﻿.ui-draggable-dragging 
+{
+    display: block;
+    border: dotted 2px #393;
+    font-family: Arial,Lucida Grande;
+    font-size: 12px;
+    background-repeat: no-repeat;
+    background-position: 2px center;
+    background-color: #e4f6e2;
+    padding: 2px 2px 2px 20px;
+    opacity: 0.75;   
+}
+
+.mixin-droppable-hover 
+{
+    background-image: url(../images/docTypeMixinApply.png) !important;
+}
+
+.mixin-droppable-hover div
+{
+    font-weight: bold;
+    color: #390;
+}

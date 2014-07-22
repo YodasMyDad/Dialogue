@@ -1,0 +1,8 @@
+﻿<div ng-controller="CssPicker.controller">
+    
+    <select ng-model="cssFile" ng-change="saveSelectedFile()">
+        <option value="">-- Choose --</option>
+        <option ng-repeat="cssfile in cssfiles" value="{{cssfile.Name}}" ng-selected="cssfile.Name == model.value">{{cssfile.Name}}</option>
+    </select>
+    
+</div>

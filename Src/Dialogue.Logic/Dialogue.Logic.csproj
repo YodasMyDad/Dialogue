@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DD101876-52AC-494C-B1FB-78A205C05AB3}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dialogue.Logic</RootNamespace>
+    <AssemblyName>Dialogue.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\packages\Autofac.3.1.5\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc">
+      <HintPath>..\..\packages\Autofac.Mvc4.3.1.0\lib\net40\Autofac.Integration.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.WebApi">
+      <HintPath>..\..\packages\Autofac.WebApi.3.1.0\lib\net40\Autofac.Integration.WebApi.dll</HintPath>
+    </Reference>
+    <Reference Include="businesslogic">
+      <HintPath>..\Dialogue.Website\bin\businesslogic.dll</HintPath>
+    </Reference>
+    <Reference Include="cms">
+      <HintPath>..\Dialogue.Website\bin\cms.dll</HintPath>
+    </Reference>
+    <Reference Include="controls">
+      <HintPath>..\Dialogue.Website\bin\controls.dll</HintPath>
+    </Reference>
+    <Reference Include="DevTrends.MvcDonutCaching">
+      <HintPath>..\..\packages\MvcDonutCaching.1.2.3\lib\net40\DevTrends.MvcDonutCaching.dll</HintPath>
+    </Reference>
+    <Reference Include="EFCache">
+      <HintPath>..\..\packages\EntityFramework.Cache.1.0.0-beta\lib\net45\EFCache.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dialogue.Website\bin\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="interfaces">
+      <HintPath>..\Dialogue.Website\bin\interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\Dialogue.Website\bin\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dialogue.Website\bin\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\Dialogue.Website\bin\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dialogue.Website\bin\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dialogue.Website\bin\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dialogue.Website\bin\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="umbraco">
+      <HintPath>..\Dialogue.Website\bin\umbraco.dll</HintPath>
+    </Reference>
+    <Reference Include="Umbraco.Core">
+      <HintPath>..\Dialogue.Website\bin\Umbraco.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="umbraco.DataLayer">
+      <HintPath>..\Dialogue.Website\bin\umbraco.DataLayer.dll</HintPath>
+    </Reference>
+    <Reference Include="umbraco.providers, Version=1.0.5261.28132, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dialogue.Website\bin\umbraco.providers.dll</HintPath>
+    </Reference>
+    <Reference Include="Umbraco.Web.UI">
+      <HintPath>..\Dialogue.Website\bin\Umbraco.Web.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application\Akismet\AkismetHelper.cs" />
+    <Compile Include="Application\Akismet\Comment.cs" />
+    <Compile Include="Application\Akismet\IValidator.cs" />
+    <Compile Include="Application\Akismet\Validator.cs" />
+    <Compile Include="Application\CensorUtils.cs" />
+    <Compile Include="Application\DatesUi.cs" />
+    <Compile Include="Application\ExtensionMethods\AppExtensionMethods.cs" />
+    <Compile Include="Application\CustomMvcAttributes.cs" />
+    <Compile Include="Application\ExtensionMethods\HtmlLabelExtensions.cs" />
+    <Compile Include="Application\ExtensionMethods\MobileExtensions.cs" />
+    <Compile Include="Application\Markdown.cs" />
+    <Compile Include="Application\PagedList.cs" />
+    <Compile Include="Application\AppHelpers.cs" />
+    <Compile Include="Application\ReflectionUtilities.cs" />
+    <Compile Include="Application\RssResult.cs" />
+    <Compile Include="Application\UrlTypes.cs" />
+    <Compile Include="Controllers\ApiControllers\BannedEmailApiController.cs" />
+    <Compile Include="Controllers\ApiControllers\BannedWordApiController.cs" />
+    <Compile Include="Controllers\ApiControllers\PropertyEditorsController.cs" />
+    <Compile Include="Controllers\DialogueCategoryController.cs" />
+    <Compile Include="Controllers\DialogueLoginRegisterController.cs" />
+    <Compile Include="Controllers\DialoguePageController.cs" />
+    <Compile Include="Controllers\DialogueTopicController.cs" />
+    <Compile Include="Controllers\DialogueTreeController.cs" />
+    <Compile Include="Controllers\DialogueMembersController.cs" />
+    <Compile Include="Controllers\ApiControllers\CssPickerController.cs" />
+    <Compile Include="Data\Context\ContextPerRequest.cs" />
+    <Compile Include="Data\Mapping\ActivityMapping.cs" />
+    <Compile Include="Data\Mapping\BadgeMapping.cs" />
+    <Compile Include="Data\Mapping\BadgeTypeTimeLastCheckedMapping.cs" />
+    <Compile Include="Data\Mapping\BannedEmailMapping.cs" />
+    <Compile Include="Data\Mapping\BannedWordMapping.cs" />
+    <Compile Include="Data\Mapping\CategoryNotificationMapping.cs" />
+    <Compile Include="Data\Mapping\MemberPointsMapping.cs" />
+    <Compile Include="Data\Mapping\PermissionMapping.cs" />
+    <Compile Include="Data\Mapping\PollAnswerMapping.cs" />
+    <Compile Include="Data\Mapping\PollMapping.cs" />
+    <Compile Include="Data\Mapping\PollVoteMapping.cs" />
+    <Compile Include="Data\Mapping\PostMapping.cs" />
+    <Compile Include="Data\Mapping\PrivateMessageMapping.cs" />
+    <Compile Include="Data\Mapping\TopicMapping.cs" />
+    <Compile Include="Data\Mapping\TopicNotificationMapping.cs" />
+    <Compile Include="Data\Mapping\UploadedFileMapping.cs" />
+    <Compile Include="Data\Mapping\VoteMapping.cs" />
+    <Compile Include="Installation\InstallHelpers.cs" />
+    <Compile Include="Installation\UnInstallHelpers.cs" />
+    <Compile Include="Interfaces\Badges\IBadge.cs" />
+    <Compile Include="Interfaces\Badges\IMarkAsSolutionBadge.cs" />
+    <Compile Include="Mapping\BadgeMapper.cs" />
+    <Compile Include="Mapping\PollMapper.cs" />
+    <Compile Include="Mapping\PostMapper.cs" />
+    <Compile Include="Mapping\PrivateMessageMapper.cs" />
+    <Compile Include="Mapping\VotePointMapping.cs" />
+    <Compile Include="Models\Activity\Activity.cs" />
+    <Compile Include="Models\Activity\ActivityBase.cs" />
+    <Compile Include="Models\Activity\BadgeActivity.cs" />
+    <Compile Include="Models\Activity\MemberJoinedActivity.cs" />
+    <Compile Include="Models\Activity\ProfileUpdatedActivity.cs" />
+    <Compile Include="Models\Attributes\AwardsPointsAttribute.cs" />
+    <Compile Include="Models\Attributes\DescriptionAttribute.cs" />
+    <Compile Include="Models\Attributes\DisplayNameAttribute.cs" />
+    <Compile Include="Models\Attributes\FilePathAttribute.cs" />
+    <Compile Include="Models\Attributes\IdAttribute.cs" />
+    <Compile Include="Models\Attributes\ImageAttribute.cs" />
+    <Compile Include="Models\Attributes\NameAttribute.cs" />
+    <Compile Include="Models\Badge.cs" />
+    <Compile Include="Models\BadgeTypeTimeLastChecked.cs" />
+    <Compile Include="Models\BannedEmail.cs" />
+    <Compile Include="Models\BannedWord.cs" />
+    <Compile Include="Models\CategoryNotification.cs" />
+    <Compile Include="Models\CategoryPermissions.cs" />
+    <Compile Include="Models\CreateTopic.cs" />
+    <Compile Include="Models\DialoguePage.cs" />
+    <Compile Include="Models\Email.cs" />
+    <Compile Include="Models\MasterModel.cs" />
+    <Compile Include="Models\MemberPoints.cs" />
+    <Compile Include="Models\MembersPaged.cs" />
+    <Compile Include="Models\Permission.cs" />
+    <Compile Include="Models\Poll.cs" />
+    <Compile Include="Models\PollAnswer.cs" />
+    <Compile Include="Models\PollVote.cs" />
+    <Compile Include="Models\Post.cs" />
+    <Compile Include="Models\PrivateMessage.cs" />
+    <Compile Include="Models\RegisterModel.cs" />
+    <Compile Include="Models\Report.cs" />
+    <Compile Include="Models\RssItem.cs" />
+    <Compile Include="Models\SectionTreeNode.cs" />
+    <Compile Include="Models\LogOnModel.cs" />
+    <Compile Include="Models\Topic.cs" />
+    <Compile Include="Models\TopicNotification.cs" />
+    <Compile Include="Models\UploadedFile.cs" />
+    <Compile Include="Models\UploadFileResult.cs" />
+    <Compile Include="Models\ViewModels\ActiveMembersViewModel.cs" />
+    <Compile Include="Models\ViewModels\ActiveTopicsViewModel.cs" />
+    <Compile Include="Models\ViewModels\AjaxEditPermissionViewModel.cs" />
+    <Compile Include="Models\ViewModels\CategoryListViewModel.cs" />
+    <Compile Include="Models\ViewModels\CategoryViewModel.cs" />
+    <Compile Include="Models\ViewModels\CreateTopicButtonViewModel.cs" />
+    <Compile Include="Models\ViewModels\CreateTopicViewModel.cs" />
+    <Compile Include="Models\ViewModels\EditPermissionsViewModel.cs" />
+    <Compile Include="Models\ViewModels\ForgotPasswordViewModel.cs" />
+    <Compile Include="Models\ViewModels\HighEarnersPointViewModel.cs" />
+    <Compile Include="Models\ViewModels\LogOnViewModel.cs" />
+    <Compile Include="Models\ViewModels\MainStatsViewModel.cs" />
+    <Compile Include="Models\ViewModels\MemberViewModels.cs" />
+    <Compile Include="Models\ViewModels\ShowTopicViewModel.cs" />
+    <Compile Include="Models\ViewModels\ViewAdminSidePanelViewModel.cs" />
+    <Compile Include="Models\ViewModels\ViewCategoryViewModel.cs" />
+    <Compile Include="Models\ViewModels\ViewTopicViewModel.cs" />
+    <Compile Include="Models\Vote.cs" />
+    <Compile Include="NotFoundHandler.cs" />
+    <Compile Include="PathHelper.cs" />
+    <Compile Include="Routes\DialogueRoutes.cs" />
+    <Compile Include="Routes\DialogueTopicRouteHandler.cs" />
+    <Compile Include="Routes\DialogueVirtualPage.cs" />
+    <Compile Include="Routes\RouteCollectionExtensions.cs" />
+    <Compile Include="Routes\UmbracoVirtualNodeByIdRouteHandler.cs" />
+    <Compile Include="Routes\UmbracoVirtualNodeRouteHandler.cs" />
+    <Compile Include="Services\ActivityService.cs" />
+    <Compile Include="Services\BadgeService.cs" />
+    <Compile Include="Services\BannedEmailService.cs" />
+    <Compile Include="Services\BannedWordService.cs" />
+    <Compile Include="Services\CategoryNotificationService.cs" />
+    <Compile Include="Services\CategoryPermissionService.cs" />
+    <Compile Include="Services\CategoryService.cs" />
+    <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\MemberPointsService.cs" />
+    <Compile Include="Services\MemberService.cs" />
+    <Compile Include="Dialogue.cs" />
+    <Compile Include="Constants\AppConstants.cs" />
+    <Compile Include="Controllers\BaseControllers.cs" />
+    <Compile Include="Controllers\DialogueController.cs" />
+    <Compile Include="Controllers\ApiControllers\PartialPickerController.cs" />
+    <Compile Include="Controllers\ViewMacroController.cs" />
+    <Compile Include="Mapping\CategoryMapper.cs" />
+    <Compile Include="Mapping\DialogueMapper.cs" />
+    <Compile Include="Mapping\MemberMapper.cs" />
+    <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\Entity.cs" />
+    <Compile Include="Models\FooterNavigation.cs" />
+    <Compile Include="Models\DialogueForum.cs" />
+    <Compile Include="Events\UmbracoEvents.cs" />
+    <Compile Include="Models\MainNavigation.cs" />
+    <Compile Include="Models\Member.cs" />
+    <Compile Include="Models\Plugins\CssFile.cs" />
+    <Compile Include="Models\Plugins\PartialPicker.cs" />
+    <Compile Include="Models\SitemapNode.cs" />
+    <Compile Include="Models\DialogueSettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\GenericMessage.cs" />
+    <Compile Include="Data\Caching\CachingConfiguration.cs" />
+    <Compile Include="Data\Context\DatabaseContext.cs" />
+    <Compile Include="Data\UnitOfWork\UnitOfWork.cs" />
+    <Compile Include="Data\UnitOfWork\UnitOfWorkManager.cs" />
+    <Compile Include="Services\PermissionService.cs" />
+    <Compile Include="Services\PollService.cs" />
+    <Compile Include="Services\PostService.cs" />
+    <Compile Include="Services\PrivateMessageService.cs" />
+    <Compile Include="Services\TopicNotificationService.cs" />
+    <Compile Include="Services\TopicService.cs" />
+    <Compile Include="Services\VoteService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="web.config" />
+    <Content Include="packages.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="config\imageprocessor\" />
+    <Folder Include="Data\Data\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>6028</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:1946/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /s /y "$(TargetDir)*.dll" "$(SolutionDir)Src\Dialogue.Website\bin\"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

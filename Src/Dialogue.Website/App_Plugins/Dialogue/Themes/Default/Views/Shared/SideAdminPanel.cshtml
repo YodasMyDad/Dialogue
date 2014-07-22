@@ -1,0 +1,16 @@
+﻿@model Dialogue.Logic.Models.ViewModels.ViewAdminSidePanelViewModel
+@{
+    var logOutUrl = string.Format("{0}?{1}={1}", Dialogue.Logic.Dialogue.Settings().ForumRootUrl, AppConstants.LogOut);
+}
+
+<li>
+    <a href="#">@Html.Lang("Buttons.Edit") @Model.CurrentUser.UserName</a>
+</li>
+
+@if (Html.Settings().AllowPrivateMessages && Model.CurrentUser.DisablePrivateMessages != true)
+{
+    var count = Model.NewPrivateMessageCount <= 0 ? null : string.Format("({0})", Model.NewPrivateMessageCount);
+    <li><a href="#">@Html.Lang("PM.PrivateMessages") @count</a></li>
+}
+
+<li><a href="@logOutUrl">@Html.Lang("Members.LogOff")</a></li>

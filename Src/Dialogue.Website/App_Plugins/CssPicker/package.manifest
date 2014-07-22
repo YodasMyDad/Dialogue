@@ -1,0 +1,31 @@
+﻿{
+    propertyEditors: [
+        {
+        alias: "Apt.CssPicker",
+        name: "Css Picker",
+        editor: {
+        view: "~/App_Plugins/CssPicker/picker.html"
+        },
+        prevalues: {
+            fields: [
+                {
+                    label: "Folder to show",
+                    description: "Enter the folder path of where the css files are you want to pick",
+                    key: "folderpath",
+                    view: "requiredfield",
+                    validation: [
+                        {
+                            type: "Required" 
+                        }                        
+                    ]
+                }
+            ]
+        }
+        }
+    ]
+    ,
+    javascript: [
+        '~/App_Plugins/CssPicker/CssPicker.controller.js',
+		'~/App_Plugins/CssPicker/CssPicker.resource.js'
+    ]
+}

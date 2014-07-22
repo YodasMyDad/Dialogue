@@ -1,0 +1,45 @@
+﻿<div ng-controller="u7dtg.prevaluesController">
+    <table class="table table-striped table-responsive table-hover prevalusTable">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Alias</th>
+          <th>Type</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr ng-repeat="column in model.value.columns">
+          <td>{{$index+1}}</td>
+          <td><input type="text" ng-model="column.title" /></td>
+          <td><input type="text" ng-model="column.alias" /></td>
+          <td>
+              <div class="clearfix">
+              <select ng-model="column.type">
+                  <option value="textbox">Textbox</option>
+                  <option value="textarea">Textarea</option>
+                  <option value="rte">Rich text editor</option>
+                  <option value="datepicker">Date picker</option>
+                  <option value="mediapicker">Media picker</option>
+                  <option value="contentpicker">Content picker</option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="dropdown">Drop down</option>
+                  <option value="numeric">Numeric</option>
+              </select>
+                  </div>
+              <ng-include src="'/app_plugins/u7dtg/propertiesPrevalues/'+column.type+'.html'"></ng-include>
+          </td>
+          <td class="actions">
+              <span ng-click="moveUp($index)" class="btn btn-default icon icon-arrow-up"></span>
+              <span ng-click="moveDown($index)" class="btn btn-default icon icon-arrow-down"></span>
+              <span ng-click="removeColumn($index)" class="btn btn-danger icon icon-trash"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-default" ng-click="addColumn()">Add coulmn</button>
+    <br />
+    <br />
+    <br />
+</div>

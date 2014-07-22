@@ -1,0 +1,29 @@
+﻿{
+    propertyEditors: [
+        {
+        alias: "Dialogue.ThemePicker",
+        name: "Theme Picker",
+        editor: {
+			view: "~/App_Plugins/Dialogue/BackOffice/PropertyEditors/themepicker.html"
+			}
+        },
+		{
+        alias: "Dialogue.Permissions",
+        name: "Category Permissions",
+        editor: {
+			view: "~/App_Plugins/Dialogue/BackOffice/PropertyEditors/permissions.html"
+			}
+        }
+    ]
+    ,
+	javascript: [
+	    '~/App_Plugins/Dialogue/backoffice/dialoguetree/controllers/view.controller.js',
+		'~/App_Plugins/Dialogue/backoffice/dialoguetree/controllers/edit.controller.js',
+		'~/App_Plugins/Dialogue/backoffice/dialoguetree/controllers/overview.controller.js',
+		'~/App_Plugins/Dialogue/backoffice/dialoguetree/controllers/bannedemail.controller.js',
+		'~/App_Plugins/Dialogue/backoffice/dialoguetree/controllers/bannedword.controller.js',
+		'~/App_Plugins/Dialogue/backoffice/dialoguetree/resources/bannedemail.resource.js',
+		'~/App_Plugins/Dialogue/backoffice/propertyeditors/themepicker.controller.js',
+		'~/App_Plugins/Dialogue/backoffice/propertyeditors/permissions.controller.js'
+	]
+}

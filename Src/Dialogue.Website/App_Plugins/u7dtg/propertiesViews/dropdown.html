@@ -1,0 +1,2 @@
+﻿<select ng-model="row[property]" class="umb-editor umb-textstring textstring" ng-options="opt.value as opt.text for opt in model.config.columns.columns[$index].props.options" ></select><br />
+<button ng-show="row[property]" type="button" class="btn btn-default btn-link" ng-click="row[property] = ''"><span class="icon icon-delete"></span> Clear selection</button>

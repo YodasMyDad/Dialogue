@@ -1,0 +1,30 @@
+﻿<div ng-controller="Dialogue.PropertyEditors.Permissions">
+
+    <table class="table table-bordered table-striped permissiontable">
+
+        <thead>
+            <tr>
+                <th></th>
+                <th ng-repeat="group in dialoguePermissions.Groups">
+                    {{group.Name}}
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="permission in dialoguePermissions.Permissions">
+                <td>{{permission.Name}}</td>
+                <td ng-repeat="group in dialoguePermissions.Groups">
+                    <span class="permissioncheckbox">
+                        <input type="checkbox" ng-disabled="disableAll"
+                               ng-click="updateDialoguePermissions(permission.Id, dialoguePermissions.Category.Id, group.Id)"
+                               ng-checked="dialogueCheckedPermissions.indexOf(formatPermissionIds(permission.Id, dialoguePermissions.Category.Id, group.Id)) > -1" />
+                    </span>
+                </td>
+            </tr>
+   
+        </tbody>
+
+    </table>
+    <!--{{dialogueCheckedPermissions}}-->
+</div>

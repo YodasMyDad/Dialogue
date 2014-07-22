@@ -1,0 +1,72 @@
+﻿@using Dialogue.Logic.Application.ExtensionMethods
+@using Dialogue.Logic.Application
+@using Dialogue.Logic.Constants
+@using Dialogue.Logic.Models.ViewModels
+@model ViewTopicViewModel
+@{
+    var topic = Model.Topic;
+    var posts = topic.Posts.Where(x => x.Pending != true).ToList();
+    var topicSolved = Model.Topic.Solved ? "answered" : "";
+
+    var firstPost = posts.FirstOrDefault(x => x.IsTopicStarter);
+    var postToolTip = string.Empty;
+    //var voteCount = firstPost != null ? firstPost.VoteCount : 0;
+    if (firstPost != null)
+    {
+        postToolTip = string.Concat(AppHelpers.ReturnAmountWordsFromString(AppHelpers.StripHtmlFromString(firstPost.PostContent), 50), "....");
+    }
+    var answerCount = (posts.Count() - 1);
+    var answerText = answerCount == 1 ? Html.Lang("Topic.Comment") : Html.Lang("Topic.Comments");
+}
+@if (!Model.Permissions[AppConstants.PermissionDenyAccess].IsTicked)
+{
+    <div class="row">
+        <div class="topicrow topicsticky-@topic.IsSticky topiclocked-@topic.IsLocked">
+
+            <div class="col-md-2">
+                <div class="topiccomments topiccomments@(Html.Settings().AllowPoints) statsblock @topicSolved">
+                    @answerCount.KiloFormat() <span>@answerText</span>
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <div class="topicviews topicviews@(Html.Settings().AllowPoints) statsblock @topicSolved">
+                    @topic.Views.KiloFormat() <span>@Html.Lang("Topic.Views")</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 topicrowdetails">
+                <h3>
+                    <a title="@postToolTip" href="@Html.Raw(topic.NiceUrl)">
+                        @if (topic.IsSticky)
+                        {
+                            <img src="@Url.Content(AppHelpers.GetStaticMediaUrl("icon-sticky.png"))" class="topicicon" alt="" />
+                        }
+                        @if (topic.Poll != null)
+                        {
+                            <img src="@Url.Content(AppHelpers.GetStaticMediaUrl("icon-poll.png"))" class="topicicon" alt="" />
+                        }
+                        @Html.Raw(topic.Name)
+                    </a>
+                </h3>
+                <div class="topicrowstatscategory">
+                    @Html.Raw(string.Format(Html.Lang("Topic.StartedBy"), DatesUI.GetPrettyDate(topic.CreateDate.ToString()), topic.Member.UserName))
+                    @if (Model.ShowCategoryName)
+                    {
+                        @Html.Lang("Topic.InCategory") <a href="@topic.Category.Url">@topic.Category.Name</a>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-2 topicrecent">
+                <p class="topicrecentavatar">
+                    <a href="@topic.LastPost.Member.NiceUrl">
+                        <img src="@topic.LastPost.Member.MemberImage(AppConstants.GravatarTopicSize)" alt="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName" title="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName">
+                    </a>
+                </p>
+                <p class="topicrecentdate">@DatesUI.GetPrettyDate(topic.LastPost.DateCreated.ToString())</p>
+            </div>
+        </div>
+    </div>
+    <hr/>
+}

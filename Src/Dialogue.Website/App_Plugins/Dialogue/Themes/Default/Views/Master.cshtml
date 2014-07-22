@@ -1,0 +1,131 @@
+﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Application.ExtensionMethods
+@using SquishIt.Framework
+@model Dialogue.Logic.Models.MasterModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@RenderSection("PageTitle", false)</title>
+    <meta name="description" content="@RenderSection("MetaDescription", false)">
+    @RenderSection("SocialMeta", false)
+    @ViewBag.Canonical
+    @Html.Raw(Bundle.Css()
+                    .Add("~/app_plugins/dialogue/content/css/bootstrap.css")
+                    .Add("~/app_plugins/dialogue/content/css/styles.css")
+                    .Render("~/app_plugins/dialogue/content/css/cache/combined_main_#.css"))
+    
+    
+    <!--[if lt IE 9]>
+              <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/html5shiv.js")"></script>
+              <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/respond.min.js")"></script>
+    <![endif]-->
+    
+    <script type="text/javascript">
+        var app_base = '@Url.Content("~/")';
+    </script>
+    @Html.Raw(Bundle.JavaScript()
+            .Add("~/app_plugins/dialogue/content/scripts/jquery-1.10.2.min.js")
+            .Add("~/app_plugins/dialogue/content/scripts/bootstrap.min.js")
+            .Add("~/app_plugins/dialogue/content/scripts/jquery.unobtrusive-ajax.js")
+            .Add("~/app_plugins/dialogue/content/scripts/jquery.validate.js")
+            .Add("~/app_plugins/dialogue/content/scripts/jquery.validate.unobtrusive.js")
+            .Add("~/app_plugins/dialogue/content/scripts/slimmage.min.js")
+            .Add("~/app_plugins/dialogue/content/scripts/general.js")
+            .Render("~/app_plugins/dialogue/content/scripts/cache/combined_main_#.js"))
+
+    @RenderSection("scripts", false)
+    @RenderSection("Head", false)
+</head>
+
+<body>
+
+    <header>
+
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="@Html.Settings().ForumRootUrl">Home</a></li>                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.Lang("Layout.Nav.Utilities")<span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    @if (Model.Settings.AllowPoints)
+                                    {
+                                        <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Leaderboard)">@Html.Lang("Layout.Nav.Leaderboard")</a></li>
+                                    }
+
+                                    <li><a href="#">@Html.Lang("Layout.Nav.Activity")</a></li>
+                                    <li><a href="#">@Html.Lang("Layout.Nav.Badges")</a></li>
+                                </ul>
+                            </li>
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                if (Model.Settings.SuspendRegistration != true)
+                                {
+                                    <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Register)">@Html.Lang("Layout.Nav.Register")</a></li>
+                                }
+                                <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Login)">@Html.Lang("Layout.Nav.Logon")</a></li>
+                            }
+                        </ul>
+
+                        <form class="navbar-form navbar-left" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </div>
+                            <button type="submit" class="btn btn-default">Submit</button>
+                        </form>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.Lang("Layout.Nav.MyAdmin")<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        @Html.Action("SideAdminPanel", "DialogueMembersSurface")
+                                        @*<li class="divider"></li>*@
+                                    </ul>
+                                </li>
+                            </ul>
+                        }
+
+                    </div>
+                </div>
+            </nav>
+
+    </header>
+
+
+    <section class="container maincontent">
+        @Html.ThemedPartial("_GenericMessage")
+        @Html.ThemedPartial("_EmailConfirmationNotice")
+        @RenderBody()
+    </section>
+    
+    <section class="container stats">
+        @Html.Action("GetMainStats", "DialogueSurface")
+        @Html.Action("GetCurrentActiveMembers", "DialogueSurface")
+    </section>
+
+    <footer class="container">
+        <hr>
+        &copy; Dialogue By <a href="http://www.aptitude.co.uk/what-we-do/website-design/" rel="nofollow">Aptitude - The Umbraco Agency</a> @DateTime.Now.Year
+    </footer>
+
+</body>
+</html>

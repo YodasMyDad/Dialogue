@@ -1,0 +1,31 @@
+﻿{
+    propertyEditors: [
+        {
+        alias: "Apt.PartialPicker",
+        name: "Partial Picker",
+        editor: {
+        view: "~/App_Plugins/PartialPicker/picker.html"
+        },
+        prevalues: {
+            fields: [
+                {
+                    label: "Folder to show",
+                    description: "Enter the folder path of where the partials are you want to pick",
+                    key: "folderpath",
+                    view: "requiredfield",
+                    validation: [
+                        {
+                            type: "Required" 
+                        }                        
+                    ]
+                }
+            ]
+        }
+        }
+    ]
+    ,
+    javascript: [
+        '~/App_Plugins/PartialPicker/PartialPicker.controller.js',
+		'~/App_Plugins/PartialPicker/partialpicker.resource.js'
+    ]
+}

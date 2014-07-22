@@ -1,0 +1,131 @@
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Logic.dll.config
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Logic.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Logic.pdb
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\businesslogic.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\cms.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\controls.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\interfaces.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.WebHost.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Core.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.DataLayer.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\AutoMapper.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\ICSharpCode.SharpZipLib.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\TidyNet.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\ClientDependency.Core.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Net.Http.Formatting.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Newtonsoft.Json.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\CookComputing.XmlRpcV2.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Examine.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Lucene.Net.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.providers.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\HtmlAgilityPack.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\UmbracoExamine.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\MiniProfiler.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\log4net.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\MySql.Data.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.ApplicationBlocks.Data.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\businesslogic.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\cms.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\controls.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\interfaces.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.WebHost.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Core.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.DataLayer.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\AutoMapper.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Net.Http.Formatting.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Lucene.Net.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.providers.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\HtmlAgilityPack.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\UmbracoExamine.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\MiniProfiler.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.XmlSerializers.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\obj\Debug\Umbraco.Logic.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\obj\Debug\Umbraco.Logic.pdb
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\ImageProcessor.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\ImageProcessor.Web.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\DevTrends.MvcDonutCaching.dll
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\DevTrends.MvcDonutCaching.pdb
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\DevTrends.MvcDonutCaching.xml
+C:\Users\Lee\Documents\My Dropbox\Aptitude\Development\Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\obj\Debug\Umbraco.Logic.csprojResolveAssemblyReference.cache
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Logic.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Logic.pdb
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\businesslogic.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\cms.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\controls.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\DevTrends.MvcDonutCaching.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\EntityFramework.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\EntityFramework.SqlServer.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\HtmlAgilityPack.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\interfaces.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Practices.ServiceLocation.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Practices.Unity.Configuration.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Practices.Unity.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Newtonsoft.Json.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Net.Http.Formatting.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Helpers.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.WebHost.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Mvc.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Razor.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.WebPages.Deployment.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.WebPages.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.WebPages.Razor.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Core.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.DataLayer.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Unity.Mvc4.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\AutoMapper.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\ICSharpCode.SharpZipLib.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\TidyNet.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\ClientDependency.Core.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\CookComputing.XmlRpcV2.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Examine.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Lucene.Net.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.providers.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\UmbracoExamine.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\MiniProfiler.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\log4net.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\MySql.Data.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.ApplicationBlocks.Data.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\businesslogic.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\cms.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\controls.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\DevTrends.MvcDonutCaching.pdb
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\DevTrends.MvcDonutCaching.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\EntityFramework.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\EntityFramework.SqlServer.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\HtmlAgilityPack.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\interfaces.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Practices.ServiceLocation.pdb
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Practices.ServiceLocation.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Practices.Unity.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Microsoft.Practices.Unity.Configuration.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Newtonsoft.Json.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Net.Http.Formatting.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Helpers.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Http.WebHost.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Mvc.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.Razor.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.WebPages.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.WebPages.Deployment.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\System.Web.WebPages.Razor.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Umbraco.Core.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.DataLayer.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\AutoMapper.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\Lucene.Net.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.providers.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\UmbracoExamine.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\MiniProfiler.xml
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\umbraco.XmlSerializers.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\obj\Debug\Umbraco.Logic.dll
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\obj\Debug\Umbraco.Logic.pdb
+C:\Users\Lee\Documents\My Dropbox\Projects\__ Umbraco Start Site\V7\Solution\Src\Umbraco.Logic\bin\EFCache.dll

@@ -1,0 +1,20 @@
+<div ng-controller="Our.Umbraco.FilePickerController">
+
+    <ul class="unstyled list-icons">
+        <li ng-show="model.value">
+            <i class="icon icon-navigation handle"></i>
+            <a href="#" prevent-default ng-click="remove()" ng-mouseenter="hover(true)" ng-mouseleave="hover(false)">
+                <i ng-show="hovering" class="icon icon-delete red hover-show"></i>
+                <i ng-show="!hovering" class="icon-umb-content hover-hide"></i> 
+                {{model.value}}
+            </a>
+        </li>
+        <li ng-show="!model.value">
+            <i class="icon icon-add blue"></i>
+            <a href="#" ng-click="openPicker('{{model.config.folder}}')" prevent-default="">
+                Choose...
+            </a>
+        </li>
+    </ul>
+
+</div>

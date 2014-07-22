@@ -1,0 +1,36 @@
+﻿{   
+    propertyEditors: [      
+        {
+            alias: "u7dtg",
+            name: "Content grid",
+            editor: {
+                view: "~/App_Plugins/u7dtg/u7dtg.editor.html",
+				valueType: "JSON"
+            },
+			prevalues : {
+				fields: [
+					{
+					    label: "Max rows",
+					    description: "Max number of rows empty or 0 for unlimited",
+					    key: "rows",
+					    view: "~/App_Plugins/u7dtg/prevalues/u7dtg.prevalues.maxrows.html"
+					},      
+					{
+					    label: "Columns",
+					    description: "Grid columns",
+					    key: "columns",
+					    view: "~/App_Plugins/u7dtg/prevalues/u7dtg.prevalues.columns.html"
+					}         
+				]
+			}
+        }
+    ],
+    javascript: [
+		'~/App_Plugins/u7dtg/prevalues/u7dtg.prevalues.controller.js',
+		'~/App_Plugins/u7dtg/directives/rteDirective.js',
+        '~/App_Plugins/u7dtg/u7dtg.controller.js'
+    ],
+	css: [
+		'~/App_Plugins/u7dtg/u7dtg.style.css'
+	]
+}

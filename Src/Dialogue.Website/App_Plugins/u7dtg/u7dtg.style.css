@@ -1,0 +1,32 @@
+﻿.prevalusTable tr td.actions span{padding:2px 4px;}
+.prevalusTable .dropdownOptionsTable {margin-bottom: 5px;}
+.prevalusTable .dropdownOptionsTable input {max-width:120px;}
+
+
+.dtgTable tr td.actions span{padding:2px 4px;}
+
+.dtgPrevaluesProperties {margin-top:10px;}
+    .dtgPrevaluesProperties .dtgcheckbox span {float:left;}
+    .dtgPrevaluesProperties .dtgcheckbox input[type="checkbox"] {position: inherit;float: left;margin-left: 6px;}
+
+.dtgTable .umb-sortable-thumbnails li {width:80px!important;height:66px!important}
+.dtgTable .umb-mediapicker LI .add-link {width:60px;height:60px;}
+.dtgTable .umb-mediapicker LI:hover .add-link {display:inline-block;}
+.dtgTable .umb-mediapicker LI .add-link .icon-add {left: 22px;top: -26px;background: none;}
+.dtgTable .umb-mediapicker LI .add-link .icon-add:hover {display:block!important;}
+
+.dtgTable .umb-mediapicker .picked-image .icon-delete {top:0px;left:0px;}
+.dtgTable .umb-mediapicker .picked-image .icon-delete:hover {display:block!important;}
+.dtgTable .umb-mediapicker .umb-sortable-thumbnails li {background:none;}
+.dtgTable .list-icons li {padding-left:25px;}
+.dtgTable .list-icons li > i.icon {display:none;}
+.dtgTable input {max-width:150px;}
+.dtgTable select {max-width:150px;}
+
+.dtgTable .umb-datepicker input {max-width:130px;}
+.dtgTable .umb-datepicker .datepicker .icon-calendar {position:relative;top:0px;left:-3px;background:none;}
+.dtgTable .umb-datepicker .datepicker .icon-calendar:hover {display:block!important;}
+.dtgTable .umb-datepicker .datepicker .icon-time {position:relative;top:0px;left:-3px;background:none;}
+.dtgTable .umb-datepicker .datepicker .icon-time:hover {display:block!important;}
+.dtgTable .umb-datepicker .datepicker .add-on {background-color:#f8f8f8!important;color:#343434!important;border-color:#ccc!important;}
+

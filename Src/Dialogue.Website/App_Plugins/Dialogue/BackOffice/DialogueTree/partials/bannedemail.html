@@ -1,0 +1,33 @@
+﻿<div ng-controller="Dialogue.BannedEmailController">
+    <div class="umb-pane">
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Email
+                    </td>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr ng-repeat="email in emails.data">
+                    <td>
+                    {{ email.Email }}
+                    <td>
+                    <td>
+                        <a ng-click="delete(email.Id)" class="btn btn-default">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+
+
+        </table>
+
+        <p>
+            <a href="#" ng-click="add()" prevent-default="" class="btn btn-primary">
+                <localize key="general_add" class="ng-isolate-scope ng-scope">Add</localize>
+            </a>
+        </p>
+
+    </div>
+</div>

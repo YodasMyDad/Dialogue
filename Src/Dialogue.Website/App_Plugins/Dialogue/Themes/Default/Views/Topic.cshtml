@@ -1,0 +1,20 @@
+﻿@using Dialogue.Logic.Models
+@using Umbraco.Core
+@using Umbraco.Web
+@model Dialogue.Logic.Models.ViewModels.ShowTopicViewModel
+@{
+    Layout = "OneCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+<h1>@Model.Topic.Name</h1>
+
+<p>TODO - Sort posts</p>

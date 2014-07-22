@@ -1,0 +1,20 @@
+<div class="umb-panel" ng-controller="Our.Umbraco.FolderPickerDialogController">
+    <div class="umb-panel-body no-header">
+        <umb-tree section="dummy"
+                  treealias="fileTree"
+                  eventhandler="dialogEventHandler"
+                  hideoptions="true"
+                  hideheader="true"
+                  isdialog="true"
+                  customtreeparams="startfolder={{model.config.folder}}&amp;filter={{model.config.filter}}&amp;files=true" />
+    </div>
+    <div class="umb-panel-footer">
+        <div class="umb-el-wrap umb-panel-buttons">
+            <div class="btn-toolbar umb-btn-toolbar pull-right">
+                <a href ng-click="close()" class="btn btn-link">
+                    <localize key="general_cancel">Cancel</localize>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
