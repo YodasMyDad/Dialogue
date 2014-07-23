@@ -1,6 +1,5 @@
 ﻿@using Dialogue.Logic.Application.ExtensionMethods
 @using Dialogue.Logic.Application
-@using Dialogue.Logic.Constants
 @using Dialogue.Logic.Models.ViewModels
 @model ViewTopicViewModel
 @{
@@ -40,11 +39,11 @@
                     <a title="@postToolTip" href="@Html.Raw(topic.NiceUrl)">
                         @if (topic.IsSticky)
                         {
-                            <img src="@Url.Content(AppHelpers.GetStaticMediaUrl("icon-sticky.png"))" class="topicicon" alt="" />
+                            <span class="glyphicon glyphicon-bullhorn"></span>
                         }
                         @if (topic.Poll != null)
                         {
-                            <img src="@Url.Content(AppHelpers.GetStaticMediaUrl("icon-poll.png"))" class="topicicon" alt="" />
+                            <span class="glyphicon glyphicon-stats"></span>
                         }
                         @Html.Raw(topic.Name)
                     </a>

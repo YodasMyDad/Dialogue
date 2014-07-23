@@ -16,13 +16,14 @@ namespace Dialogue.Logic.Models
         public string Twitter { get; set; }
         public string Avatar { get; set; }
         public string Comments { get; set; }
+        public string Slug { get; set; }
         public DateTime LastActiveDate { get; set; }
         public DateTime DateCreated { get; set; }
         public bool DisableEmailNotifications { get; set; }
         public bool DisablePosting { get; set; }
         public bool DisablePrivateMessages { get; set; }
         public bool DisableFileUploads { get; set; }
-        //public IMember BaseMember { get; set; }
+        public bool CanEditOtherMembers { get; set; }
         public List<IMemberGroup> Groups { get; set; }
         public string FacebookAccessToken { get; set; }
         public string FacebookId { get; set; }
@@ -48,7 +49,7 @@ namespace Dialogue.Logic.Models
 
         public string NiceUrl
         {
-            get { return UrlTypes.GenerateUrl(UrlTypes.UrlType.Member, AppHelpers.CreateUrl(UserName, "-")); }
+            get { return UrlTypes.GenerateUrl(UrlTypes.UrlType.Member, Slug); }
         }
 
         public string MemberImage(int size)

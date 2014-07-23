@@ -17,6 +17,11 @@ namespace Dialogue.Logic.Mapping
 
         #region Member Mapping
 
+        public static Member MapMember(IMember member, bool populateAll = false)
+        {
+            return MapMember(member.Id, populateAll);
+        }
+
         public static Member MapMember(IPublishedContent member, bool populateAll = false)
         {
             if (member != null)
@@ -149,6 +154,8 @@ namespace Dialogue.Logic.Mapping
             siteMember.Avatar = member.GetPropertyValue<string>(AppConstants.PropMemberAvatar);
             siteMember.Comments = member.GetPropertyValue<string>(AppConstants.PropMemberUmbracoMemberComments);
             siteMember.LastActiveDate = member.GetPropertyValue<DateTime>(AppConstants.PropMemberLastActiveDate);
+            siteMember.Slug = member.GetPropertyValue<string>(AppConstants.PropMemberSlug);
+            siteMember.CanEditOtherMembers = member.GetPropertyValue<bool>(AppConstants.PropMemberCanEditOtherUsers);
 
             siteMember.DisableEmailNotifications = member.GetPropertyValue<bool>(AppConstants.PropMemberDisableEmailNotifications);
             siteMember.DisablePosting = member.GetPropertyValue<bool>(AppConstants.PropMemberDisablePosting);

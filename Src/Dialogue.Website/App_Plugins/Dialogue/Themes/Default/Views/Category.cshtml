@@ -47,12 +47,12 @@
             ParentCategory = Model.Category
         });
 }*@
-<div class="row-fluid categoryheader">
+<div class="row categoryheader">
 
-    <div class="span8 categoryheading">
+    <div class="col-md-8 categoryheading">
         <h2>@Html.Raw(@Model.Category.Name)</h2>
     </div>
-    <div class="span4 categoryrss">
+    <div class="col-md-4 categoryrss">
         @if (Html.Settings().AllowRssFeeds)
         {
             <a title="@Html.Lang("Home.Rss")" href="#" class="rsssubscribe">@Html.Lang("Home.Rss")</a>

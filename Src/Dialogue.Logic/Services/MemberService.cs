@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web;
 using System.Web.Security;
 using Dialogue.Logic.Application;
@@ -9,7 +8,6 @@ using Dialogue.Logic.Constants;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
 using Umbraco.Core.Models;
-using Umbraco.Core.Models.Membership;
 using Umbraco.Core.Persistence.Querying;
 using Umbraco.Web.Security;
 using Member = Dialogue.Logic.Models.Member;
@@ -38,6 +36,26 @@ namespace Dialogue.Logic.Services
                 .Where(x => x.IsApproved && !x.IsLockedOut)
                 .Select(x => x.Id);
             return MemberMapper.MapMember(ids.ToList());
+        }
+
+        public IEnumerable<string> GetMembersWithSameSlug(string slug)
+        {
+            // Get members that last activity date is valid
+            var usernames = _memberService.GetMembersByPropertyValue(AppConstants.PropMemberSlug, slug, StringPropertyMatchType.StartsWith)
+                .Select(x => x.Properties[AppConstants.PropMemberSlug].Value.ToString());
+            return usernames;
+        }
+
+        public Member GetUserBySlug(string slug)
+        {
+            var safeSlug = AppHelpers.SafePlainText(slug);
+            var key = string.Format("umb-member-{0}", safeSlug);
+            if (!HttpContext.Current.Items.Contains(key))
+            {
+                var member = MemberMapper.MapMember(_memberService.GetMembersByPropertyValue(AppConstants.PropMemberSlug, slug, StringPropertyMatchType.Exact).FirstOrDefault());
+                HttpContext.Current.Items.Add(key, member);
+            }
+            return HttpContext.Current.Items[key] as Member;
         }
 
         public Member Get(int id, bool populateFull = false)

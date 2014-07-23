@@ -105,7 +105,7 @@ $(function () {
 
 
 function SortWhosOnline() {
-    $.getJSON(app_base + 'umbraco/Surface/DialogueMembersSurface/LastActiveCheck');
+    $.getJSON(app_base + 'umbraco/Surface/DialogueMemberSurface/LastActiveCheck');
 }
 
 // **** POLL FUNCTIONS START **** //

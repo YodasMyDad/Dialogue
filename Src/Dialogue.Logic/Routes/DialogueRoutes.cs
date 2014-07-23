@@ -1,10 +1,10 @@
-﻿using System.EnterpriseServices;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Dialogue.Logic.Constants;
 using Umbraco.Core;
 using Umbraco.Core.Models;
+using umbraco.presentation.umbraco;
 using Umbraco.Web;
 using Umbraco.Web.PublishedCache;
 
@@ -30,14 +30,35 @@ namespace Dialogue.Logic.Routes
                 {
                     RemoveExisting(routes,
                         string.Format(TopicRouteName, node.Id),
-                        string.Format(MemberRouteName, node.Id)
+                        string.Format(MemberRouteName, node.Id),
+                        string.Format(DialoguePageRouteName, node.Id)
                         );
 
                     MapTopicRoute(routes, node);
                     MapDialoguePages(routes, node);
-                    //MapMemberRoute(routes, node);
+                    MapMemberRoute(routes, node);
                 }
             }
+        }
+
+        /// <summary>
+        /// Create the Topic route - It's a fake page
+        /// </summary>
+        /// <param name="routes"></param>
+        /// <param name="node"></param>
+        private static void MapMemberRoute(RouteCollection routes, IPublishedContent node)
+        {
+            //Create the route for the /search/{term} results
+            routes.MapUmbracoRoute(
+                string.Format(MemberRouteName, node.Id),
+                (node.Url.EnsureEndsWith('/') + node.GetPropertyValue<string>(AppConstants.PropMemberUrlName) + "/{membername}").TrimStart('/'),
+                new
+                {
+                    controller = "DialogueMember",
+                    action = "Show",
+                    topicname = UrlParameter.Optional
+                },
+                new PageBySlugRouteHandler(node.Id, node.GetPropertyValue<string>(AppConstants.PropMemberUrlName), "MemberPageNamePlaceHolder"));
         }
 
         /// <summary>

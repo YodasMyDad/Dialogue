@@ -188,7 +188,7 @@ namespace Dialogue.Logic.Application
                 HttpContext.Current.Items.Add(key, memberGroups);
             }
             return HttpContext.Current.Items[key] as List<IMemberGroup>;
-        } 
+        }
 
         /// <summary>
         /// Logs an error but opn as info as Umbraco error logging is weird now
@@ -369,18 +369,18 @@ namespace Dialogue.Logic.Application
         /// </summary>
         /// <returns></returns>
         public static IPublishedContent CurrentPage()
-        {            
+        {
             var contentRequest = UmbracoContext.Current.PublishedContentRequest;
             if (contentRequest != null)
             {
-                return contentRequest.PublishedContent;    
+                return contentRequest.PublishedContent;
             }
 
             // Not ideal - But if blank, return the first instance of a dialogue forum we can find
             return UmbracoContext.Current.ContentCache.GetByXPath(string.Concat("//", AppConstants.DocTypeForumRoot)).FirstOrDefault();
         }
 
-       
+
         public static void SetCurrentPage(int nodeId)
         {
             UmbracoContext.Current.PublishedContentRequest.PublishedContent = GetNode(nodeId);
@@ -610,36 +610,36 @@ namespace Dialogue.Logic.Application
 
             // To list the entities
             var matchingEntities = similarList.ToList();
+            if (matchingEntities.Any())
+            {
+                matchingEntities = matchingEntities.Where(x => !string.IsNullOrEmpty(x)).ToList();
+            }
+            else
+            {
+               return slug;
+            }
 
-            // if the similarList is empty, just return this slug
-            if (!matchingEntities.Any())
+
+            // If there is a previous slug, remove it from the similarList
+            // basically remove itself from the list
+            if (!string.IsNullOrEmpty(previousSlug))
+            {
+                matchingEntities.Remove(previousSlug);
+            }
+
+            // If there are no entities now, just return the slug
+            if (matchingEntities.Count <= 0)
             {
                 return slug;
             }
 
-            // If the previous slug is null, then it's a newly created Entity
-            if (string.IsNullOrEmpty(previousSlug))
-            {
-                // Now check another entity doesn't have the same one
-                if (matchingEntities.Any())
-                {
-                    // See if there is only one. And if it matches exactly
-                    // someone else has this, grab all like it and do a count, stick a suffix on
-                    slug = string.Concat(slug, "-", matchingEntities.Count());
-                }
-            }
-            else
-            {
-                // It's an update, see if they have changed the title by checking slugs
-                if (slug != previousSlug)
-                {
-                    // Name/Title has changed
-                    if (matchingEntities.Any())
-                    {
-                        slug = string.Concat(slug, "-", matchingEntities.Count());
-                    }
-                }
-            }
+
+            // Entity Count
+            var countToAdd = matchingEntities.Count();
+
+            // Append the count to the current slug
+            slug = string.Concat(slug, "-", countToAdd);
+
 
             return slug;
         }
@@ -1089,7 +1089,7 @@ namespace Dialogue.Logic.Application
             var r = HttpContext.Current.Request;
             var builder = new UriBuilder(r.Url.Scheme, r.Url.Host, r.Url.Port);
             return builder.Uri.ToString().TrimEnd('/');
-        }        
+        }
         #endregion
 
         #region Passwords

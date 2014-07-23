@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Installation;
 using Dialogue.Logic.Routes;
@@ -67,15 +68,24 @@ namespace Dialogue.Logic.Events
 
         static void MemberServiceSaved(IMemberService sender, SaveEventArgs<IMember> e)
         {
+            var mService = new Services.MemberService();
             foreach (var entity in e.SavedEntities)
             {
                 if (entity.HasProperty(AppConstants.PropMemberEmail))
                 {
                     entity.SetValue(AppConstants.PropMemberEmail, entity.Email);
+
+                    string previousSlug = null;
+                    if (entity.Properties[AppConstants.PropMemberSlug].Value != null)
+                    {
+                        previousSlug = entity.Properties[AppConstants.PropMemberSlug].Value.ToString();
+                    }
+                    entity.SetValue(AppConstants.PropMemberSlug, AppHelpers.GenerateSlug(entity.Username,
+                                                                                          mService.GetMembersWithSameSlug(AppHelpers.CreateUrl(entity.Username)),
+                                                                                          previousSlug));
                     sender.Save(entity, false);
                 }
             }
- 
         }
 
         /// <summary>

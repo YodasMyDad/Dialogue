@@ -149,7 +149,7 @@
     <Compile Include="Controllers\DialoguePageController.cs" />
     <Compile Include="Controllers\DialogueTopicController.cs" />
     <Compile Include="Controllers\DialogueTreeController.cs" />
-    <Compile Include="Controllers\DialogueMembersController.cs" />
+    <Compile Include="Controllers\DialogueMemberController.cs" />
     <Compile Include="Controllers\ApiControllers\CssPickerController.cs" />
     <Compile Include="Data\Context\ContextPerRequest.cs" />
     <Compile Include="Data\Mapping\ActivityMapping.cs" />
@@ -217,6 +217,7 @@
     <Compile Include="Models\TopicNotification.cs" />
     <Compile Include="Models\UploadedFile.cs" />
     <Compile Include="Models\UploadFileResult.cs" />
+    <Compile Include="Models\ViewMemberViewModel.cs" />
     <Compile Include="Models\ViewModels\ActiveMembersViewModel.cs" />
     <Compile Include="Models\ViewModels\ActiveTopicsViewModel.cs" />
     <Compile Include="Models\ViewModels\AjaxEditPermissionViewModel.cs" />

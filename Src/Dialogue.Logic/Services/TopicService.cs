@@ -128,7 +128,7 @@ namespace Dialogue.Logic.Services
         {
 
             return ContextPerRequest.Db.Topic
-                            .Where(x => x.Slug.Contains(slug))
+                            .Where(x => x.Slug.StartsWith(slug))
                             .Select(x => x.Slug)
                             .ToList();
         }

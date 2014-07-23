@@ -78,6 +78,8 @@
 
         // Members
         public const string PropMemberEmail = "email";
+        public const string PropMemberSlug = "slug";
+        public const string PropMemberCanEditOtherUsers = "canEditOtherMembers";
         public const string PropMemberSignature = "signature";
         public const string PropMemberWebsite = "website";
         public const string PropMemberTwitter = "twitter";
