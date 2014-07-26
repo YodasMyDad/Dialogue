@@ -144,6 +144,7 @@
     <Compile Include="Controllers\ApiControllers\BannedEmailApiController.cs" />
     <Compile Include="Controllers\ApiControllers\BannedWordApiController.cs" />
     <Compile Include="Controllers\ApiControllers\PropertyEditorsController.cs" />
+    <Compile Include="Controllers\DialogueBadgeController.cs" />
     <Compile Include="Controllers\DialogueCategoryController.cs" />
     <Compile Include="Controllers\DialogueLoginRegisterController.cs" />
     <Compile Include="Controllers\DialoguePageController.cs" />
@@ -173,6 +174,10 @@
     <Compile Include="Installation\UnInstallHelpers.cs" />
     <Compile Include="Interfaces\Badges\IBadge.cs" />
     <Compile Include="Interfaces\Badges\IMarkAsSolutionBadge.cs" />
+    <Compile Include="Interfaces\Badges\IPostBadge.cs" />
+    <Compile Include="Interfaces\Badges\ITimeBadge.cs" />
+    <Compile Include="Interfaces\Badges\IVoteDownBadge.cs" />
+    <Compile Include="Interfaces\Badges\IVoteUpBadge.cs" />
     <Compile Include="Mapping\BadgeMapper.cs" />
     <Compile Include="Mapping\PollMapper.cs" />
     <Compile Include="Mapping\PostMapper.cs" />
@@ -221,6 +226,8 @@
     <Compile Include="Models\ViewModels\ActiveMembersViewModel.cs" />
     <Compile Include="Models\ViewModels\ActiveTopicsViewModel.cs" />
     <Compile Include="Models\ViewModels\AjaxEditPermissionViewModel.cs" />
+    <Compile Include="Models\ViewModels\AllRecentActivitiesViewModel.cs" />
+    <Compile Include="Models\ViewModels\BadgeViewModels.cs" />
     <Compile Include="Models\ViewModels\CategoryListViewModel.cs" />
     <Compile Include="Models\ViewModels\CategoryViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateTopicButtonViewModel.cs" />
@@ -234,6 +241,7 @@
     <Compile Include="Models\ViewModels\ShowTopicViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewAdminSidePanelViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewCategoryViewModel.cs" />
+    <Compile Include="Models\ViewModels\ViewMemberDiscussionsViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewTopicViewModel.cs" />
     <Compile Include="Models\Vote.cs" />
     <Compile Include="NotFoundHandler.cs" />
@@ -287,6 +295,7 @@
     <Compile Include="Services\PrivateMessageService.cs" />
     <Compile Include="Services\TopicNotificationService.cs" />
     <Compile Include="Services\TopicService.cs" />
+    <Compile Include="Services\UploadedFileService.cs" />
     <Compile Include="Services\VoteService.cs" />
   </ItemGroup>
   <ItemGroup>

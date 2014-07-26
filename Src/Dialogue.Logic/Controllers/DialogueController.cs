@@ -9,6 +9,7 @@ using Umbraco.Web.Models;
 
 namespace Dialogue.Logic.Controllers
 {
+    #region Render Controllers
     /// <summary>
     /// Create the controller name to be the same as the doctype you want
     /// in this the doctype is 'Home'
@@ -59,8 +60,10 @@ namespace Dialogue.Logic.Controllers
             // Return the model to the current template
             return View(PathHelper.GetThemeViewPath("Dialogue"), forumRoot);
         }
-    }
+    } 
+    #endregion
 
+    #region SurfaceControllers
     public class DialogueSurfaceController : BaseSurfaceController
     {
         private readonly TopicService _topicService;
@@ -114,7 +117,38 @@ namespace Dialogue.Logic.Controllers
             }
         }
 
-    }
+        [OutputCache(Duration = AppConstants.DefaultCacheLengthInSeconds)]
+        public PartialViewResult GetThisWeeksTopEarners()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var highEarners = _pointsService.GetCurrentWeeksPoints(20);
+                    var viewModel = new HighEarnersPointViewModel { HighEarners = highEarners };
+                    return PartialView(PathHelper.GetThemePartialViewPath("GetThisWeeksTopEarners"), viewModel);
+                }
+            }
+            return null;
+        }
+
+        [OutputCache(Duration = AppConstants.DefaultCacheLengthInSeconds)]
+        public PartialViewResult GetThisYearsTopEarners()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var highEarners = _pointsService.GetThisYearsPoints(20);
+                    var viewModel = new HighEarnersPointViewModel { HighEarners = highEarners };
+                    return PartialView(PathHelper.GetThemePartialViewPath("GetThisYearsTopEarners"), viewModel);
+                }
+            }
+            return null;
+        }
+
+    } 
+    #endregion
 
 
 

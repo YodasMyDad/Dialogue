@@ -1,9 +1,11 @@
-﻿using System.Web.Mvc;
-using System.Web.Routing;
+﻿using System.Web.Routing;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
+using Dialogue.Logic.Data.Context;
+using Dialogue.Logic.Data.UnitOfWork;
 using Dialogue.Logic.Installation;
 using Dialogue.Logic.Routes;
+using Dialogue.Logic.Services;
 using Umbraco.Core;
 using Umbraco.Core.Events;
 using Umbraco.Core.Models;
@@ -12,6 +14,8 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Trees;
 using umbraco.cms.businesslogic.packager;
+using MemberService = Umbraco.Core.Services.MemberService;
+using System;
 
 namespace Dialogue.Logic.Events
 {
@@ -52,18 +56,54 @@ namespace Dialogue.Logic.Events
             // Fire Custom Events Here
             //ContentService.Saved += ContentServiceSaved;
             //ContentService.Published += ContentServiceOnPublished;
-
             MemberService.Saved += MemberServiceSaved;
+            MemberService.Deleting += MemberServiceOnDeleting;
 
-            // Register Custom Routes Here
-            //RouteTable.Routes.MapRoute("ExampleController", "example/{action}/{id}",
-            //    new
-            //    {
-            //        controller = "Example",
-            //        action = "Index",
-            //        id = UrlParameter.Optional
-            //    });
+            // Sync the badges
+            // Do the badge processing
+            var badgeService = new BadgeService();
+            var unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
+            using (var unitOfWork = unitOfWorkManager.NewUnitOfWork())
+            {
+                try
+                {
+                    badgeService.SyncBadges();
+                    unitOfWork.Commit();
+                }
+                catch (Exception ex)
+                {
+                    AppHelpers.LogError(string.Format("Error processing badge classes: {0}", ex.Message));
+                }
+            }
 
+        }
+
+        private void MemberServiceOnDeleting(IMemberService sender, DeleteEventArgs<IMember> deleteEventArgs)
+        {           
+
+            var memberService = new Services.MemberService();
+            var unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
+            using (var unitOfWork = unitOfWorkManager.NewUnitOfWork())
+            {
+                try
+                {
+                    foreach (var member in deleteEventArgs.DeletedEntities)
+                    {
+                        var canDelete = memberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork);
+                        if (!canDelete)
+                        {
+                            deleteEventArgs.Cancel = true;
+                            break;
+                            //TODO - Need to show a notification to the user
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    AppHelpers.LogError("Error attempting to delete members", ex);
+                }
+            }
         }
 
         static void MemberServiceSaved(IMemberService sender, SaveEventArgs<IMember> e)

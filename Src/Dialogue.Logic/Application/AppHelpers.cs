@@ -232,7 +232,10 @@ namespace Dialogue.Logic.Application
 
         #region Media
 
-
+        public static string ReturnBadgeUrl(string badgeFile)
+        {
+            return String.Concat(AppConstants.AssetsImagePath, "/badges/", badgeFile);
+        }
         public static string GetStaticMediaUrl(string imagename)
         {
             return string.Concat(AppConstants.AssetsImagePath, imagename);

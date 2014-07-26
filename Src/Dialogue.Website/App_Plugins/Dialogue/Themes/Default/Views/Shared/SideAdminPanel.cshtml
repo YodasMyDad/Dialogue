@@ -6,7 +6,7 @@
 <li>
     <a href="#">@Html.Lang("Buttons.Edit") @Model.CurrentUser.UserName</a>
 </li>
-
+<li class="divider"></li>
 @if (Html.Settings().AllowPrivateMessages && Model.CurrentUser.DisablePrivateMessages != true)
 {
     var count = Model.NewPrivateMessageCount <= 0 ? null : string.Format("({0})", Model.NewPrivateMessageCount);

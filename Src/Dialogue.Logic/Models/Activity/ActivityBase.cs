@@ -13,8 +13,7 @@ namespace Dialogue.Logic.Models.Activity
     /// </summary>
     public abstract class ActivityBase
     {
-        public const string Equality = @"=";
-        protected const string Separator = @",";
+
         protected const string RegexNameValue = @"^([^=]+)=([^=]+)$";
 
         public Activity ActivityMapped { get; set; }

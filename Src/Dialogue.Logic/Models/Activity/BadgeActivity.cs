@@ -1,12 +1,10 @@
 ﻿using System;
+using Dialogue.Logic.Constants;
 
 namespace Dialogue.Logic.Models.Activity
 {
     public class BadgeActivity : ActivityBase
     {
-        public const string KeyBadgeId = @"BadgeID";
-        public const string KeyUserId = @"UserID";
-
         public Badge Badge { get; set; }
         public Member User { get; set; }
 
@@ -25,7 +23,7 @@ namespace Dialogue.Logic.Models.Activity
             return new Activity
                        {
                            // badge=badgeId,user=userId
-                           Data = KeyBadgeId + Equality + badge.Id + Separator + KeyUserId + Equality + user.Id,
+                           Data = AppConstants.KeyBadgeId + AppConstants.Equality + badge.Id + AppConstants.Separator + AppConstants.KeyUserId + AppConstants.Equality + user.Id,
                            Timestamp = timestamp,
                            Type = ActivityType.BadgeAwarded.ToString()
                        };

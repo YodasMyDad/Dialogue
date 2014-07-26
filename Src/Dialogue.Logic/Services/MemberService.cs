@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
+using Dialogue.Logic.Data.UnitOfWork;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
 using Umbraco.Core.Models;
@@ -46,13 +47,13 @@ namespace Dialogue.Logic.Services
             return usernames;
         }
 
-        public Member GetUserBySlug(string slug)
+        public Member GetUserBySlug(string slug, bool getFullMember = false)
         {
             var safeSlug = AppHelpers.SafePlainText(slug);
-            var key = string.Format("umb-member-{0}", safeSlug);
+            var key = string.Format("umb-member-{0}-{1}", safeSlug, getFullMember);
             if (!HttpContext.Current.Items.Contains(key))
             {
-                var member = MemberMapper.MapMember(_memberService.GetMembersByPropertyValue(AppConstants.PropMemberSlug, slug, StringPropertyMatchType.Exact).FirstOrDefault());
+                var member = MemberMapper.MapMember(_memberService.GetMembersByPropertyValue(AppConstants.PropMemberSlug, slug).FirstOrDefault(), getFullMember);
                 HttpContext.Current.Items.Add(key, member);
             }
             return HttpContext.Current.Items[key] as Member;
@@ -119,10 +120,209 @@ namespace Dialogue.Logic.Services
             return MemberMapper.MapPagedMember(mappedMembers, pageIndex, pageSize, totalRecords);
         }
 
-        public void Delete(Member member)
+        #region Deleting Member Stuff
+        public bool Delete(Member member, UnitOfWork unitOfWork)
+        {
+            if (DeleteAllAssociatedMemberInfo(member.Id, unitOfWork))
+            {
+                var baseMember = _memberService.GetById(member.Id);
+                _memberService.Delete(baseMember);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// This method deletes/clears all member data, but not the actual member itself.
+        /// Perfect for clearing spammers accounts before banning them. It needs a UnitOfWork passed in
+        /// because it has to do a lot of saving and removing. so make sure you wrap it in a using statement
+        /// NOTE: It calls it's own commit at the end of this method
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="unitOfWork"></param>
+        /// <returns></returns>
+        public bool DeleteAllAssociatedMemberInfo(int userId, UnitOfWork unitOfWork)
+        {
+            try
+            {
+                // ALOT of services needed to complete this
+                var privateMessageService = new PrivateMessageService();
+                var badgeService = new BadgeService();
+                var memberPointsService = new MemberPointsService();
+                var topicNotificationService = new TopicNotificationService();
+                var voteService = new VoteService();
+                var categoryNotificationService = new CategoryNotificationService();
+                var uploadedFileService = new UploadedFileService();
+                var postService = new PostService();
+                var pollService = new PollService();
+                var topicService = new TopicService();
+                var activityService = new ActivityService();
+
+
+                // Delete all file uploads
+                var files = uploadedFileService.GetAllByUser(userId);
+                var filesList = new List<UploadedFile>();
+                filesList.AddRange(files);
+                foreach (var file in filesList)
+                {
+                    // store the file path as we'll need it to delete on the file system
+                    var filePath = file.FilePath;
+
+                    // Now delete it
+                    uploadedFileService.Delete(file);
+
+                    // And finally delete from the file system
+                    System.IO.File.Delete(HttpContext.Current.Server.MapPath(filePath));
+                }
+
+                // Delete all posts
+                var posts = postService.GetAllByMember(userId);
+                var postList = new List<Post>();
+                postList.AddRange(posts);
+                foreach (var post in postList)
+                {
+                    post.Files.Clear();
+                    postService.Delete(post);
+                }
+
+                unitOfWork.SaveChanges();
+
+                // Also clear their poll votes
+                var userPollVotes = pollService.GetMembersPollVotes(userId);
+                if (userPollVotes.Any())
+                {
+                    var pollList = new List<PollVote>();
+                    pollList.AddRange(userPollVotes);
+                    foreach (var vote in pollList)
+                    {
+                        pollService.Delete(vote);
+                    }
+                }
+
+                unitOfWork.SaveChanges();
+
+                // Also clear their polls
+                var userPolls = pollService.GetMembersPolls(userId);
+                if (userPolls.Any())
+                {
+                    var polls = new List<Poll>();
+                    polls.AddRange(userPolls);
+                    foreach (var poll in polls)
+                    {
+                        //Delete the poll answers
+                        var pollAnswers = poll.PollAnswers;
+                        if (pollAnswers.Any())
+                        {
+                            var pollAnswersList = new List<PollAnswer>();
+                            pollAnswersList.AddRange(pollAnswers);
+                            foreach (var answer in pollAnswersList)
+                            {
+                                answer.Poll = null;
+                                pollService.Delete(answer);
+                            }
+                        }
+
+                        poll.PollAnswers.Clear();
+                        pollService.Delete(poll);
+                    }
+                }
+
+                unitOfWork.SaveChanges();
+
+                // Delete all topics
+                var topics = topicService.GetAllTopicsByUser(userId);
+                var topicList = new List<Topic>();
+                topicList.AddRange(topics);
+                foreach (var topic in topicList)
+                {
+                    topicService.Delete(topic);
+                }
+
+                // Now clear all activities for this user
+                var usersActivities = activityService.GetDataByUserId(userId);
+                activityService.Delete(usersActivities.ToList());
+
+
+                // Delete all private messages from this user
+                var msgsToDelete = new List<PrivateMessage>();
+                msgsToDelete.AddRange(privateMessageService.GetAllByUserSentOrReceived(userId));
+                foreach (var msgToDelete in msgsToDelete)
+                {
+                    privateMessageService.DeleteMessage(msgToDelete);
+                }
+
+
+                // Delete all badge times last checked
+                var badgeTypesTimeLastCheckedToDelete = new List<BadgeTypeTimeLastChecked>();
+                badgeTypesTimeLastCheckedToDelete.AddRange(badgeService.BadgeTypeTimeLastCheckedByMember(userId));
+                foreach (var badgeTypeTimeLastCheckedToDelete in badgeTypesTimeLastCheckedToDelete)
+                {
+                    badgeService.DeleteTimeLastChecked(badgeTypeTimeLastCheckedToDelete);
+                }
+
+                // Delete all points from this user
+                var pointsToDelete = new List<MemberPoints>();
+                pointsToDelete.AddRange(memberPointsService.GetByUser(userId));
+                foreach (var pointToDelete in pointsToDelete)
+                {
+                    memberPointsService.Delete(pointToDelete);
+                }
+
+                // Delete all topic notifications
+                var topicNotificationsToDelete = new List<TopicNotification>();
+                topicNotificationsToDelete.AddRange(topicNotificationService.GetByUser(userId));
+                foreach (var topicNotificationToDelete in topicNotificationsToDelete)
+                {
+                    topicNotificationService.Delete(topicNotificationToDelete);
+                }
+
+                // Delete all user's votes
+                var votesToDelete = new List<Vote>();
+                votesToDelete.AddRange(voteService.GetAllVotesByUser(userId));
+                foreach (var voteToDelete in votesToDelete)
+                {
+                    voteService.Delete(voteToDelete);
+                }
+
+                // Delete all user's badges
+                var badgesToDelete = new List<BadgeToMember>();
+                badgesToDelete.AddRange(badgeService.GetAllBadgeToMembers(userId));
+                foreach (var badgeToDelete in badgesToDelete)
+                {
+                    badgeService.DeleteBadgeToMember(badgeToDelete);
+                }
+
+                // Delete all user's category notifications
+                var categoryNotificationsToDelete = new List<CategoryNotification>();
+                categoryNotificationsToDelete.AddRange(categoryNotificationService.GetByUser(userId));
+                foreach (var categoryNotificationToDelete in categoryNotificationsToDelete)
+                {
+                    categoryNotificationService.Delete(categoryNotificationToDelete);
+                }
+
+                unitOfWork.Commit();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AppHelpers.LogError("Error trying to delete Dialogue member", ex);
+            }
+            return false;
+        } 
+        #endregion
+
+        /// <summary>
+        /// Use this when banning a spammer
+        /// They use signature and website fields for urls. This clears both
+        /// </summary>
+        /// <param name="member"></param>
+        public void ClearWebsiteAndSignature(Member member)
         {
             var baseMember = _memberService.GetById(member.Id);
-            _memberService.Delete(baseMember);
+            baseMember.Properties[AppConstants.PropMemberWebsite].Value = "";
+            baseMember.Properties[AppConstants.PropMemberSignature].Value = "";
+            _memberService.Save(baseMember);
         }
 
         public void UpdateLastActiveDate(Member member)

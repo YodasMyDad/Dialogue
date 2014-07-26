@@ -3,7 +3,7 @@ using Dialogue.Logic.Constants;
 
 namespace Dialogue.Logic.Application
 {
-    public static class UrlTypes
+    public static partial class UrlTypes
     {
         public enum UrlType
         {
@@ -17,7 +17,10 @@ namespace Dialogue.Logic.Application
             EditMember,
             SearchMembers,
             PrivateMessageCreate,
-            TopicsRss
+            TopicsRss,
+            Badges,
+            Activity,
+            ActivityRss
         }
 
         public static string UrlTypeName(UrlType e)
@@ -42,8 +45,14 @@ namespace Dialogue.Logic.Application
                     return Dialogue.Settings().CreatePrivateMessageUrl;
                 case UrlType.Leaderboard:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlLeaderboard);
+                case UrlType.Activity:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlActivity);
                 case UrlType.TopicsRss:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlTopicsRss);
+                case UrlType.ActivityRss:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlActivityRss);
+                case UrlType.Badges:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlBadges);
                 default:
                     return Dialogue.Settings().DialogueUrlName;
             }

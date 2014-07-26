@@ -24,9 +24,9 @@ namespace Dialogue.Logic.Services
             ContextPerRequest.Db.Vote.Remove(item);
         }
 
-        public IList<Vote> GetAllVotesByUser(int memberId)
+        public IEnumerable<Vote> GetAllVotesByUser(int memberId)
         {
-            return ContextPerRequest.Db.Vote.Where(x => x.VotedByMemberId == memberId).ToList();
+            return ContextPerRequest.Db.Vote.Where(x => x.VotedByMemberId == memberId);
         }
     }
 }

@@ -3,8 +3,8 @@
 
 @if (Model.ActiveMembers.Any())
 {
-    <ul class="activememberslist">
-        <li class="activememberslistheading">@Html.Lang("Stats.FooterActiveUsersText")</li>
+    <p class="activememberslistheading">@Html.Lang("Stats.FooterActiveUsersText")</p>
+    <ul class="activememberslist">        
         @foreach (var member in Model.ActiveMembers)
         {
             <li>

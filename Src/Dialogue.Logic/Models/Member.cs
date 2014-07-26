@@ -44,7 +44,6 @@ namespace Dialogue.Logic.Models
         // Populated only when full populate marked as true
         public IList<Vote> Votes { get; set; }
         public IList<Badge> Badges { get; set; }
-        public IList<BadgeTypeTimeLastChecked> BadgeTypesTimeLastChecked { get; set; }
         // Populated only when full populate marked as true
 
         public string NiceUrl

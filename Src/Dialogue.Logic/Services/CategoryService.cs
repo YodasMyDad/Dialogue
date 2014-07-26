@@ -25,6 +25,19 @@ namespace Dialogue.Logic.Services
             return CategoryMapper.MapCategory(AppHelpers.GetNode(id));
         }
 
+        public List<Category> Get(List<int> ids)
+        {
+            var cats = new List<Category>();
+            if (ids.Any())
+            {
+                foreach (var catId in ids)
+                {
+                    cats.Add(CategoryMapper.MapCategory(AppHelpers.GetNode(catId)));
+                }
+            }
+            return cats;
+        }
+
         /// <summary>
         /// Return all categories
         /// </summary>

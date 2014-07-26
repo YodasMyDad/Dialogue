@@ -16,6 +16,11 @@ namespace Dialogue.Logic.Services
             return ContextPerRequest.Db.Poll.ToList();
         }
 
+        public List<Poll> GetMembersPolls(int memberId)
+        {
+            return ContextPerRequest.Db.Poll.Where(x => x.MemberId == memberId).ToList();
+        }
+
         public Poll Add(Poll poll)
         {
             poll.DateCreated = DateTime.UtcNow;
@@ -56,6 +61,41 @@ namespace Dialogue.Logic.Services
         public void Delete(PollAnswer pollAnswer)
         {
             ContextPerRequest.Db.PollAnswer.Remove(pollAnswer);
+        }
+
+        #endregion
+
+        #region Poll Votes
+
+        public List<PollVote> GetAllPollVotes()
+        {
+            return ContextPerRequest.Db.PollVote.ToList();
+        }
+
+        public PollVote Add(PollVote pollVote)
+        {
+            return ContextPerRequest.Db.PollVote.Add(pollVote);
+        }
+
+        public bool HasUserVotedAlready(Guid answerId, int userId)
+        {
+            var vote = ContextPerRequest.Db.PollVote.FirstOrDefault(x => x.PollAnswer.Id == answerId && x.MemberId == userId);
+            return (vote != null);
+        }
+
+        public PollVote GetPollVote(Guid id)
+        {
+            return ContextPerRequest.Db.PollVote.FirstOrDefault(x => x.Id == id);
+        }
+
+        public List<PollVote> GetMembersPollVotes(int memberId)
+        {
+            return ContextPerRequest.Db.PollVote.Where(x => x.MemberId == memberId).ToList();
+        }
+
+        public void Delete(PollVote pollVote)
+        {
+            ContextPerRequest.Db.PollVote.Remove(pollVote);
         }
 
         #endregion

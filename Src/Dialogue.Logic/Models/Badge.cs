@@ -25,11 +25,11 @@ namespace Dialogue.Logic.Models
         /// </summary>
         public static readonly Dictionary<BadgeType, string> BadgeClassNames = new Dictionary<BadgeType, string>
                                                             {
-                                                                {BadgeType.VoteUp, "MVCForum.Domain.Interfaces.Badges.IVoteUpBadge"},
-                                                                {BadgeType.MarkAsSolution, "MVCForum.Domain.Interfaces.Badges.IMarkAsSolutionBadge"},
-                                                                {BadgeType.Time, "MVCForum.Domain.Interfaces.Badges.ITimeBadge"},
-                                                                {BadgeType.Post, "MVCForum.Domain.Interfaces.Badges.IPostBadge"},
-                                                                {BadgeType.VoteDown, "MVCForum.Domain.Interfaces.Badges.IVoteDownBadge"}
+                                                                {BadgeType.VoteUp, "Dialogue.Logic.Interfaces.Badges.IVoteUpBadge"},
+                                                                {BadgeType.MarkAsSolution, "Dialogue.Logic.Interfaces.Badges.IMarkAsSolutionBadge"},
+                                                                {BadgeType.Time, "Dialogue.Logic.Interfaces.Badges.ITimeBadge"},
+                                                                {BadgeType.Post, "Dialogue.Logic.Interfaces.Badges.IPostBadge"},
+                                                                {BadgeType.VoteDown, "Dialogue.Logic.Interfaces.Badges.IVoteDownBadge"}
                                                             };
 
         public Guid Id { get; set; }

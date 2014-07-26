@@ -29,22 +29,22 @@ namespace Dialogue.Logic
                 settings.DialogueUrlName = forumRootNode.GetPropertyValue<string>(AppConstants.PropDialogueUrlName);
 
                 var loginPage = forumRootNode.Descendant(AppConstants.DocTypeLogin) ?? forumRootNode.Ancestor(AppConstants.DocTypeLogin);
-                settings.LoginUrl = loginPage != null ? loginPage.Url : "Unable to find login page";
+                settings.LoginUrl = loginPage != null ? loginPage.Url : "/Unable-to-find-login-page";
 
                 var registerPage = forumRootNode.Descendant(AppConstants.DocTypeRegister) ?? forumRootNode.Ancestor(AppConstants.DocTypeRegister);
-                settings.RegisterUrl = registerPage != null ? registerPage.Url : "Unable to find Register page";
+                settings.RegisterUrl = registerPage != null ? registerPage.Url : "/Unable-to-find-Register-page";
 
                 var createTopic = forumRootNode.Descendant(AppConstants.DocTypeCreateTopic) ?? forumRootNode.Ancestor(AppConstants.DocTypeCreateTopic);
-                settings.CreateTopicUrl = createTopic != null ? createTopic.Url : "Unable to find Create Topic page";
+                settings.CreateTopicUrl = createTopic != null ? createTopic.Url : "/Unable-to-find-Create-Topic-page";
 
                 var editMemberUrl = forumRootNode.Descendant(AppConstants.DocTypeEditMember) ?? forumRootNode.Ancestor(AppConstants.DocTypeEditMember);
-                settings.EditMemberUrl = editMemberUrl != null ? editMemberUrl.Url : "Unable to find EditMember page";
+                settings.EditMemberUrl = editMemberUrl != null ? editMemberUrl.Url : "/Unable-to-find-EditMember-page";
 
                 var searchMembersUrl = forumRootNode.Descendant(AppConstants.DocTypeSearchMembers) ?? forumRootNode.Ancestor(AppConstants.DocTypeSearchMembers);
-                settings.SearchMembersUrl = searchMembersUrl != null ? searchMembersUrl.Url : "Unable to find Search members page";
+                settings.SearchMembersUrl = searchMembersUrl != null ? searchMembersUrl.Url : "/Unable-to-find-Search-members-page";
 
                 var sendPrivateMessageUrl = forumRootNode.Descendant(AppConstants.DocTypeSendPrivateMessage) ?? forumRootNode.Ancestor(AppConstants.DocTypeSendPrivateMessage);
-                settings.CreatePrivateMessageUrl = sendPrivateMessageUrl != null ? sendPrivateMessageUrl.Url : "Unable to find create private message page";
+                settings.CreatePrivateMessageUrl = sendPrivateMessageUrl != null ? sendPrivateMessageUrl.Url : "/Unable-to-find-create-private-message-page";
 
                 // General
                 settings.CloseForum = forumRootNode.GetPropertyValue<bool>("closeForum");

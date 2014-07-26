@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MVCForum.Domain.DomainModel.Attributes
+namespace Dialogue.Logic.Models.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class DescriptionAttribute : Attribute

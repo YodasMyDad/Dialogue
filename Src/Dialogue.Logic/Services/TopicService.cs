@@ -23,7 +23,7 @@ namespace Dialogue.Logic.Services
 
         #region Populate Methods
 
-        private static void PopulateMembers(IList<Topic> entityList)
+        public static void PopulateMembers(IList<Topic> entityList)
         {
             // Map full Members
             var membersIds = entityList.Select(x => x.MemberId).ToList();
@@ -35,7 +35,7 @@ namespace Dialogue.Logic.Services
             }
         }
 
-        private static void PopulateCategories(IList<Topic> entityList)
+        public static void PopulateCategories(IList<Topic> entityList)
         {
             // Map full categories
             var catIds = entityList.Select(x => x.CategoryId).ToList();
@@ -47,7 +47,7 @@ namespace Dialogue.Logic.Services
             }
         }
 
-        private static void PopulateLastPostMembers(IList<Topic> entityList)
+        public static void PopulateLastPostMembers(IList<Topic> entityList)
         {
             // Map full categories
             var membersIds = entityList.Select(x => x.LastPost.MemberId).ToList();
@@ -59,7 +59,7 @@ namespace Dialogue.Logic.Services
             }
         }
 
-        private static void PopulateAll(IList<Topic> entityList)
+        public static void PopulateAll(IList<Topic> entityList)
         {
             PopulateLastPostMembers(entityList);
             PopulateCategories(entityList);
@@ -231,6 +231,25 @@ namespace Dialogue.Logic.Services
 
             PopulateAll(results);
 
+            return results;
+        }
+
+        /// <summary>
+        /// Gets ALL Topics including pending ones
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <param name="populateAll"></param>
+        /// <returns></returns>
+        public IList<Topic> GetAllTopicsByUser(int memberId, bool populateAll = false)
+        {
+            var results = ContextPerRequest.Db.Topic
+                                .Where(x => x.MemberId == memberId)
+                                .ToList();
+
+            if (populateAll)
+            {
+                PopulateAll(results);   
+            }
             return results;
         }
 

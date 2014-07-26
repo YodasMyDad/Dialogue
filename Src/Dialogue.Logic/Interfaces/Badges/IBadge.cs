@@ -3,10 +3,7 @@
 
     2. Create a class. Add these references:
 
-        using MVCForum.Domain.DomainModel;
-        using MVCForum.Domain.DomainModel.Attributes;
-        using MVCForum.Domain.Interfaces.API;
-        using MVCForum.Domain.Interfaces.Badges;
+        using Dialogue.Logic.Models;
 
     3. Inherit from the appropriate badge type interface, e.g. MVCForum.Domain.Interfaces.Badges.IVoteUpBadge
 

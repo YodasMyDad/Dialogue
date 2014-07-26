@@ -38,7 +38,11 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<CategoryNotification> GetByUser(Member user)
         {
-            return ContextPerRequest.Db.CategoryNotification.Where(x => x.MemberId == user.Id).ToList();
+            return GetByUser(user.Id);
+        }
+        public IList<CategoryNotification> GetByUser(int memberId)
+        {
+            return ContextPerRequest.Db.CategoryNotification.Where(x => x.MemberId == memberId).ToList();
         }
 
         /// <summary>

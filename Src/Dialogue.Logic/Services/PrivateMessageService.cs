@@ -134,6 +134,13 @@ namespace Dialogue.Logic.Services
                                 .ToList();
         }
 
+        public IList<PrivateMessage> GetAllByUserSentOrReceived(int id)
+        {
+            return ContextPerRequest.Db.PrivateMessage
+                                .Where(x => x.MemberFromId == id || x.MemberToId == id)
+                                .ToList();
+        }
+
         /// <summary>
         /// Returns a count of any new messages the user has
         /// </summary>

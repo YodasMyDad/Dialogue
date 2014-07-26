@@ -1,12 +1,11 @@
 ﻿using System;
+using Dialogue.Logic.Constants;
 
 namespace Dialogue.Logic.Models.Activity
 {
 
     public class ProfileUpdatedActivity : ActivityBase
     {
-        public const string KeyUserId = @"UserID";
-
         public Member User { get; set; }
         
         /// <summary>
@@ -22,7 +21,7 @@ namespace Dialogue.Logic.Models.Activity
         {
             return new Activity
             {
-                Data = KeyUserId + Equality + user.Id,
+                Data = AppConstants.KeyUserId + AppConstants.Equality + user.Id,
                 Timestamp = modified,
                 Type = ActivityType.ProfileUpdated.ToString()
             };

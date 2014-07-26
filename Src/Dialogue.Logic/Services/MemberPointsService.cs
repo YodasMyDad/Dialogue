@@ -11,8 +11,13 @@ namespace Dialogue.Logic.Services
     {
         public IList<MemberPoints> GetByUser(Member user)
         {
+            return GetByUser(user.Id);
+        }
+
+        public IList<MemberPoints> GetByUser(int memberId)
+        {
             return ContextPerRequest.Db.MemberPoints
-                    .Where(x => x.MemberId == user.Id)
+                    .Where(x => x.MemberId == memberId)
                     .ToList();
         }
 

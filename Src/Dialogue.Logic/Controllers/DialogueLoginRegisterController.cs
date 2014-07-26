@@ -5,8 +5,6 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Data.UnitOfWork;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
@@ -17,6 +15,7 @@ using Member = Dialogue.Logic.Models.Member;
 
 namespace Dialogue.Logic.Controllers
 {
+    #region Render Controllers
     public partial class DialogueLoginController : BaseController
     {
         protected readonly BannedEmailService BannedEmailService;
@@ -69,6 +68,8 @@ namespace Dialogue.Logic.Controllers
 
     }
 
+    #endregion
+
     #region SurefaceController
 
     public class DialogueLoginRegisterSurfaceController : BaseSurfaceController
@@ -76,11 +77,13 @@ namespace Dialogue.Logic.Controllers
         protected readonly BannedEmailService BannedEmailService;
         protected readonly BannedWordService BannedWordService;
         protected readonly EmailService EmailService;
+        protected readonly ActivityService ActivityService;
         public DialogueLoginRegisterSurfaceController()
         {
             BannedEmailService = new BannedEmailService();
             BannedWordService = new BannedWordService();
             EmailService = new EmailService();
+            ActivityService = new ActivityService();
         }
 
         [ChildActionOnly]
@@ -309,7 +312,6 @@ namespace Dialogue.Logic.Controllers
                     }
                     else
                     {
-
                         // Get the umbraco member
                         var umbracoMember = AppHelpers.UmbServices().MemberService.GetByUsername(userToSave.Username);
 
@@ -327,6 +329,25 @@ namespace Dialogue.Logic.Controllers
 
                         // Do a save on the member
                         AppHelpers.UmbServices().MemberService.Save(umbracoMember);
+
+                        if (Settings.EmailAdminOnNewMemberSignup)
+                        {
+                            var sb = new StringBuilder();
+                            sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.NewMemberRegistered"), Settings.ForumName, Settings.ForumRootUrl));
+                            sb.AppendFormat("<p>{0} - {1}</p>", userToSave.Username, userToSave.Email);
+                            var email = new Email
+                            {
+                                EmailTo = Settings.AdminEmailAddress,
+                                EmailFrom = Settings.NotificationReplyEmailAddress,
+                                NameTo = Lang("Members.Admin"),
+                                Subject = Lang("Members.NewMemberSubject")
+                            };
+                            email.Body = EmailService.EmailTemplate(email.NameTo, sb.ToString());
+                            EmailService.SendMail(email);
+                        }
+
+                        // Fire the activity Service
+                        ActivityService.MemberJoined(MemberMapper.MapMember(umbracoMember));
 
                         var userMessage = new GenericMessageViewModel();
 

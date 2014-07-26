@@ -20,7 +20,7 @@ namespace Dialogue.Logic.Data.Mapping
         {
             ToTable("DialogueMember_Badge");
             HasKey(x => x.Id);
-            Property(t => t.DialogueBadgeId).HasColumnName("DialogueBadge_Id");
+            Property(t => t.DialogueBadgeId).HasColumnName("DialogueBadgeId");
         }
     }
 }

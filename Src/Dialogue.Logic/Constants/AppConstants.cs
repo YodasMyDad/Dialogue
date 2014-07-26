@@ -1,7 +1,16 @@
-﻿namespace Dialogue.Logic.Constants
+﻿using System;
+
+namespace Dialogue.Logic.Constants
 {
     public static class AppConstants
     {
+
+        //Activity Keys
+        public const string KeyBadgeId = @"BadgeID";
+        public const string KeyUserId = @"UserID";
+        public const string Equality = @"=";
+        public const string Separator = @",";
+
         // Cache keys
         public const string MessageViewBagName = "ViewBagKeyHere";
         public const string PartialCachePrefix = "tonystark-";
@@ -13,7 +22,7 @@
         public const string AssetsImagePath = "~/App_Plugins/Dialogue/Content/Images/";
 
         // Paths
-        public static string MemberUploadPath = string.Concat(UploadFolderPath, "{0}/{1}");
+        public static string MemberUploadPath = String.Concat(UploadFolderPath, "{0}/{1}");
 
         // Default Image Sizes
         public const int GravatarPostSize = 50;
@@ -50,8 +59,11 @@
 
         // Page Names
         public const string PageUrlLeaderboard = "leaderboard";
+        public const string PageUrlActivity = "activity";
         public const string PageUrlTopicsRss = "topicsrss";
+        public const string PageUrlActivityRss = "activityrss";
         public const string PageUrlCreateTopic = "create";
+        public const string PageUrlBadges = "badges";
 
         // Default Member Group
         public const string MemberGroupDefault = "Dialogue Standard";
@@ -127,6 +139,5 @@
         // Main guest role [This should never be changed]
         // This is the role a non logged in user defaults to
         public const string GuestRoleName = "Dialogue Guest";
-
     }
 }

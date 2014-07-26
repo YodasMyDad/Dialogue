@@ -63,7 +63,11 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<TopicNotification> GetByUser(Member user)
         {
-            return ContextPerRequest.Db.TopicNotification.Where(x => x.MemberId == user.Id).ToList();
+            return GetByUser(user.Id);
+        }
+        public IList<TopicNotification> GetByUser(int userId)
+        {
+            return ContextPerRequest.Db.TopicNotification.Where(x => x.MemberId == userId).ToList();
         }
 
         /// <summary>

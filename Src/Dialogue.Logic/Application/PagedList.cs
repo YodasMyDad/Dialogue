@@ -7,9 +7,15 @@ namespace Dialogue.Logic.Application
         public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int total)
         {
             TotalCount = total;
-            TotalPages = total / pageSize;
-            if (total % pageSize > 0)
-                TotalPages++;
+            if (total > 0 && pageSize > 0)
+            {
+                TotalPages = total / pageSize;
+                if (total%pageSize > 0)
+                {
+                    TotalPages++;
+                }                    
+            }            
+
             PageSize = pageSize;
             PageIndex = pageIndex;
             //AddRange(source.Skip(pageIndex * pageSize).Take(pageSize).ToList());

@@ -41,9 +41,8 @@ namespace Dialogue.Logic.Mapping
                     if (populateAll)
                     {
                         var badgeIds = ContextPerRequest.Db.BadgeToMember.Where(x => x.MemberId == siteMember.Id).Select(x => x.DialogueBadgeId);
-                        siteMember.Badges = ContextPerRequest.Db.Badge.Where(x => badgeIds.Contains(x.Id)).ToList();
+                        siteMember.Badges = badgeIds.Any() ? ContextPerRequest.Db.Badge.Where(x => badgeIds.Contains(x.Id)).ToList() : new List<Badge>();
                         siteMember.Votes = ContextPerRequest.Db.Vote.Where(x => x.MemberId == siteMember.Id).ToList();
-                        siteMember.BadgeTypesTimeLastChecked = ContextPerRequest.Db.BadgeTypeTimeLastChecked.Where(x => x.MemberId == siteMember.Id).ToList();
                     }
 
                     HttpContext.Current.Items.Add(key, siteMember);
@@ -87,7 +86,6 @@ namespace Dialogue.Logic.Mapping
                     var allMembersPoints = ContextPerRequest.Db.MemberPoints.Where(x => ids.Contains(x.MemberId)).ToList();
                     var allBadges = new List<Badge>();
                     var allMembersVotes = new List<Vote>();
-                    var allMembersCheckTimes = new List<BadgeTypeTimeLastChecked>();
                     var allMembersBadges = new List<BadgeToMember>();
 
                     if (populateAll)
@@ -96,7 +94,6 @@ namespace Dialogue.Logic.Mapping
                         allMembersBadges = ContextPerRequest.Db.BadgeToMember.Where(x => ids.Contains(x.MemberId)).ToList();
                         allBadges = ContextPerRequest.Db.Badge.ToList();
                         allMembersVotes = ContextPerRequest.Db.Vote.Where(x => ids.Contains(x.MemberId)).ToList();
-                        allMembersCheckTimes = ContextPerRequest.Db.BadgeTypeTimeLastChecked.Where(x => ids.Contains(x.MemberId)).ToList();
                     }
 
                     foreach (var member in members)
@@ -116,7 +113,6 @@ namespace Dialogue.Logic.Mapping
                             var badgeIds = allMembersBadges.Where(x => x.MemberId == siteMember.Id).Select(x => x.DialogueBadgeId);
                             siteMember.Badges = allBadges.Where(x => badgeIds.Contains(x.Id)).ToList();
                             siteMember.Votes = allMembersVotes.Where(x => x.MemberId == siteMember.Id).ToList();
-                            siteMember.BadgeTypesTimeLastChecked = allMembersCheckTimes.Where(x => x.MemberId == siteMember.Id).ToList();
                         }
 
                         siteMembers.Add(siteMember);

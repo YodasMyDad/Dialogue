@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dialogue.Logic.Application;
+using Dialogue.Logic.Constants;
 using Dialogue.Logic.Data.Context;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.Activity;
@@ -16,6 +17,44 @@ namespace Dialogue.Logic.Services
             _memberService = new MemberService();
         }
 
+
+        #region There are the methods that power the activity service
+
+        /// <summary>
+        /// New badge has been awarded
+        /// </summary>
+        /// <param name="badge"></param>
+        /// <param name="user"> </param>
+        /// <param name="timestamp"> </param>
+        public void BadgeAwarded(Badge badge, Member user, DateTime timestamp)
+        {
+            var badgeActivity = BadgeActivity.GenerateMappedRecord(badge, user, timestamp);
+            Add(badgeActivity);
+        }
+
+        /// <summary>
+        /// New member has joined
+        /// </summary>
+        /// <param name="user"></param>
+        public void MemberJoined(Member user)
+        {
+            var memberJoinedActivity = MemberJoinedActivity.GenerateMappedRecord(user);
+            Add(memberJoinedActivity);
+        }
+
+        /// <summary>
+        /// Profile has been updated
+        /// </summary>
+        /// <param name="user"></param>
+        public void ProfileUpdated(Member user)
+        {
+            var profileUpdatedActivity = ProfileUpdatedActivity.GenerateMappedRecord(user, DateTime.UtcNow);
+            Add(profileUpdatedActivity);
+        }
+
+        #endregion
+
+
         /// <summary>
         /// Get activities
         /// </summary>
@@ -26,14 +65,14 @@ namespace Dialogue.Logic.Services
         }
 
         /// <summary>
-        /// Gets all activities by search data field for a Guid
+        /// Gets all activities by search data field for a int
         /// </summary>
-        /// <param name="guid"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public IEnumerable<Activity> GetDataFieldByGuid(Guid guid)
+        public IEnumerable<Activity> GetDataByUserId(int id)
         {
-            var stringGuid = guid.ToString();
-            return ContextPerRequest.Db.Activity.Where(x => x.Data.Contains(stringGuid));
+            var key = string.Concat(AppConstants.KeyUserId, AppConstants.Equality, id);
+            return ContextPerRequest.Db.Activity.Where(x => x.Data.Contains(key));
         }
 
         /// <summary>
@@ -70,14 +109,14 @@ namespace Dialogue.Logic.Services
 
             var dataPairs = ActivityBase.UnpackData(activity);
 
-            if (!dataPairs.ContainsKey(BadgeActivity.KeyBadgeId))
+            if (!dataPairs.ContainsKey(AppConstants.KeyBadgeId))
             {
                 // Log the problem then skip
                 AppHelpers.LogError(string.Format("A badge activity record with id '{0}' has no badge id in its data.", activity.Id));
                 return null;
             }
 
-            var badgeId = dataPairs[BadgeActivity.KeyBadgeId];
+            var badgeId = dataPairs[AppConstants.KeyBadgeId];
             var badge = badgeService.Get(new Guid(badgeId));
 
             if (badge == null)
@@ -88,7 +127,7 @@ namespace Dialogue.Logic.Services
                 return null;
             }
 
-            var userId = dataPairs[BadgeActivity.KeyUserId];
+            var userId = dataPairs[AppConstants.KeyUserId];
             var user = _memberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
@@ -111,14 +150,14 @@ namespace Dialogue.Logic.Services
         {
             var dataPairs = ActivityBase.UnpackData(activity);
 
-            if (!dataPairs.ContainsKey(ProfileUpdatedActivity.KeyUserId))
+            if (!dataPairs.ContainsKey(AppConstants.KeyUserId))
             {
                 // Log the problem then skip
                 AppHelpers.LogError(string.Format("A profile updated activity record with id '{0}' has no user id in its data.", activity.Id));
                 return null;
             }
 
-            var userId = dataPairs[ProfileUpdatedActivity.KeyUserId];
+            var userId = dataPairs[AppConstants.KeyUserId];
             var user = _memberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
@@ -141,14 +180,14 @@ namespace Dialogue.Logic.Services
         {
             var dataPairs = ActivityBase.UnpackData(activity);
 
-            if (!dataPairs.ContainsKey(MemberJoinedActivity.KeyUserId))
+            if (!dataPairs.ContainsKey(AppConstants.KeyUserId))
             {
                 // Log the problem then skip
                 AppHelpers.LogError(string.Format("A member joined activity record with id '{0}' has no user id in its data.", activity.Id));
                 return null;
             }
 
-            var userId = dataPairs[MemberJoinedActivity.KeyUserId];
+            var userId = dataPairs[AppConstants.KeyUserId];
             var user = _memberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
@@ -267,38 +306,6 @@ namespace Dialogue.Logic.Services
             var activities = ContextPerRequest.Db.Activity.Take(howMany);
             var specificActivities = ConvertToSpecificActivities(activities);
             return specificActivities;
-        }
-
-        /// <summary>
-        /// New badge has been awarded
-        /// </summary>
-        /// <param name="badge"></param>
-        /// <param name="user"> </param>
-        /// <param name="timestamp"> </param>
-        public void BadgeAwarded(Badge badge, Member user, DateTime timestamp)
-        {
-            var badgeActivity = BadgeActivity.GenerateMappedRecord(badge, user, timestamp);
-            Add(badgeActivity);
-        }
-
-        /// <summary>
-        /// New member has joined
-        /// </summary>
-        /// <param name="user"></param>
-        public void MemberJoined(Member user)
-        {
-            var memberJoinedActivity = MemberJoinedActivity.GenerateMappedRecord(user);
-            Add(memberJoinedActivity);
-        }
-
-        /// <summary>
-        /// Profile has been updated
-        /// </summary>
-        /// <param name="user"></param>
-        public void ProfileUpdated(Member user)
-        {
-            var profileUpdatedActivity = ProfileUpdatedActivity.GenerateMappedRecord(user, DateTime.UtcNow);
-            Add(profileUpdatedActivity);
         }
 
         /// <summary>

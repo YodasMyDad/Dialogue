@@ -14,6 +14,7 @@ using System.Text;
 
 namespace Dialogue.Logic.Controllers
 {
+    #region Render Controllers
     public class DialogueTopicController : BaseController
     {
         private readonly CategoryService _categoryService;
@@ -113,7 +114,9 @@ namespace Dialogue.Logic.Controllers
         }
 
     }
+    #endregion
 
+    #region Surface controllers
     public partial class DialogueTopicSurfaceController : BaseSurfaceController
     {
         private readonly MemberPointsService _memberPointsService;
@@ -127,7 +130,7 @@ namespace Dialogue.Logic.Controllers
         private readonly PollService _pollService;
         private readonly CategoryNotificationService _categoryNotificationService;
         private readonly EmailService _emailService;
-        
+
         public DialogueTopicSurfaceController()
         {
             _privateMessageService = new PrivateMessageService();
@@ -295,11 +298,12 @@ namespace Dialogue.Logic.Controllers
                             });
 
                             // Check for moderation
-                            if (category.ModerateAllTopicsInThisCategory == true)
+                            if (category.ModerateAllTopicsInThisCategory)
                             {
                                 topic.Pending = true;
                                 moderate = true;
                             }
+
 
                             // Create the topic
                             topic = _topicService.Add(topic);
@@ -312,44 +316,41 @@ namespace Dialogue.Logic.Controllers
 
                             // Now check its not spam
                             var akismetHelper = new AkismetHelper();
-                            if (!akismetHelper.IsSpam(topic))
+                            if (akismetHelper.IsSpam(topic))
                             {
-                                // Subscribe the user to the topic as they have checked the checkbox
-                                if (topicViewModel.SubscribeToTopic)
-                                {
-                                    // Create the notification
-                                    var topicNotification = new TopicNotification
-                                    {
-                                        Topic = topic,
-                                        Member = CurrentMember,
-                                        MemberId = CurrentMember.Id
-                                    };
-                                    //save
-                                    _topicNotificationService.Add(topicNotification);
-                                }
-
-                                try
-                                {
-                                    unitOfWork.Commit();
-                                    if (!moderate)
-                                    {
-                                        successfullyCreated = true;
-                                    }
-
-                                }
-                                catch (Exception ex)
-                                {
-                                    unitOfWork.Rollback();
-                                    LogError(ex);
-                                    ModelState.AddModelError(string.Empty, Lang("Errors.GenericMessage"));
-                                }
+                                // Could be spam, mark as pending
+                                topic.Pending = true;
                             }
-                            else
+
+                            // Subscribe the user to the topic as they have checked the checkbox
+                            if (topicViewModel.SubscribeToTopic)
+                            {
+                                // Create the notification
+                                var topicNotification = new TopicNotification
+                                {
+                                    Topic = topic,
+                                    Member = CurrentMember,
+                                    MemberId = CurrentMember.Id
+                                };
+                                //save
+                                _topicNotificationService.Add(topicNotification);
+                            }
+
+                            try
+                            {
+                                unitOfWork.Commit();
+                                if (!moderate)
+                                {
+                                    successfullyCreated = true;
+                                }
+
+                            }
+                            catch (Exception ex)
                             {
                                 unitOfWork.Rollback();
-                                ModelState.AddModelError(string.Empty, Lang("Errors.PossibleSpam"));
+                                LogError(ex);
+                                ModelState.AddModelError(string.Empty, Lang("Errors.GenericMessage"));
                             }
-
                         }
                         else
                         {
@@ -454,4 +455,5 @@ namespace Dialogue.Logic.Controllers
 
 
     }
+    #endregion
 }

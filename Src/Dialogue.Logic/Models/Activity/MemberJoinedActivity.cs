@@ -1,11 +1,11 @@
-﻿namespace Dialogue.Logic.Models.Activity
+﻿using Dialogue.Logic.Constants;
+
+namespace Dialogue.Logic.Models.Activity
 {
     // Seal this class to avoid "virtual member call in constructor" problem
 
     public sealed class MemberJoinedActivity : ActivityBase
     {
-        public const string KeyUserId = @"UserID";
-
         public Member User { get; set; }
         
         /// <summary>
@@ -21,7 +21,7 @@
         {
             return new Activity
             {
-                Data = KeyUserId + Equality + user.Id,
+                Data = AppConstants.KeyUserId + AppConstants.Equality + user.Id,
                 Timestamp = user.DateCreated,
                 Type = ActivityType.MemberJoined.ToString()
             };

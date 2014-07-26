@@ -63,6 +63,15 @@ namespace Dialogue.Logic.Services
             return ContextPerRequest.Db.Post;
         }
 
+        public int GetMemberPostCount(int memberId)
+        {
+            if (memberId > 0)
+            {
+                return ContextPerRequest.Db.Post.Count(x => x.MemberId == memberId && !x.Pending);   
+            }
+            return 0;
+        }
+
         /// <summary>
         /// Returns a list of posts ordered by the lowest vote
         /// </summary>
@@ -94,17 +103,40 @@ namespace Dialogue.Logic.Services
         }
 
         /// <summary>
-        /// Return all posts by a specified member
+        /// Gets ALL posts including pending
         /// </summary>
         /// <param name="memberId"></param>
-        /// <param name="amountToTake"></param>
         /// <returns></returns>
-        public IList<Post> GetByMember(int memberId, int amountToTake)
+        public IEnumerable<Post> GetAllByMember(int memberId)
+        {
+            return ContextPerRequest.Db.Post
+                .Include(x => x.Votes)
+                .Where(x => x.MemberId == memberId)
+                .OrderByDescending(x => x.DateCreated);
+        }
+
+        /// <summary>
+        /// Return all posts by a specified member ignoring pending posts
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public IEnumerable<Post> GetByMember(int memberId)
         {
             return ContextPerRequest.Db.Post
                 .Include(x => x.Votes)
                 .Where(x => x.MemberId == memberId && x.Pending != true)
-                .OrderByDescending(x => x.DateCreated)
+                .OrderByDescending(x => x.DateCreated);
+        }
+
+        /// <summary>
+        /// Return all posts by a specified member ignoring pending posts
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <param name="amountToTake"></param>
+        /// <returns></returns>
+        public List<Post> GetByMember(int memberId, int amountToTake)
+        {
+            return GetByMember(memberId)
                 .Take(amountToTake)
                 .ToList();
         }

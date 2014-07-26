@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Web;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Data.Context;
 using Dialogue.Logic.Interfaces.Badges;
 using Dialogue.Logic.Models;
-using MVCForum.Domain.DomainModel.Attributes;
+using Dialogue.Logic.Models.Attributes;
 
 namespace Dialogue.Logic.Services
 {
     public partial class BadgeService
     {
         private readonly ActivityService _activityService;
+        private readonly MemberPointsService _pointsService;
         public BadgeService()
         {
             _activityService = new ActivityService();
+            _pointsService = new MemberPointsService();
         }
 
         public const int BadgeCheckIntervalMinutes = 10;
@@ -141,11 +142,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         private bool BadgeCanBeAwarded(Member user, BadgeMapping badgeMapping)
         {
-            if (user.Badges == null)
-            {
-                AppHelpers.LogError(string.Format(AppHelpers.Lang("Badges.UnableToAward"), user.UserName));
-                return false;
-            }
+            var usersBadges = GetallMembersBadges(user.Id);
 
             var badgeCanBeAwarded = true;
 
@@ -155,7 +152,8 @@ namespace Dialogue.Logic.Services
             }
             else
             {
-                var userHasBadge = user.Badges.Any(userBadge => userBadge.Name == badgeMapping.DbBadge.Name);
+
+                var userHasBadge = usersBadges.Any(userBadge => userBadge.Name == badgeMapping.DbBadge.Name);
 
                 if (userHasBadge)
                 {
@@ -192,8 +190,9 @@ namespace Dialogue.Logic.Services
 
             BadgeTypeTimeLastChecked timeBadgeLastChecked = null;
 
+            var usersBadgeTypesTimeLastChecked = BadgeTypeTimeLastCheckedByMember(user.Id);
             // Go through all the badge-check time records for this user
-            foreach (var nextBadgeTypeCheckedForUser in user.BadgeTypesTimeLastChecked)
+            foreach (var nextBadgeTypeCheckedForUser in usersBadgeTypesTimeLastChecked)
             {
                 var previouslyCheckedBadgeType = FromString(nextBadgeTypeCheckedForUser.BadgeType);
 
@@ -221,10 +220,11 @@ namespace Dialogue.Logic.Services
                 {
                     BadgeType = badgeType.ToString(),
                     TimeLastChecked = now,
-                    Member = user
+                    Member = user,
+                    MemberId = user.Id
                 };
 
-                user.BadgeTypesTimeLastChecked.Add(timeBadgeLastChecked);
+                ContextPerRequest.Db.BadgeTypeTimeLastChecked.Add(timeBadgeLastChecked);
             }
 
             return recentlyProcessed;
@@ -282,7 +282,12 @@ namespace Dialogue.Logic.Services
                         continue;
                     }
 
-                    if (nextAssembly.FullName.StartsWith("System") || nextAssembly.FullName.StartsWith("Microsoft") || nextAssembly.FullName.StartsWith("DotNetOpenAuth"))
+                    if (nextAssembly.FullName.StartsWith("System") 
+                        || nextAssembly.FullName.StartsWith("Microsoft") 
+                        || nextAssembly.FullName.StartsWith("DotNetOpenAuth")
+                        || nextAssembly.FullName.StartsWith("Umbraco")
+                        || nextAssembly.FullName.StartsWith("EntityFramework")
+                        || nextAssembly.FullName.StartsWith("Newtonsoft"))
                     {
                         // Skip microsoft and dotnetauth assemblies
                         continue;
@@ -478,9 +483,9 @@ namespace Dialogue.Logic.Services
                                     DateAdded = DateTime.UtcNow,
                                     Points = (int)dbBadge.AwardsPoints
                                 };
-                                user.Points.Add(points);
+                                _pointsService.Add(points);
                             }
-                            user.Badges.Add(dbBadge);
+                            ContextPerRequest.Db.Badge.Add(dbBadge);
                             _activityService.BadgeAwarded(badgeMapping.DbBadge, user, DateTime.UtcNow);
                         }
                     }
@@ -534,8 +539,15 @@ namespace Dialogue.Logic.Services
 
         public List<Badge> GetallMembersBadges(int memberId)
         {
+            var badges = new List<Badge>();
             var badgeIds = ContextPerRequest.Db.BadgeToMember.Where(x => x.MemberId == memberId).Select(x => x.DialogueBadgeId);
-            return ContextPerRequest.Db.Badge.Where(x => badgeIds.Contains(x.Id)).ToList();
+            badges.AddRange(ContextPerRequest.Db.Badge.Where(x => badgeIds.Contains(x.Id)));
+            return badges;
+        }
+
+        public List<BadgeToMember> GetAllBadgeToMembers(int memberId)
+        {
+            return ContextPerRequest.Db.BadgeToMember.Where(x => x.MemberId == memberId).ToList();
         }
 
         public List<Badge> GetallBadges()
@@ -547,6 +559,11 @@ namespace Dialogue.Logic.Services
         public void Delete(Badge badge)
         {
             ContextPerRequest.Db.Badge.Remove(badge);
+        }
+
+        public void DeleteBadgeToMember(BadgeToMember badgeToMember)
+        {
+            ContextPerRequest.Db.BadgeToMember.Remove(badgeToMember);
         }
     }
 

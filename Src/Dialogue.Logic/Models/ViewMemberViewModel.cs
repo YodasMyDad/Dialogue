@@ -7,8 +7,8 @@ namespace Dialogue.Logic.Models
         public ViewMemberViewModel(IPublishedContent content) : base(content)
         {
         }
-
         public Member User { get; set; }
+        public int PostCount { get; set; }
         public int LoggedOnUserId { get; set; }
     }
 }
