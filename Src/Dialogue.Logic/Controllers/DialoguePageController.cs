@@ -20,14 +20,12 @@ namespace Dialogue.Logic.Controllers
         private readonly IMemberGroup _membersGroup;
         private readonly TopicService _topicService;
         private readonly BadgeService _badgeService;
-        private readonly ActivityService _activityService;
 
         public DialoguePageController()
         {
             _categoryService = new CategoryService();
             _topicService = new TopicService();
             _badgeService = new BadgeService();
-            _activityService = new ActivityService();
             _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
@@ -111,7 +109,7 @@ namespace Dialogue.Logic.Controllers
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
 
                 // Get the topics
-                var activities = _activityService.GetPagedGroupedActivities(pageIndex, Settings.ActivitiesPerPage);
+                var activities = ServiceFactory.ActivityService.GetPagedGroupedActivities(pageIndex, Settings.ActivitiesPerPage);
 
                 // create the view model
                 var viewModel = new AllRecentActivitiesViewModel(page)
@@ -184,7 +182,7 @@ namespace Dialogue.Logic.Controllers
                 // get an rss lit ready
                 var rssActivities = new List<RssItem>();
 
-                var activities = _activityService.GetAll(20).OrderByDescending(x => x.ActivityMapped.Timestamp);
+                var activities = ServiceFactory.ActivityService.GetAll(20).OrderByDescending(x => x.ActivityMapped.Timestamp);
 
                 var activityLink = UrlTypes.GenerateUrl(UrlTypes.UrlType.Activity);
 

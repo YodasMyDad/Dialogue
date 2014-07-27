@@ -13,11 +13,9 @@ namespace Dialogue.Logic.Services
 {
     public partial class BadgeService
     {
-        private readonly ActivityService _activityService;
         private readonly MemberPointsService _pointsService;
         public BadgeService()
         {
-            _activityService = new ActivityService();
             _pointsService = new MemberPointsService();
         }
 
@@ -486,7 +484,7 @@ namespace Dialogue.Logic.Services
                                 _pointsService.Add(points);
                             }
                             ContextPerRequest.Db.Badge.Add(dbBadge);
-                            _activityService.BadgeAwarded(badgeMapping.DbBadge, user, DateTime.UtcNow);
+                            ServiceFactory.ActivityService.BadgeAwarded(badgeMapping.DbBadge, user, DateTime.UtcNow);
                         }
                     }
                 }

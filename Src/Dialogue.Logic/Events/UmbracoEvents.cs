@@ -1,4 +1,5 @@
-﻿using System.Web.Routing;
+﻿using System.Web;
+using System.Web.Routing;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Data.Context;
@@ -11,9 +12,12 @@ using Umbraco.Core.Events;
 using Umbraco.Core.Models;
 using Umbraco.Core.Publishing;
 using Umbraco.Core.Services;
+using umbraco.dialogs;
 using Umbraco.Web;
 using Umbraco.Web.Trees;
 using umbraco.cms.businesslogic.packager;
+using Umbraco.Web.UI;
+using Umbraco.Web.UI.Pages;
 using MemberService = Umbraco.Core.Services.MemberService;
 using System;
 
@@ -79,7 +83,7 @@ namespace Dialogue.Logic.Events
         }
 
         private void MemberServiceOnDeleting(IMemberService sender, DeleteEventArgs<IMember> deleteEventArgs)
-        {           
+        {
 
             var memberService = new Services.MemberService();
             var unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
@@ -93,8 +97,12 @@ namespace Dialogue.Logic.Events
                         if (!canDelete)
                         {
                             deleteEventArgs.Cancel = true;
+                            //TODO - Check this notification works - It doesn't!! Need to sort
+                            //DialogueService??
+                            var basePage = ((BasePage)HttpContext.Current.Handler);
+                            basePage.ClientTools.ShowSpeechBubble(SpeechBubbleIcon.Error, "Error", "Unable to delete member. Check logfile for further information");
                             break;
-                            //TODO - Need to show a notification to the user
+
                         }
                     }
 
@@ -104,6 +112,7 @@ namespace Dialogue.Logic.Events
                     AppHelpers.LogError("Error attempting to delete members", ex);
                 }
             }
+
         }
 
         static void MemberServiceSaved(IMemberService sender, SaveEventArgs<IMember> e)

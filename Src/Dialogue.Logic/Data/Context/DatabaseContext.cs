@@ -9,6 +9,16 @@ namespace Dialogue.Logic.Data.Context
 {
     public class DatabaseContext : DbContext
     {
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public DatabaseContext()
+            : base("umbracoDbDSN") // We use the umbraco connection string
+        {
+            Configuration.LazyLoadingEnabled = true;
+        }
+
         // http://blogs.msdn.com/b/adonet/archive/2010/12/06/ef-feature-ctp5-fluent-api-samples.aspx
 
         public DbSet<BannedEmail> BannedEmail { get; set; }
@@ -30,15 +40,6 @@ namespace Dialogue.Logic.Data.Context
         public DbSet<Permission> Permission { get; set; }
         public DbSet<CategoryPermission> CategoryPermission { get; set; }
         public DbSet<BadgeToMember> BadgeToMember { get; set; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public DatabaseContext()
-            : base("umbracoDbDSN") // We use the umbraco connection string
-        {
-            Configuration.LazyLoadingEnabled = true;
-        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -68,11 +69,6 @@ namespace Dialogue.Logic.Data.Context
             modelBuilder.Configurations.Add(new VoteMapping());
 
             base.OnModelCreating(modelBuilder);
-        }
-
-        public new void Dispose()
-        {
-
         }
     }
 }

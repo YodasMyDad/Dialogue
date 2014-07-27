@@ -77,13 +77,11 @@ namespace Dialogue.Logic.Controllers
         protected readonly BannedEmailService BannedEmailService;
         protected readonly BannedWordService BannedWordService;
         protected readonly EmailService EmailService;
-        protected readonly ActivityService ActivityService;
         public DialogueLoginRegisterSurfaceController()
         {
             BannedEmailService = new BannedEmailService();
             BannedWordService = new BannedWordService();
             EmailService = new EmailService();
-            ActivityService = new ActivityService();
         }
 
         [ChildActionOnly]
@@ -347,7 +345,7 @@ namespace Dialogue.Logic.Controllers
                         }
 
                         // Fire the activity Service
-                        ActivityService.MemberJoined(MemberMapper.MapMember(umbracoMember));
+                        ServiceFactory.ActivityService.MemberJoined(MemberMapper.MapMember(umbracoMember));
 
                         var userMessage = new GenericMessageViewModel();
 

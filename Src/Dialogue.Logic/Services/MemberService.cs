@@ -156,7 +156,6 @@ namespace Dialogue.Logic.Services
                 var postService = new PostService();
                 var pollService = new PollService();
                 var topicService = new TopicService();
-                var activityService = new ActivityService();
 
 
                 // Delete all file uploads
@@ -239,8 +238,8 @@ namespace Dialogue.Logic.Services
                 }
 
                 // Now clear all activities for this user
-                var usersActivities = activityService.GetDataByUserId(userId);
-                activityService.Delete(usersActivities.ToList());
+                var usersActivities = ServiceFactory.ActivityService.GetDataByUserId(userId);
+                ServiceFactory.ActivityService.Delete(usersActivities.ToList());
 
 
                 // Delete all private messages from this user

@@ -8,13 +8,16 @@
 **/App_Data/TEMP/
 Cached/
 
+#Badges object folders
+**/obj/
+**/Dialogue.Logic/obj/
+
 # Ignore Umbraco content cache file
 **/App_Data/umbraco.config
 
-# Don't ignore Umbraco packages (VisualStudio.gitignore mistakes this for a NuGet packages folder)
-# Make sure to include details from VisualStudio.gitignore BEFORE this
-!**/App_Data/[Pp]ackages/
-!**/[Uu]mbraco/developer/[Pp]ackages
+# Ignore logic files
+**/Dialogue.Logic/bin/
+
 
 # =========================
 # Operating System Files
@@ -56,5 +59,8 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# Don't ignore Umbraco packages (VisualStudio.gitignore mistakes this for a NuGet packages folder)
+# Make sure to include details from VisualStudio.gitignore BEFORE this
+!**/App_Data/[Pp]ackages/
+!**/[Uu]mbraco/developer/[Pp]ackages
 
-Src/Dialogue.Badges/Badge.Padawan/obj/Debug/Badge.Padawan.csproj.FileListAbsolute.txt

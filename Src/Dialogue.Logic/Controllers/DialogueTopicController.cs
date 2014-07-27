@@ -182,6 +182,25 @@ namespace Dialogue.Logic.Controllers
             }
         }
 
+
+        //// POST: /Customer/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Create([Bind(Include = "CustomerID,CompanyName,ContactName,ContactTitle,Address,City,Region,PostalCode,Country,Phone,Fax")] Customer customer)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _customerService.Add(customer);
+        //        await _unitOfWork.SaveAsync();
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    return View(customer);
+        //}
+
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]

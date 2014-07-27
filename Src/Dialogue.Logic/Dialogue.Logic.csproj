@@ -293,6 +293,7 @@
     <Compile Include="Services\PollService.cs" />
     <Compile Include="Services\PostService.cs" />
     <Compile Include="Services\PrivateMessageService.cs" />
+    <Compile Include="Services\ServiceFactory.cs" />
     <Compile Include="Services\TopicNotificationService.cs" />
     <Compile Include="Services\TopicService.cs" />
     <Compile Include="Services\UploadedFileService.cs" />
@@ -311,6 +312,7 @@
   <ItemGroup>
     <Folder Include="config\imageprocessor\" />
     <Folder Include="Data\Data\" />
+    <Folder Include="Data\Testing\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

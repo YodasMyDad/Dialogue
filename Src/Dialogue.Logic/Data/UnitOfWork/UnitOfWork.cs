@@ -3,6 +3,8 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using Dialogue.Logic.Data.Context;
 
@@ -39,9 +41,20 @@ namespace Dialogue.Logic.Data.UnitOfWork
             }
         }
 
-        public void SaveChanges()
+        public int SaveChanges()
         {
-            _context.SaveChanges();
+            return _context.SaveChanges();
+        }
+
+        public Task<int> SaveChangesAsync()
+        {
+            return _context.SaveChangesAsync();
+        }
+
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            var changesAsync = _context.SaveChangesAsync(cancellationToken);
+            return changesAsync;
         }
 
         public void Commit()
@@ -53,9 +66,6 @@ namespace Dialogue.Logic.Data.UnitOfWork
         public void Rollback()
         {
             _transaction.Rollback();
-
-            // http://blog.oneunicorn.com/2011/04/03/rejecting-changes-to-entities-in-ef-4-1/
-
             foreach (var entry in _context.ChangeTracker.Entries())
             {
                 switch (entry.State)
@@ -67,14 +77,6 @@ namespace Dialogue.Logic.Data.UnitOfWork
                         entry.State = EntityState.Detached;
                         break;
                     case EntityState.Deleted:
-                        // Note - problem with deleted entities:
-                        // When an entity is deleted its relationships to other entities are severed. 
-                        // This includes setting FKs to null for nullable FKs or marking the FKs as conceptually null (don’t ask!) 
-                        // if the FK property is not nullable. You’ll need to reset the FK property values to 
-                        // the values that they had previously in order to re-form the relationships. 
-                        // This may include FK properties in other entities for relationships where the 
-                        // deleted entity is the principal of the relationship–e.g. has the PK 
-                        // rather than the FK. I know this is a pain–it would be great if it could be made easier in the future, but for now it is what it is.
                         entry.State = EntityState.Unchanged;
                         break;
                 }
@@ -89,5 +91,6 @@ namespace Dialogue.Logic.Data.UnitOfWork
                 _objectContext.Connection.Close();
             }
         }
+
     }
 }

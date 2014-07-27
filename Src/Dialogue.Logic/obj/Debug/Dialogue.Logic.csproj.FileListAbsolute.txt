@@ -141,4 +141,3 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.XmlSerializers.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.pdb
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.csprojResolveAssemblyReference.cache
