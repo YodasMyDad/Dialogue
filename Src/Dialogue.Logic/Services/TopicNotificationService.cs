@@ -6,7 +6,7 @@ using Dialogue.Logic.Models;
 
 namespace Dialogue.Logic.Services
 {
-    public class TopicNotificationService
+    public partial class TopicNotificationService
     {
 
         #region Populate Methods

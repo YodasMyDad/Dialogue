@@ -17,8 +17,7 @@ namespace Badge.VoteTheGrouch
         public bool Rule(Member user)
         {
             // Get all down votes
-            var voteService = new VoteService();
-            var downVotes = voteService.GetAllVotesByUser(user.Id).Where(x => x.Amount < 1).ToList();
+            var downVotes = ServiceFactory.VoteService.GetAllVotesByUser(user.Id).Where(x => x.Amount < 1).ToList();
             return downVotes.Count() >= 10;
         }
     }

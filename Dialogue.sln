@@ -54,6 +54,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badge.UserVoteUpBadge", "Sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badge.VoteTheGrouch", "Src\Dialogue.Badges\Badge.VoteTheGrouch\Badge.VoteTheGrouch.csproj", "{E07637B5-97F0-4AE9-99B7-26CDF85C162B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Externals", "Externals", "{9EF25FB9-B4FA-46F5-BF0C-41408E26B3C1}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Externals\Skybrud.Social.dll = Src\Externals\Skybrud.Social.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

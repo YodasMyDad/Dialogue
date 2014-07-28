@@ -9,21 +9,12 @@ using Dialogue.Logic.Models;
 
 namespace Dialogue.Logic.Services
 {
-    public class TopicService
+    public partial class TopicService
     {
-        private readonly PostService _postService;
-        private readonly TopicNotificationService _topicNotificationService;
-        private readonly MemberPointsService _memberPointsService;
-        public TopicService()
-        {
-            _postService = new PostService();
-            _topicNotificationService = new TopicNotificationService();
-            _memberPointsService = new MemberPointsService();
-        }
 
         #region Populate Methods
 
-        public static void PopulateMembers(IList<Topic> entityList)
+        public void PopulateMembers(IList<Topic> entityList)
         {
             // Map full Members
             var membersIds = entityList.Select(x => x.MemberId).ToList();
@@ -35,7 +26,7 @@ namespace Dialogue.Logic.Services
             }
         }
 
-        public static void PopulateCategories(IList<Topic> entityList)
+        public void PopulateCategories(IList<Topic> entityList)
         {
             // Map full categories
             var catIds = entityList.Select(x => x.CategoryId).ToList();
@@ -47,7 +38,7 @@ namespace Dialogue.Logic.Services
             }
         }
 
-        public static void PopulateLastPostMembers(IList<Topic> entityList)
+        public void PopulateLastPostMembers(IList<Topic> entityList)
         {
             // Map full categories
             var membersIds = entityList.Select(x => x.LastPost.MemberId).ToList();
@@ -59,7 +50,7 @@ namespace Dialogue.Logic.Services
             }
         }
 
-        public static void PopulateAll(IList<Topic> entityList)
+        public void PopulateAll(IList<Topic> entityList)
         {
             PopulateLastPostMembers(entityList);
             PopulateCategories(entityList);
@@ -173,7 +164,7 @@ namespace Dialogue.Logic.Services
             };
 
             // Add the post
-            _postService.Add(post);
+            ServiceFactory.PostService.Add(post);
 
             topic.LastPost = post;
 
@@ -441,7 +432,7 @@ namespace Dialogue.Logic.Services
                 postsToDelete.AddRange(topic.Posts);
                 foreach (var post in postsToDelete)
                 {
-                    _postService.Delete(post);
+                    ServiceFactory.PostService.Delete(post);
                 }
             }
 
@@ -451,7 +442,7 @@ namespace Dialogue.Logic.Services
                 notificationsToDelete.AddRange(topic.TopicNotifications);
                 foreach (var topicNotification in notificationsToDelete)
                 {
-                    _topicNotificationService.Delete(topicNotification);
+                    ServiceFactory.TopicNotificationService.Delete(topicNotification);
                 }
             }
 
@@ -509,7 +500,7 @@ namespace Dialogue.Logic.Services
                     // Do not give points to the user if they are marking their own post as the solution
                     if (marker.Id != solutionWriter.Id)
                     {
-                        _memberPointsService.Add(new MemberPoints
+                        ServiceFactory.MemberPointsService.Add(new MemberPoints
                         {
                             Points = Dialogue.Settings().PointsAddedForASolution,
                             Member = solutionWriter

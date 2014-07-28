@@ -16,8 +16,7 @@ namespace Badge.PostMentionUmbraco
     {
         public bool Rule(Member user)
         {
-            var postService = new PostService();
-            var usersPosts = postService.GetByMember(user.Id);
+            var usersPosts = ServiceFactory.PostService.GetByMember(user.Id);
             var lastPost = usersPosts.OrderByDescending(x => x.DateCreated).FirstOrDefault();
             if (lastPost != null && lastPost.PostContent.ToLower().Contains("umbraco"))
             {

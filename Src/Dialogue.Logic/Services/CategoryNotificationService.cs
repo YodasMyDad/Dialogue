@@ -5,7 +5,7 @@ using Dialogue.Logic.Models;
 
 namespace Dialogue.Logic.Services
 {
-    public class CategoryNotificationService
+    public partial class CategoryNotificationService
     {
         public IList<CategoryNotification> GetAll()
         {

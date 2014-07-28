@@ -21,7 +21,7 @@ namespace Dialogue.Logic.Controllers
         private readonly IMemberGroup UsersRole;
         public DialogueController()
         {
-            UsersRole = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            UsersRole = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Dialogue.Logic.Controllers
             var logOff = Request.QueryString[AppConstants.LogOut];
             if (!string.IsNullOrEmpty(logOff))
             {
-                MemberService.LogOff();
+                ServiceFactory.MemberService.LogOff();
                 return Redirect(Settings.ForumRootUrl);
             }
 
@@ -66,16 +66,6 @@ namespace Dialogue.Logic.Controllers
     #region SurfaceControllers
     public class DialogueSurfaceController : BaseSurfaceController
     {
-        private readonly TopicService _topicService;
-        private readonly PostService _postService;
-        private readonly MemberPointsService _pointsService;
-
-        public DialogueSurfaceController()
-        {
-            _topicService = new TopicService();
-            _postService = new PostService();
-            _pointsService = new MemberPointsService();
-        }
 
         [ChildActionOnly]
         [OutputCache(Duration = AppConstants.DefaultCacheLengthInSeconds)]
@@ -85,11 +75,11 @@ namespace Dialogue.Logic.Controllers
             {
                 var viewModel = new MainStatsViewModel
                 {
-                    LatestMembers = MemberService.GetLatestUsers(10).ToDictionary(o => o.UserName,
+                    LatestMembers = ServiceFactory.MemberService.GetLatestUsers(10).ToDictionary(o => o.UserName,
                                                                                       o => o.NiceUrl),
-                    MemberCount = MemberService.MemberCount(),
-                    TopicCount = _topicService.TopicCount(),
-                    PostCount = _postService.PostCount()
+                    MemberCount = ServiceFactory.MemberService.MemberCount(),
+                    TopicCount = ServiceFactory.TopicService.TopicCount(),
+                    PostCount = ServiceFactory.PostService.PostCount()
                 };
                 return PartialView(PathHelper.GetThemePartialViewPath("GetMainStats"), viewModel);
             }
@@ -100,7 +90,7 @@ namespace Dialogue.Logic.Controllers
         {
             var viewModel = new ActiveMembersViewModel
             {
-                ActiveMembers = MemberService.GetActiveMembers()
+                ActiveMembers = ServiceFactory.MemberService.GetActiveMembers()
             };
             return PartialView(PathHelper.GetThemePartialViewPath("GetCurrentActiveMembers"), viewModel);
         }
@@ -111,7 +101,7 @@ namespace Dialogue.Logic.Controllers
         {
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                var highEarners = _pointsService.GetCurrentWeeksPoints(20);
+                var highEarners = ServiceFactory.MemberPointsService.GetCurrentWeeksPoints(20);
                 var viewModel = new HighEarnersPointViewModel { HighEarners = highEarners };
                 return PartialView(PathHelper.GetThemePartialViewPath("CurrentWeekHighPointUsers"), viewModel);
             }
@@ -124,7 +114,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var highEarners = _pointsService.GetCurrentWeeksPoints(20);
+                    var highEarners = ServiceFactory.MemberPointsService.GetCurrentWeeksPoints(20);
                     var viewModel = new HighEarnersPointViewModel { HighEarners = highEarners };
                     return PartialView(PathHelper.GetThemePartialViewPath("GetThisWeeksTopEarners"), viewModel);
                 }
@@ -139,7 +129,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var highEarners = _pointsService.GetThisYearsPoints(20);
+                    var highEarners = ServiceFactory.MemberPointsService.GetThisYearsPoints(20);
                     var viewModel = new HighEarnersPointViewModel { HighEarners = highEarners };
                     return PartialView(PathHelper.GetThemePartialViewPath("GetThisYearsTopEarners"), viewModel);
                 }

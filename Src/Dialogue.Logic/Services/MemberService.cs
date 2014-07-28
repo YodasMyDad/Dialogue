@@ -145,21 +145,8 @@ namespace Dialogue.Logic.Services
         {
             try
             {
-                // ALOT of services needed to complete this
-                var privateMessageService = new PrivateMessageService();
-                var badgeService = new BadgeService();
-                var memberPointsService = new MemberPointsService();
-                var topicNotificationService = new TopicNotificationService();
-                var voteService = new VoteService();
-                var categoryNotificationService = new CategoryNotificationService();
-                var uploadedFileService = new UploadedFileService();
-                var postService = new PostService();
-                var pollService = new PollService();
-                var topicService = new TopicService();
-
-
                 // Delete all file uploads
-                var files = uploadedFileService.GetAllByUser(userId);
+                var files = ServiceFactory.UploadedFileService.GetAllByUser(userId);
                 var filesList = new List<UploadedFile>();
                 filesList.AddRange(files);
                 foreach (var file in filesList)
@@ -168,40 +155,40 @@ namespace Dialogue.Logic.Services
                     var filePath = file.FilePath;
 
                     // Now delete it
-                    uploadedFileService.Delete(file);
+                    ServiceFactory.UploadedFileService.Delete(file);
 
                     // And finally delete from the file system
                     System.IO.File.Delete(HttpContext.Current.Server.MapPath(filePath));
                 }
 
                 // Delete all posts
-                var posts = postService.GetAllByMember(userId);
+                var posts = ServiceFactory.PostService.GetAllByMember(userId);
                 var postList = new List<Post>();
                 postList.AddRange(posts);
                 foreach (var post in postList)
                 {
                     post.Files.Clear();
-                    postService.Delete(post);
+                    ServiceFactory.PostService.Delete(post);
                 }
 
                 unitOfWork.SaveChanges();
 
                 // Also clear their poll votes
-                var userPollVotes = pollService.GetMembersPollVotes(userId);
+                var userPollVotes = ServiceFactory.PollService.GetMembersPollVotes(userId);
                 if (userPollVotes.Any())
                 {
                     var pollList = new List<PollVote>();
                     pollList.AddRange(userPollVotes);
                     foreach (var vote in pollList)
                     {
-                        pollService.Delete(vote);
+                        ServiceFactory.PollService.Delete(vote);
                     }
                 }
 
                 unitOfWork.SaveChanges();
 
                 // Also clear their polls
-                var userPolls = pollService.GetMembersPolls(userId);
+                var userPolls = ServiceFactory.PollService.GetMembersPolls(userId);
                 if (userPolls.Any())
                 {
                     var polls = new List<Poll>();
@@ -217,24 +204,24 @@ namespace Dialogue.Logic.Services
                             foreach (var answer in pollAnswersList)
                             {
                                 answer.Poll = null;
-                                pollService.Delete(answer);
+                                ServiceFactory.PollService.Delete(answer);
                             }
                         }
 
                         poll.PollAnswers.Clear();
-                        pollService.Delete(poll);
+                        ServiceFactory.PollService.Delete(poll);
                     }
                 }
 
                 unitOfWork.SaveChanges();
 
                 // Delete all topics
-                var topics = topicService.GetAllTopicsByUser(userId);
+                var topics = ServiceFactory.TopicService.GetAllTopicsByUser(userId);
                 var topicList = new List<Topic>();
                 topicList.AddRange(topics);
                 foreach (var topic in topicList)
                 {
-                    topicService.Delete(topic);
+                    ServiceFactory.TopicService.Delete(topic);
                 }
 
                 // Now clear all activities for this user
@@ -244,59 +231,59 @@ namespace Dialogue.Logic.Services
 
                 // Delete all private messages from this user
                 var msgsToDelete = new List<PrivateMessage>();
-                msgsToDelete.AddRange(privateMessageService.GetAllByUserSentOrReceived(userId));
+                msgsToDelete.AddRange(ServiceFactory.PrivateMessageService.GetAllByUserSentOrReceived(userId));
                 foreach (var msgToDelete in msgsToDelete)
                 {
-                    privateMessageService.DeleteMessage(msgToDelete);
+                    ServiceFactory.PrivateMessageService.DeleteMessage(msgToDelete);
                 }
 
 
                 // Delete all badge times last checked
                 var badgeTypesTimeLastCheckedToDelete = new List<BadgeTypeTimeLastChecked>();
-                badgeTypesTimeLastCheckedToDelete.AddRange(badgeService.BadgeTypeTimeLastCheckedByMember(userId));
+                badgeTypesTimeLastCheckedToDelete.AddRange(ServiceFactory.BadgeService.BadgeTypeTimeLastCheckedByMember(userId));
                 foreach (var badgeTypeTimeLastCheckedToDelete in badgeTypesTimeLastCheckedToDelete)
                 {
-                    badgeService.DeleteTimeLastChecked(badgeTypeTimeLastCheckedToDelete);
+                    ServiceFactory.BadgeService.DeleteTimeLastChecked(badgeTypeTimeLastCheckedToDelete);
                 }
 
                 // Delete all points from this user
                 var pointsToDelete = new List<MemberPoints>();
-                pointsToDelete.AddRange(memberPointsService.GetByUser(userId));
+                pointsToDelete.AddRange(ServiceFactory.MemberPointsService.GetByUser(userId));
                 foreach (var pointToDelete in pointsToDelete)
                 {
-                    memberPointsService.Delete(pointToDelete);
+                    ServiceFactory.MemberPointsService.Delete(pointToDelete);
                 }
 
                 // Delete all topic notifications
                 var topicNotificationsToDelete = new List<TopicNotification>();
-                topicNotificationsToDelete.AddRange(topicNotificationService.GetByUser(userId));
+                topicNotificationsToDelete.AddRange(ServiceFactory.TopicNotificationService.GetByUser(userId));
                 foreach (var topicNotificationToDelete in topicNotificationsToDelete)
                 {
-                    topicNotificationService.Delete(topicNotificationToDelete);
+                    ServiceFactory.TopicNotificationService.Delete(topicNotificationToDelete);
                 }
 
                 // Delete all user's votes
                 var votesToDelete = new List<Vote>();
-                votesToDelete.AddRange(voteService.GetAllVotesByUser(userId));
+                votesToDelete.AddRange(ServiceFactory.VoteService.GetAllVotesByUser(userId));
                 foreach (var voteToDelete in votesToDelete)
                 {
-                    voteService.Delete(voteToDelete);
+                    ServiceFactory.VoteService.Delete(voteToDelete);
                 }
 
                 // Delete all user's badges
                 var badgesToDelete = new List<BadgeToMember>();
-                badgesToDelete.AddRange(badgeService.GetAllBadgeToMembers(userId));
+                badgesToDelete.AddRange(ServiceFactory.BadgeService.GetAllBadgeToMembers(userId));
                 foreach (var badgeToDelete in badgesToDelete)
                 {
-                    badgeService.DeleteBadgeToMember(badgeToDelete);
+                    ServiceFactory.BadgeService.DeleteBadgeToMember(badgeToDelete);
                 }
 
                 // Delete all user's category notifications
                 var categoryNotificationsToDelete = new List<CategoryNotification>();
-                categoryNotificationsToDelete.AddRange(categoryNotificationService.GetByUser(userId));
+                categoryNotificationsToDelete.AddRange(ServiceFactory.CategoryNotificationService.GetByUser(userId));
                 foreach (var categoryNotificationToDelete in categoryNotificationsToDelete)
                 {
-                    categoryNotificationService.Delete(categoryNotificationToDelete);
+                    ServiceFactory.CategoryNotificationService.Delete(categoryNotificationToDelete);
                 }
 
                 unitOfWork.Commit();

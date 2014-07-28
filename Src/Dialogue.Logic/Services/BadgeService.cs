@@ -13,12 +13,6 @@ namespace Dialogue.Logic.Services
 {
     public partial class BadgeService
     {
-        private readonly MemberPointsService _pointsService;
-        public BadgeService()
-        {
-            _pointsService = new MemberPointsService();
-        }
-
         public const int BadgeCheckIntervalMinutes = 10;
 
         /// <summary>
@@ -481,7 +475,7 @@ namespace Dialogue.Logic.Services
                                     DateAdded = DateTime.UtcNow,
                                     Points = (int)dbBadge.AwardsPoints
                                 };
-                                _pointsService.Add(points);
+                                ServiceFactory.MemberPointsService.Add(points);
                             }
                             ContextPerRequest.Db.Badge.Add(dbBadge);
                             ServiceFactory.ActivityService.BadgeAwarded(badgeMapping.DbBadge, user, DateTime.UtcNow);

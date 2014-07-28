@@ -65,13 +65,12 @@ namespace Dialogue.Logic.Events
 
             // Sync the badges
             // Do the badge processing
-            var badgeService = new BadgeService();
             var unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
             using (var unitOfWork = unitOfWorkManager.NewUnitOfWork())
             {
                 try
                 {
-                    badgeService.SyncBadges();
+                    ServiceFactory.BadgeService.SyncBadges();
                     unitOfWork.Commit();
                 }
                 catch (Exception ex)

@@ -67,6 +67,13 @@
       <HintPath>..\Dialogue.Website\bin\interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dialogue.Website\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Skybrud.Social">
+      <HintPath>..\Externals\Skybrud.Social.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions">
@@ -152,6 +159,8 @@
     <Compile Include="Controllers\DialogueTreeController.cs" />
     <Compile Include="Controllers\DialogueMemberController.cs" />
     <Compile Include="Controllers\ApiControllers\CssPickerController.cs" />
+    <Compile Include="Controllers\OAuthControllers\FacebookOAuthSurfaceController.cs" />
+    <Compile Include="Controllers\OAuthControllers\GoogleOAuthSurfaceController.cs" />
     <Compile Include="Data\Context\ContextPerRequest.cs" />
     <Compile Include="Data\Mapping\ActivityMapping.cs" />
     <Compile Include="Data\Mapping\BadgeMapping.cs" />
@@ -245,6 +254,8 @@
     <Compile Include="Models\ViewModels\ViewTopicViewModel.cs" />
     <Compile Include="Models\Vote.cs" />
     <Compile Include="NotFoundHandler.cs" />
+    <Compile Include="Models\OAuth\FacebookOAuthData.cs" />
+    <Compile Include="Models\OAuth\GoogleOAuthData.cs" />
     <Compile Include="PathHelper.cs" />
     <Compile Include="Routes\DialogueRoutes.cs" />
     <Compile Include="Routes\DialogueTopicRouteHandler.cs" />
@@ -267,7 +278,6 @@
     <Compile Include="Controllers\BaseControllers.cs" />
     <Compile Include="Controllers\DialogueController.cs" />
     <Compile Include="Controllers\ApiControllers\PartialPickerController.cs" />
-    <Compile Include="Controllers\ViewMacroController.cs" />
     <Compile Include="Mapping\CategoryMapper.cs" />
     <Compile Include="Mapping\DialogueMapper.cs" />
     <Compile Include="Mapping\MemberMapper.cs" />

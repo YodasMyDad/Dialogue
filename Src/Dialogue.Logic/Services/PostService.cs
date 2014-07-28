@@ -10,15 +10,8 @@ using Dialogue.Logic.Models;
 
 namespace Dialogue.Logic.Services
 {
-    public class PostService
+    public partial class PostService
     {
-        private readonly PermissionService _permissionService;
-        private readonly MemberPointsService _memberPointsService;
-        public PostService()
-        {
-            _permissionService = new PermissionService();
-            _memberPointsService = new MemberPointsService();
-        }
 
         #region Populate Methods
 
@@ -336,7 +329,7 @@ namespace Dialogue.Logic.Services
         public Post AddNewPost(string postContent, Topic topic, Member user, out PermissionSet permissions)
         {
             // Get the permissions for the category that this topic is in
-            permissions = _permissionService.GetPermissions(topic.Category, user.Groups.FirstOrDefault());
+            permissions = ServiceFactory.PermissionService.GetPermissions(topic.Category, user.Groups.FirstOrDefault());
 
             // Check this users role has permission to create a post
             if (permissions[AppConstants.PermissionDenyAccess].IsTicked || permissions[AppConstants.PermissionReadOnly].IsTicked)
@@ -368,7 +361,7 @@ namespace Dialogue.Logic.Services
             Add(newPost);
 
             // Update the users points score and post count for posting
-            _memberPointsService.Add(new MemberPoints
+            ServiceFactory.MemberPointsService.Add(new MemberPoints
             {
                 Points = Dialogue.Settings().PointsAddedPerNewPost,
                 Member = user

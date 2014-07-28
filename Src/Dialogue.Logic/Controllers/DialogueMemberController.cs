@@ -16,19 +16,11 @@ namespace Dialogue.Logic.Controllers
 
     public class DialogueMemberController : BaseController
     {
-        private readonly CategoryService _categoryService;
         private readonly IMemberGroup _membersGroup;
-        private readonly EmailService _emailService;
-        private readonly TopicService _topicService;
-        private readonly PostService _postService;
 
         public DialogueMemberController()
         {
-            _categoryService = new CategoryService();
-            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-            _emailService = new EmailService();
-            _topicService = new TopicService();
-            _postService = new PostService();
+            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         /// <summary>
@@ -50,14 +42,14 @@ namespace Dialogue.Logic.Controllers
 
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                var member = MemberService.GetUserBySlug(membername, true);
+                var member = ServiceFactory.MemberService.GetUserBySlug(membername, true);
                 var loggedonId = UserIsAuthenticated ? CurrentMember.Id : 0;
                 var viewModel = new ViewMemberViewModel(model.Content)
                 {
                     User = member, 
                     LoggedOnUserId = loggedonId,
                     PageTitle = string.Concat(member.UserName, Lang("Members.ProfileTitle")),
-                    PostCount = _postService.GetMemberPostCount(member.Id)
+                    PostCount = ServiceFactory.PostService.GetMemberPostCount(member.Id)
                 };
 
                 // Get the topic view slug
@@ -73,17 +65,11 @@ namespace Dialogue.Logic.Controllers
 
     public partial class DialogueMemberSurfaceController : BaseSurfaceController
     {
-        private readonly PrivateMessageService _privateMessageService;
         private readonly IMemberGroup _membersGroup;
-        private readonly PostService _postService;
-        private readonly CategoryService _categoryService;
 
         public DialogueMemberSurfaceController()
         {
-            _privateMessageService = new PrivateMessageService();
-            _postService = new PostService();
-            _categoryService = new CategoryService();
-            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         [Authorize]
@@ -91,7 +77,7 @@ namespace Dialogue.Logic.Controllers
         {
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                var count = _privateMessageService.NewPrivateMessageCount(CurrentMember.Id);
+                var count = ServiceFactory.PrivateMessageService.NewPrivateMessageCount(CurrentMember.Id);
                 if (count > 0)
                 {
                     ShowMessage(new GenericMessageViewModel
@@ -114,11 +100,11 @@ namespace Dialogue.Logic.Controllers
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
                     // Get the user discussions, only grab 100 posts
-                    var posts = _postService.GetByMember(id, 100);
+                    var posts = ServiceFactory.PostService.GetByMember(id, 100);
 
                     // Get the distinct topics
                     var topics = posts.Select(x => x.Topic).Distinct().Take(6).OrderByDescending(x => x.LastPost.DateCreated).ToList();
-                    TopicService.PopulateCategories(topics);
+                    ServiceFactory.TopicService.PopulateCategories(topics);
 
                     // Get all the categories for this topic collection
                     var categories = topics.Select(x => x.Category).Distinct();
@@ -134,7 +120,7 @@ namespace Dialogue.Logic.Controllers
                     // loop through the categories and get the permissions
                     foreach (var category in categories)
                     {
-                        var permissionSet = PermissionService.GetPermissions(category, _membersGroup);
+                        var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
                         viewModel.AllPermissionSets.Add(category, permissionSet);
                     }
 
@@ -162,7 +148,7 @@ namespace Dialogue.Logic.Controllers
                     // Update
                     try
                     {
-                        MemberService.UpdateLastActiveDate(CurrentMember);
+                        ServiceFactory.MemberService.UpdateLastActiveDate(CurrentMember);
                     }
                     catch (Exception ex)
                     {

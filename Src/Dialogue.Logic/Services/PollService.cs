@@ -7,7 +7,7 @@ using Dialogue.Logic.Models;
 
 namespace Dialogue.Logic.Services
 {
-    public class PollService
+    public partial class PollService
     {
         #region Polls
 

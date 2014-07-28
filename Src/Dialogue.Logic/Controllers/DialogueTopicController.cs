@@ -17,17 +17,11 @@ namespace Dialogue.Logic.Controllers
     #region Render Controllers
     public class DialogueTopicController : BaseController
     {
-        private readonly CategoryService _categoryService;
         private readonly IMemberGroup _membersGroup;
-        private readonly EmailService _emailService;
-        private readonly TopicService _topicService;
 
         public DialogueTopicController()
         {
-            _categoryService = new CategoryService();
-            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-            _emailService = new EmailService();
-            _topicService = new TopicService();
+            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         /// <summary>
@@ -50,7 +44,7 @@ namespace Dialogue.Logic.Controllers
             //create a blog model of the main page
             var viewModel = new ShowTopicViewModel(model.Content)
             {
-                Topic = _topicService.GetTopicBySlug(topicname)
+                Topic = ServiceFactory.TopicService.GetTopicBySlug(topicname)
             };
 
             // Get the topic view slug
@@ -65,29 +59,11 @@ namespace Dialogue.Logic.Controllers
 
     public partial class DialogueCreateTopicController : BaseController
     {
-        private readonly MemberPointsService _memberPointsService;
-        private readonly PrivateMessageService _privateMessageService;
-        private readonly CategoryService _categoryService;
-        private readonly IMemberGroup UsersRole;
-        private readonly BannedEmailService _bannedEmailService;
-        private readonly BannedWordService _bannedWordService;
-        private readonly TopicNotificationService _topicNotificationService;
-        private readonly CategoryNotificationService _categoryNotificationService;
-        private readonly EmailService _emailService;
         private readonly IMemberGroup _membersGroup;
 
         public DialogueCreateTopicController()
         {
-            _privateMessageService = new PrivateMessageService();
-            _categoryService = new CategoryService();
-            UsersRole = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-            _bannedEmailService = new BannedEmailService();
-            _bannedWordService = new BannedWordService();
-            _memberPointsService = new MemberPointsService();
-            _topicNotificationService = new TopicNotificationService();
-            _categoryNotificationService = new CategoryNotificationService();
-            _emailService = new EmailService();
-            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         public override ActionResult Index(RenderModel model)
@@ -96,7 +72,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var allowedCategories = _categoryService.GetAllowedCategories(_membersGroup).ToList();
+                    var allowedCategories = ServiceFactory.CategoryService.GetAllowedCategories(_membersGroup).ToList();
                     if (allowedCategories.Any() && CurrentMember.DisablePosting != true)
                     {
                         var viewModel = new CreateTopic(model.Content)
@@ -119,31 +95,12 @@ namespace Dialogue.Logic.Controllers
     #region Surface controllers
     public partial class DialogueTopicSurfaceController : BaseSurfaceController
     {
-        private readonly MemberPointsService _memberPointsService;
-        private readonly PrivateMessageService _privateMessageService;
-        private readonly CategoryService _categoryService;
-        private readonly IMemberGroup UsersRole;
-        private readonly BannedEmailService _bannedEmailService;
-        private readonly BannedWordService _bannedWordService;
-        private readonly TopicService _topicService;
-        private readonly TopicNotificationService _topicNotificationService;
-        private readonly PollService _pollService;
-        private readonly CategoryNotificationService _categoryNotificationService;
-        private readonly EmailService _emailService;
+
+        private readonly IMemberGroup _membersGroup;
 
         public DialogueTopicSurfaceController()
         {
-            _privateMessageService = new PrivateMessageService();
-            _categoryService = new CategoryService();
-            UsersRole = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-            _bannedEmailService = new BannedEmailService();
-            _bannedWordService = new BannedWordService();
-            _memberPointsService = new MemberPointsService();
-            _topicNotificationService = new TopicNotificationService();
-            _categoryNotificationService = new CategoryNotificationService();
-            _topicService = new TopicService();
-            _pollService = new PollService();
-            _emailService = new EmailService();
+            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
 
@@ -155,7 +112,7 @@ namespace Dialogue.Logic.Controllers
                 var pageIndex = p ?? 1;
 
                 // Get the topics
-                var topics = _topicService.GetRecentTopics(pageIndex,
+                var topics = ServiceFactory.TopicService.GetRecentTopics(pageIndex,
                                                            Dialogue.Settings().TopicsPerPage,
                                                            AppConstants.ActiveTopicsListSize);
 
@@ -175,7 +132,7 @@ namespace Dialogue.Logic.Controllers
                 // loop through the categories and get the permissions
                 foreach (var category in categories)
                 {
-                    var permissionSet = PermissionService.GetPermissions(category, UsersRole);
+                    var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
                     viewModel.AllPermissionSets.Add(category, permissionSet);
                 }
                 return PartialView(PathHelper.GetThemePartialViewPath("LatestTopics"), viewModel);
@@ -211,7 +168,7 @@ namespace Dialogue.Logic.Controllers
                 // Quick check to see if user is locked out, when logged in
                 if (CurrentMember.IsLockedOut || CurrentMember.DisablePosting == true || !CurrentMember.IsApproved)
                 {
-                    MemberService.LogOff();
+                    ServiceFactory.MemberService.LogOff();
                     return ErrorToHomePage(Lang("Errors.NoPermission"));
                 }
 
@@ -223,10 +180,10 @@ namespace Dialogue.Logic.Controllers
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
                     // Not using automapper for this one only, as a topic is a post and topic in one
-                    category = _categoryService.Get(topicViewModel.Category);
+                    category = ServiceFactory.CategoryService.Get(topicViewModel.Category);
 
                     // First check this user is allowed to create topics in this category
-                    var permissions = PermissionService.GetPermissions(category, UsersRole);
+                    var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
 
                     // Check this users role has permission to create a post
                     if (permissions[AppConstants.PermissionDenyAccess].IsTicked || permissions[AppConstants.PermissionReadOnly].IsTicked || !permissions[AppConstants.PermissionCreateTopics].IsTicked)
@@ -238,7 +195,7 @@ namespace Dialogue.Logic.Controllers
                     {
                         // We get the banned words here and pass them in, so its just one call
                         // instead of calling it several times and each call getting all the words back
-                        var bannedWordsList = _bannedWordService.GetAll();
+                        var bannedWordsList = ServiceFactory.BannedWordService.GetAll();
                         List<string> bannedWords = null;
                         if (bannedWordsList.Any())
                         {
@@ -247,7 +204,7 @@ namespace Dialogue.Logic.Controllers
 
                         topic = new Topic
                         {
-                            Name = _bannedWordService.SanitiseBannedWords(topicViewModel.TopicName, bannedWords),
+                            Name = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicName, bannedWords),
                             Category = category,
                             CategoryId = category.Id,
                             Member = CurrentMember,
@@ -258,7 +215,7 @@ namespace Dialogue.Logic.Controllers
                         if (!string.IsNullOrEmpty(topicViewModel.TopicContent))
                         {
                             // Check for any banned words
-                            topicViewModel.TopicContent = _bannedWordService.SanitiseBannedWords(topicViewModel.TopicContent, bannedWords);
+                            topicViewModel.TopicContent = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicContent, bannedWords);
 
                             // See if this is a poll and add it to the topic
                             if (topicViewModel.PollAnswers != null && topicViewModel.PollAnswers.Count > 0)
@@ -274,7 +231,7 @@ namespace Dialogue.Logic.Controllers
                                     };
 
                                     // Create the poll
-                                    _pollService.Add(newPoll);
+                                    ServiceFactory.PollService.Add(newPoll);
 
                                     // Save the poll in the context so we can add answers
                                     unitOfWork.SaveChanges();
@@ -285,7 +242,7 @@ namespace Dialogue.Logic.Controllers
                                     {
                                         // Attach newly created poll to each answer
                                         pollAnswer.Poll = newPoll;
-                                        _pollService.Add(pollAnswer);
+                                        ServiceFactory.PollService.Add(pollAnswer);
                                         newPollAnswers.Add(pollAnswer);
                                     }
                                     // Attach answers to poll
@@ -309,7 +266,7 @@ namespace Dialogue.Logic.Controllers
                             }
 
                             // Update the users points score for posting
-                            _memberPointsService.Add(new MemberPoints
+                            ServiceFactory.MemberPointsService.Add(new MemberPoints
                             {
                                 Points = Settings.PointsAddedPerNewPost,
                                 Member = CurrentMember,
@@ -325,13 +282,13 @@ namespace Dialogue.Logic.Controllers
 
 
                             // Create the topic
-                            topic = _topicService.Add(topic);
+                            topic = ServiceFactory.TopicService.Add(topic);
 
                             // Save the changes
                             unitOfWork.SaveChanges();
 
                             // Now create and add the post to the topic
-                            _topicService.AddLastPost(topic, topicViewModel.TopicContent);
+                            ServiceFactory.TopicService.AddLastPost(topic, topicViewModel.TopicContent);
 
                             // Now check its not spam
                             var akismetHelper = new AkismetHelper();
@@ -352,7 +309,7 @@ namespace Dialogue.Logic.Controllers
                                     MemberId = CurrentMember.Id
                                 };
                                 //save
-                                _topicNotificationService.Add(topicNotification);
+                                ServiceFactory.TopicNotificationService.Add(topicNotification);
                             }
 
                             try
@@ -407,7 +364,7 @@ namespace Dialogue.Logic.Controllers
             //  a topic if there are 1000's of users
 
             // Get all notifications for this category
-            var notifications = _categoryNotificationService.GetByCategory(cat).Select(x => x.MemberId).ToList();
+            var notifications = ServiceFactory.CategoryNotificationService.GetByCategory(cat).Select(x => x.MemberId).ToList();
 
             if (notifications.Any())
             {
@@ -418,7 +375,7 @@ namespace Dialogue.Logic.Controllers
                 if (notifications.Count > 0)
                 {
                     // Now get all the users that need notifying
-                    var usersToNotify = MemberService.GetUsersById(notifications);
+                    var usersToNotify = ServiceFactory.MemberService.GetUsersById(notifications);
 
                     // Create the email
                     var sb = new StringBuilder();
@@ -428,7 +385,7 @@ namespace Dialogue.Logic.Controllers
                     // create the emails and only send them to people who have not had notifications disabled
                     var emails = usersToNotify.Where(x => x.DisableEmailNotifications != true).Select(user => new Email
                     {
-                        Body = _emailService.EmailTemplate(user.UserName, sb.ToString()),
+                        Body = ServiceFactory.EmailService.EmailTemplate(user.UserName, sb.ToString()),
                         EmailFrom = Settings.NotificationReplyEmailAddress,
                         EmailTo = user.Email,
                         NameTo = user.UserName,
@@ -436,7 +393,7 @@ namespace Dialogue.Logic.Controllers
                     }).ToList();
 
                     // and now pass the emails in to be sent
-                    _emailService.SendMail(emails);
+                    ServiceFactory.EmailService.SendMail(emails);
                 }
             }
         }
@@ -452,7 +409,7 @@ namespace Dialogue.Logic.Controllers
             if (CurrentMember != null)
             {
                 // Add all categories to a permission set
-                var allCategories = _categoryService.GetAll();
+                var allCategories = ServiceFactory.CategoryService.GetAll();
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
                     foreach (var category in allCategories)
@@ -460,7 +417,7 @@ namespace Dialogue.Logic.Controllers
                         // Now check to see if they have access to any categories
                         // if so, check they are allowed to create topics - If no to either set to false
                         viewModel.UserCanPostTopics = false;
-                        var permissionSet = PermissionService.GetPermissions(category, UsersRole);
+                        var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
                         if (permissionSet[AppConstants.PermissionCreateTopics].IsTicked)
                         {
                             viewModel.UserCanPostTopics = true;

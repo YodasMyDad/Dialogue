@@ -64,3 +64,6 @@ $RECYCLE.BIN/
 !**/App_Data/[Pp]ackages/
 !**/[Uu]mbraco/developer/[Pp]ackages
 
+Src/Dialogue.Logic/bin/Dialogue.Logic.dll
+Src/Dialogue.Logic/bin/Dialogue.Logic.dll
+Src/Dialogue.Logic/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache

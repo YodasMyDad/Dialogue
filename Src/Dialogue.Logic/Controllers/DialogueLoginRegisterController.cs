@@ -18,11 +18,6 @@ namespace Dialogue.Logic.Controllers
     #region Render Controllers
     public partial class DialogueLoginController : BaseController
     {
-        protected readonly BannedEmailService BannedEmailService;
-        public DialogueLoginController()
-        {
-            BannedEmailService = new BannedEmailService();
-        }
 
         [ModelStateToTempData]
         public override ActionResult Index(RenderModel model)
@@ -47,12 +42,6 @@ namespace Dialogue.Logic.Controllers
 
     public partial class DialogueRegisterController : BaseController
     {
-        protected readonly BannedEmailService BannedEmailService;
-        public DialogueRegisterController()
-        {
-            BannedEmailService = new BannedEmailService();
-        }
-
 
         [ModelStateToTempData]
         public override ActionResult Index(RenderModel model)
@@ -74,16 +63,6 @@ namespace Dialogue.Logic.Controllers
 
     public class DialogueLoginRegisterSurfaceController : BaseSurfaceController
     {
-        protected readonly BannedEmailService BannedEmailService;
-        protected readonly BannedWordService BannedWordService;
-        protected readonly EmailService EmailService;
-        public DialogueLoginRegisterSurfaceController()
-        {
-            BannedEmailService = new BannedEmailService();
-            BannedWordService = new BannedWordService();
-            EmailService = new EmailService();
-        }
-
         [ChildActionOnly]
         public ActionResult LogOnForm()
         {
@@ -136,10 +115,10 @@ namespace Dialogue.Logic.Controllers
                 {
                     var message = new GenericMessageViewModel();
                     var user = new Member();
-                    if (MemberService.Login(model.UserName, model.Password))
+                    if (ServiceFactory.MemberService.Login(model.UserName, model.Password))
                     {
                         // Set last login date
-                        user = MemberService.Get(model.UserName);
+                        user = ServiceFactory.MemberService.Get(model.UserName);
                         if (user.IsApproved && !user.IsLockedOut)
                         {
                             if (Url.IsLocalUrl(model.ReturnUrl) && model.ReturnUrl.Length > 1 && model.ReturnUrl.StartsWith("/")
@@ -205,10 +184,10 @@ namespace Dialogue.Logic.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    currentUser = MemberService.GetByEmail(model.EmailAddress);
+                    currentUser = ServiceFactory.MemberService.GetByEmail(model.EmailAddress);
                     if (currentUser != null)
                     {
-                        changePasswordSucceeded = MemberService.ResetPassword(currentUser, newPassword);
+                        changePasswordSucceeded = ServiceFactory.MemberService.ResetPassword(currentUser, newPassword);
                     }
                     else
                     {
@@ -234,8 +213,8 @@ namespace Dialogue.Logic.Controllers
                     NameTo = currentUser.UserName,
                     Subject = Lang("Members.ForgotPassword.Subject")
                 };
-                email.Body = EmailService.EmailTemplate(email.NameTo, sb.ToString());
-                EmailService.SendMail(email);
+                email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
+                ServiceFactory.EmailService.SendMail(email);
 
                 // We use temp data because we are doing a redirect
                 ShowMessage(new GenericMessageViewModel
@@ -284,7 +263,7 @@ namespace Dialogue.Logic.Controllers
                     }
 
                     // Secondly see if the email is banned
-                    if (BannedEmailService.EmailIsBanned(userModel.Email))
+                    if (ServiceFactory.BannedEmailService.EmailIsBanned(userModel.Email))
                     {
                         ModelState.AddModelError(string.Empty, Lang("Error.EmailIsBanned"));
                         //ShowModelErrors();
@@ -292,7 +271,7 @@ namespace Dialogue.Logic.Controllers
                     }
 
                     var userToSave = AppHelpers.UmbMemberHelper().CreateRegistrationModel(AppConstants.MemberTypeAlias);
-                    userToSave.Username = BannedWordService.SanitiseBannedWords(userModel.UserName);
+                    userToSave.Username = ServiceFactory.BannedWordService.SanitiseBannedWords(userModel.UserName);
                     userToSave.Name = userToSave.Username;
                     userToSave.UsernameIsEmail = false;
                     userToSave.Email = userModel.Email;
@@ -306,7 +285,7 @@ namespace Dialogue.Logic.Controllers
 
                     if (createStatus != MembershipCreateStatus.Success)
                     {
-                        ModelState.AddModelError(string.Empty, MemberService.ErrorCodeToString(createStatus));
+                        ModelState.AddModelError(string.Empty, ServiceFactory.MemberService.ErrorCodeToString(createStatus));
                     }
                     else
                     {
@@ -340,8 +319,8 @@ namespace Dialogue.Logic.Controllers
                                 NameTo = Lang("Members.Admin"),
                                 Subject = Lang("Members.NewMemberSubject")
                             };
-                            email.Body = EmailService.EmailTemplate(email.NameTo, sb.ToString());
-                            EmailService.SendMail(email);
+                            email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
+                            ServiceFactory.EmailService.SendMail(email);
                         }
 
                         // Fire the activity Service
@@ -420,6 +399,7 @@ namespace Dialogue.Logic.Controllers
                 {
                     // SEND AUTHORISATION EMAIL
                     var sb = new StringBuilder();
+                    //TODO - Sort email confirmation link
                     var confirmationLink = string.Concat(AppHelpers.ReturnCurrentDomain(), Url.Action("EmailConfirmation", new { id = userToSave.Id }));
                     sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.MemberEmailAuthorisation.EmailBody"),
                                                 Settings.ForumName,
@@ -431,8 +411,8 @@ namespace Dialogue.Logic.Controllers
                         NameTo = userToSave.Username,
                         Subject = Lang("Members.MemberEmailAuthorisation.Subject")
                     };
-                    email.Body = EmailService.EmailTemplate(email.NameTo, sb.ToString());
-                    EmailService.SendMail(email);
+                    email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
+                    ServiceFactory.EmailService.SendMail(email);
 
                     // ADD COOKIE
                     // We add a cookie for 7 days, which will display the resend email confirmation button
@@ -476,7 +456,7 @@ namespace Dialogue.Logic.Controllers
             using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
                 // Checkconfirmation
-                var user = MemberService.Get(id);
+                var user = ServiceFactory.MemberService.Get(id);
                 if (user != null)
                 {
                     // Set the user to active

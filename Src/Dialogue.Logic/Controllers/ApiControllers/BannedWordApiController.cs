@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Data.Context;
 using Dialogue.Logic.Data.UnitOfWork;
@@ -15,12 +14,10 @@ namespace Dialogue.Logic.Controllers.ApiControllers
     [PluginController("BannedWord")]
     public class BannedWordApiController : UmbracoAuthorizedJsonController
     {
-        private readonly BannedWordService _bannedWordService;
         private readonly UnitOfWorkManager _unitOfWorkManager;
 
         public BannedWordApiController()
         {
-            _bannedWordService = new BannedWordService();
             _unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
         }
 
@@ -28,7 +25,7 @@ namespace Dialogue.Logic.Controllers.ApiControllers
         {
             using (_unitOfWorkManager.NewUnitOfWork())
             {
-                return _bannedWordService.GetAll().Where(x => x.Word.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
+                return ServiceFactory.BannedWordService.GetAll().Where(x => x.Word.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
             }
         }
 
@@ -36,7 +33,7 @@ namespace Dialogue.Logic.Controllers.ApiControllers
         {
             using (_unitOfWorkManager.NewUnitOfWork())
             {
-                return _bannedWordService.GetAll();
+                return ServiceFactory.BannedWordService.GetAll();
             }
         }
 
@@ -46,8 +43,8 @@ namespace Dialogue.Logic.Controllers.ApiControllers
             {
                 try
                 {
-                    var email = _bannedWordService.Get(id);
-                    _bannedWordService.Delete(email);
+                    var email = ServiceFactory.BannedWordService.Get(id);
+                    ServiceFactory.BannedWordService.Delete(email);
                     unitOfWork.Commit();
                     return true;
                 }
@@ -67,7 +64,7 @@ namespace Dialogue.Logic.Controllers.ApiControllers
                 try
                 {
                     email.DateAdded = DateTime.Now;
-                    var newEmail = _bannedWordService.Add(email);
+                    var newEmail = ServiceFactory.BannedWordService.Add(email);
                     unitOfWork.Commit();
                     return newEmail;
                 }

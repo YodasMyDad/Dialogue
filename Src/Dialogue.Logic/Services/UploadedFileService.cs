@@ -6,7 +6,7 @@ using Dialogue.Logic.Models;
 
 namespace Dialogue.Logic.Services
 {
-    public class UploadedFileService
+    public partial class UploadedFileService
     {
         public UploadedFile Add(UploadedFile uploadedFile)
         {

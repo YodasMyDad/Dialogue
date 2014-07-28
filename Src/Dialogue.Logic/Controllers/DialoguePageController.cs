@@ -16,17 +16,11 @@ namespace Dialogue.Logic.Controllers
 {
     public class DialoguePageController : BaseController
     {
-        private readonly CategoryService _categoryService;
         private readonly IMemberGroup _membersGroup;
-        private readonly TopicService _topicService;
-        private readonly BadgeService _badgeService;
 
         public DialoguePageController()
         {
-            _categoryService = new CategoryService();
-            _topicService = new TopicService();
-            _badgeService = new BadgeService();
-            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         /// <summary>
@@ -82,7 +76,7 @@ namespace Dialogue.Logic.Controllers
         {
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                var allBadges = _badgeService.GetallBadges();
+                var allBadges = ServiceFactory.BadgeService.GetallBadges();
 
                 var badgesListModel = new AllBadgesViewModel(page)
                 {
@@ -136,7 +130,7 @@ namespace Dialogue.Logic.Controllers
 
                 //TODO - Get Topics for only the current forum
                 // Get the latest topics
-                var topics = _topicService.GetRecentRssTopics(AppConstants.ActiveTopicsListSize);
+                var topics = ServiceFactory.TopicService.GetRecentRssTopics(AppConstants.ActiveTopicsListSize);
 
                 // Get all the categories for this topic collection
                 var categories = topics.Select(x => x.Category).Distinct();
@@ -147,7 +141,7 @@ namespace Dialogue.Logic.Controllers
                 // loop through the categories and get the permissions
                 foreach (var category in categories)
                 {
-                    var permissionSet = PermissionService.GetPermissions(category, _membersGroup);
+                    var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
                     permissions.Add(category, permissionSet);
                 }
 

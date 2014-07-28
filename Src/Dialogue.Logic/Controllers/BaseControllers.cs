@@ -14,15 +14,11 @@ namespace Dialogue.Logic.Controllers
 
     public class BaseController : RenderMvcController
     {
-        protected readonly MemberService MemberService;
         protected readonly UnitOfWorkManager UnitOfWorkManager;
-        protected readonly PermissionService PermissionService;
 
         public BaseController()
         {
             UnitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
-            MemberService = new MemberService();
-            PermissionService = new PermissionService();
         }
         public void ShowMessage(GenericMessageViewModel messageViewModel)
         {
@@ -74,7 +70,7 @@ namespace Dialogue.Logic.Controllers
             {
                 if (UserIsAuthenticated)
                 {
-                    return MemberService.CurrentMember();    
+                    return ServiceFactory.MemberService.CurrentMember();    
                 }
                 return null;
             }
@@ -106,15 +102,11 @@ namespace Dialogue.Logic.Controllers
 
     public class BaseSurfaceController : SurfaceController
     {
-        protected readonly MemberService MemberService;
         protected readonly UnitOfWorkManager UnitOfWorkManager;
-        protected readonly PermissionService PermissionService;
 
         public BaseSurfaceController()
         {
             UnitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
-            MemberService = new MemberService();
-            PermissionService = new PermissionService();
         }
 
         public void ShowModelErrors()
@@ -210,7 +202,7 @@ namespace Dialogue.Logic.Controllers
             {
                 if (UserIsAuthenticated)
                 {
-                    return MemberService.CurrentMember();
+                    return ServiceFactory.MemberService.CurrentMember();
                 }
                 return null;
             }

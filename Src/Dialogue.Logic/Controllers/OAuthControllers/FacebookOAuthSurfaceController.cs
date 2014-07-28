@@ -1,0 +1,188 @@
+﻿using System;
+using System.Web.Mvc;
+using Dialogue.Logic.Application;
+using Dialogue.Logic.Models;
+using Dialogue.Logic.Models.OAuth;
+using Skybrud.Social.Facebook;
+using Skybrud.Social.Facebook.OAuth;
+using Skybrud.Social.Facebook.Responses;
+using Skybrud.Social.Json;
+
+namespace Dialogue.Logic.Controllers.OAuthControllers
+{
+    public class FacebookOAuthSurfaceController : BaseSurfaceController
+    {
+        public string ReturnUrl
+        {
+            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), "/umbraco/Surface/FacebookOAuthSurface/FacebookLogin"); }
+        }
+
+        public string Callback { get; private set; }
+
+        public string ContentTypeAlias { get; private set; }
+
+        public string PropertyAlias { get; private set; }
+
+        /// <summary>
+        /// Gets the authorizing code from the query string (if specified).
+        /// </summary>
+        public string AuthCode
+        {
+            get { return Request.QueryString["code"]; }
+        }
+
+        public string AuthState
+        {
+            get { return Request.QueryString["state"]; }
+        }
+
+        public string AuthErrorReason
+        {
+            get { return Request.QueryString["error_reason"]; }
+        }
+
+        public string AuthError
+        {
+            get { return Request.QueryString["error"]; }
+        }
+
+        public string AuthErrorDescription
+        {
+            get { return Request.QueryString["error_description"]; }
+        }
+
+        public ActionResult FacebookLogin()
+        {
+            var resultMessage = new GenericMessageViewModel();
+
+            Callback = Request.QueryString["callback"];
+            ContentTypeAlias = Request.QueryString["contentTypeAlias"];
+            PropertyAlias = Request.QueryString["propertyAlias"];
+
+            if (AuthState != null)
+            {
+                var stateValue = Session["Dialogue_" + AuthState] as string[];
+                if (stateValue != null && stateValue.Length == 3)
+                {
+                    Callback = stateValue[0];
+                    ContentTypeAlias = stateValue[1];
+                    PropertyAlias = stateValue[2];
+                }
+            }
+
+            // Get the prevalue options
+            if (string.IsNullOrEmpty(Dialogue.Settings().FacebookAppId) || string.IsNullOrEmpty(Dialogue.Settings().FacebookAppSecret))
+            {
+                resultMessage.Message = "You need to add the Facebook app credentials";
+                resultMessage.MessageType = GenericMessages.Danger;
+            }
+            else
+            {
+
+                // Settings valid move on
+                // Configure the OAuth client based on the options of the prevalue options
+                var client = new FacebookOAuthClient
+                {
+                    AppId = Dialogue.Settings().FacebookAppId,
+                    AppSecret = Dialogue.Settings().FacebookAppSecret,
+                    RedirectUri = ReturnUrl
+                };
+
+                // Session expired?
+                if (AuthState != null && Session["Dialogue_" + AuthState] == null)
+                {
+                    resultMessage.Message = "Session Expired";
+                    resultMessage.MessageType = GenericMessages.Danger;
+                }
+
+                // Check whether an error response was received from Facebook
+                if (AuthError != null)
+                {
+                    resultMessage.Message = AuthErrorDescription;
+                    resultMessage.MessageType = GenericMessages.Danger;
+                }
+
+                // Redirect the user to the Facebook login dialog
+                if (AuthCode == null)
+                {
+                    // Generate a new unique/random state
+                    var state = Guid.NewGuid().ToString();
+
+                    // Save the state in the current user session
+                    Session["Dialogue_" + state] = new[] { Callback, ContentTypeAlias, PropertyAlias };
+
+                    // Construct the authorization URL
+                    var url = client.GetAuthorizationUrl(state, "user_about_me", "user_photos", "email ");
+
+                    // Redirect the user
+                    return Redirect(url);
+                }
+
+                // Exchange the authorization code for a user access token
+                var userAccessToken = string.Empty;
+                try
+                {
+                    userAccessToken = client.GetAccessTokenFromAuthCode(AuthCode);
+                }
+                catch (Exception ex)
+                {
+                    resultMessage.Message = string.Format("Unable to acquire access token<br/>{0}", ex.Message);
+                    resultMessage.MessageType = GenericMessages.Danger;
+                }
+
+                try
+                {
+
+                    // Initialize the Facebook service (no calls are made here)
+                    var service = FacebookService.CreateFromAccessToken(userAccessToken);
+
+
+                    // Hack to get email
+                    // Get the raw string and parse it
+                    // we use this to get items manually including the email
+                    var response = service.Methods.Raw.Me();
+                    var obj = JsonObject.ParseJson(response);
+
+                    // Make a call to the Facebook API to get information about the user
+                    var me = service.Methods.Me();
+
+                    // Get debug information about the access token
+                    var debug = service.Methods.DebugToken(userAccessToken);
+
+                    // Set the callback data
+                    var data = new FacebookOAuthData
+                    {
+                        Id = me.Id,
+                        Name = me.Name ?? me.UserName,
+                        AccessToken = userAccessToken,
+                        ExpiresAt = debug.ExpiresAt == null ? default(DateTime) : debug.ExpiresAt.Value,
+                        Scope = debug.Scopes,
+                        Email = obj.GetString("email")
+                    };
+
+
+
+
+                    resultMessage.Message = string.Format("Success<br/>Username: {0}", data.Name);
+                    resultMessage.MessageType = GenericMessages.Success;
+
+                    // Update the UI and close the popup window
+                    //Page.ClientScript.RegisterClientScriptBlock(GetType(), "callback", String.Format(
+                    //    "self.opener." + Callback + "({0}); window.close();",
+                    //    data.Serialize()
+                    //), true);
+
+                }
+                catch (Exception ex)
+                {
+                    resultMessage.Message = string.Format("Unable to get user information<br/>{0}", ex.Message);
+                    resultMessage.MessageType = GenericMessages.Danger;
+                }
+
+            }
+
+            ShowMessage(resultMessage);
+            return RedirectToUmbracoPage(Dialogue.Settings().ForumId);
+        }
+    } 
+}

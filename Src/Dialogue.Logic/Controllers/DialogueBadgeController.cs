@@ -9,40 +9,14 @@ using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Controllers
 {
-    //public partial class DialogueBadgeController : BaseController
-    //{
-    //    private readonly CategoryService _categoryService;
-    //    private readonly TopicService _topicService;
-    //    private readonly CategoryNotificationService _categoryNotificationService;
-    //    private readonly IMemberGroup _usersRole;
-    //    private readonly BadgeService _badgeService;
-
-    //    public DialogueBadgeController()
-    //    {
-    //        _categoryService = new CategoryService();
-    //        _topicService = new TopicService();
-    //        _categoryNotificationService = new CategoryNotificationService();
-    //        _usersRole = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-    //        _badgeService = new BadgeService();
-    //    }
-
-
-
-    //}
 
     public partial class DialogueBadgeSurfaceController : BaseSurfaceController
     {
         private readonly IMemberGroup _usersRole;
-        private readonly CategoryService _categoryService;
-        private readonly PostService _postService;
-        private readonly BadgeService _badgeService;
 
         public DialogueBadgeSurfaceController()
         {
-            _usersRole = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-            _categoryService = new CategoryService();
-            _postService = new PostService();
-            _badgeService = new BadgeService();
+            _usersRole = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         [HttpPost]
@@ -53,15 +27,15 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var databaseUpdateNeededOne = _badgeService.ProcessBadge(BadgeType.VoteUp, CurrentMember);
+                    var databaseUpdateNeededOne = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteUp, CurrentMember);
                     if (databaseUpdateNeededOne)
                     {
                         unitOfwork.SaveChanges();
                     }
 
-                    var post = _postService.Get(voteUpBadgeViewModel.PostId);
-                    var member = MemberService.Get(post.MemberId);
-                    var databaseUpdateNeededTwo = _badgeService.ProcessBadge(BadgeType.VoteUp, member);
+                    var post = ServiceFactory.PostService.Get(voteUpBadgeViewModel.PostId);
+                    var member = ServiceFactory.MemberService.Get(post.MemberId);
+                    var databaseUpdateNeededTwo = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteUp, member);
                     if (databaseUpdateNeededTwo)
                     {
                         unitOfwork.SaveChanges();
@@ -88,15 +62,15 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var databaseUpdateNeededOne = _badgeService.ProcessBadge(BadgeType.VoteDown, CurrentMember);
+                    var databaseUpdateNeededOne = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteDown, CurrentMember);
                     if (databaseUpdateNeededOne)
                     {
                         unitOfwork.SaveChanges();
                     }
 
-                    var post = _postService.Get(voteUpBadgeViewModel.PostId);
-                    var member = MemberService.Get(post.MemberId);
-                    var databaseUpdateNeededTwo = _badgeService.ProcessBadge(BadgeType.VoteDown, member);
+                    var post = ServiceFactory.PostService.Get(voteUpBadgeViewModel.PostId);
+                    var member = ServiceFactory.MemberService.Get(post.MemberId);
+                    var databaseUpdateNeededTwo = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteDown, member);
 
                     if (databaseUpdateNeededTwo)
                     {
@@ -126,7 +100,7 @@ namespace Dialogue.Logic.Controllers
                 {
                     try
                     {
-                        var databaseUpdateNeeded = _badgeService.ProcessBadge(BadgeType.Post, CurrentMember);
+                        var databaseUpdateNeeded = ServiceFactory.BadgeService.ProcessBadge(BadgeType.Post, CurrentMember);
 
                         if (databaseUpdateNeeded)
                         {
@@ -150,10 +124,10 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var post = _postService.Get(markAsSolutionBadgeViewModel.PostId);
-                    var postMember = MemberService.Get(post.MemberId);
-                    var topicMember = MemberService.Get(post.Topic.MemberId);
-                    var databaseUpdateNeeded = _badgeService.ProcessBadge(BadgeType.MarkAsSolution, postMember) | _badgeService.ProcessBadge(BadgeType.MarkAsSolution, topicMember);
+                    var post = ServiceFactory.PostService.Get(markAsSolutionBadgeViewModel.PostId);
+                    var postMember = ServiceFactory.MemberService.Get(post.MemberId);
+                    var topicMember = ServiceFactory.MemberService.Get(post.Topic.MemberId);
+                    var databaseUpdateNeeded = ServiceFactory.BadgeService.ProcessBadge(BadgeType.MarkAsSolution, postMember) | ServiceFactory.BadgeService.ProcessBadge(BadgeType.MarkAsSolution, topicMember);
 
                     if (databaseUpdateNeeded)
                     {
@@ -175,8 +149,8 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var user = MemberService.Get(timeBadgeViewModel.Id);
-                    var databaseUpdateNeeded = _badgeService.ProcessBadge(BadgeType.Time, user);
+                    var user = ServiceFactory.MemberService.Get(timeBadgeViewModel.Id);
+                    var databaseUpdateNeeded = ServiceFactory.BadgeService.ProcessBadge(BadgeType.Time, user);
 
                     if (databaseUpdateNeeded)
                     {

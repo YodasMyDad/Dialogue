@@ -19,12 +19,10 @@ namespace Dialogue.Logic.Controllers.ApiControllers
         //UmbracoAuthorizedApiController
         //UmbracoAuthorizedJsonController
 
-        private readonly BannedEmailService _bannedEmailService;
         private readonly UnitOfWorkManager _unitOfWorkManager;
 
         public BannedEmailApiController()
         {
-            _bannedEmailService = new BannedEmailService();
             _unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
         }
 
@@ -34,7 +32,7 @@ namespace Dialogue.Logic.Controllers.ApiControllers
         {
             using (_unitOfWorkManager.NewUnitOfWork())
             {
-                return _bannedEmailService.GetAll().Where(x => x.Email.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
+                return ServiceFactory.BannedEmailService.GetAll().Where(x => x.Email.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
             }
         }
 
@@ -42,7 +40,7 @@ namespace Dialogue.Logic.Controllers.ApiControllers
         {
             using (_unitOfWorkManager.NewUnitOfWork())
             {
-                return _bannedEmailService.GetAll();
+                return ServiceFactory.BannedEmailService.GetAll();
             }
         }
 
@@ -52,8 +50,8 @@ namespace Dialogue.Logic.Controllers.ApiControllers
             {
                 try
                 {
-                    var email = _bannedEmailService.Get(id);
-                    _bannedEmailService.Delete(email);
+                    var email = ServiceFactory.BannedEmailService.Get(id);
+                    ServiceFactory.BannedEmailService.Delete(email);
                     unitOfWork.Commit();
                     return true;
                 }
@@ -73,7 +71,7 @@ namespace Dialogue.Logic.Controllers.ApiControllers
                 try
                 {
                     email.DateAdded = DateTime.Now;
-                    var newEmail = _bannedEmailService.Add(email);
+                    var newEmail = ServiceFactory.BannedEmailService.Add(email);
                     unitOfWork.Commit();
                     return newEmail;
                 }

@@ -105,6 +105,9 @@ namespace Dialogue.Logic
                 settings.EnableSocialLogins = forumRootNode.GetPropertyValue<bool>("EnableSocialLogins");
                 settings.FacebookAppId = forumRootNode.GetPropertyValue<string>("FacebookAppId");
                 settings.FacebookAppSecret = forumRootNode.GetPropertyValue<string>("FacebookAppSecret");
+                settings.GoogleClientId = forumRootNode.GetPropertyValue<string>("googleClientId");
+                settings.GoogleClientSecret = forumRootNode.GetPropertyValue<string>("googleClientSecret");
+                
 
                 // Meta
                 settings.PageTitle = forumRootNode.GetPropertyValue<string>("pageTitle");

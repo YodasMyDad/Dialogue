@@ -10,14 +10,7 @@ using Dialogue.Logic.Models.Activity;
 namespace Dialogue.Logic.Services
 {
     public partial class ActivityService
-    {
-        private readonly MemberService _memberService;
-        public ActivityService()
-        {
-            _memberService = new MemberService();
-        }
-
-
+    {       
         #region There are the methods that power the activity service
 
         /// <summary>
@@ -105,8 +98,6 @@ namespace Dialogue.Logic.Services
         private BadgeActivity GenerateBadgeActivity(Activity activity)
         {
             // Get the corresponding badge
-            var badgeService = new BadgeService();
-
             var dataPairs = ActivityBase.UnpackData(activity);
 
             if (!dataPairs.ContainsKey(AppConstants.KeyBadgeId))
@@ -117,7 +108,7 @@ namespace Dialogue.Logic.Services
             }
 
             var badgeId = dataPairs[AppConstants.KeyBadgeId];
-            var badge = badgeService.Get(new Guid(badgeId));
+            var badge = ServiceFactory.BadgeService.Get(new Guid(badgeId));
 
             if (badge == null)
             {
@@ -128,7 +119,7 @@ namespace Dialogue.Logic.Services
             }
 
             var userId = dataPairs[AppConstants.KeyUserId];
-            var user = _memberService.Get(Convert.ToInt32(userId));
+            var user = ServiceFactory.MemberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
             {
@@ -158,7 +149,7 @@ namespace Dialogue.Logic.Services
             }
 
             var userId = dataPairs[AppConstants.KeyUserId];
-            var user = _memberService.Get(Convert.ToInt32(userId));
+            var user = ServiceFactory.MemberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
             {
@@ -188,7 +179,7 @@ namespace Dialogue.Logic.Services
             }
 
             var userId = dataPairs[AppConstants.KeyUserId];
-            var user = _memberService.Get(Convert.ToInt32(userId));
+            var user = ServiceFactory.MemberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
             {

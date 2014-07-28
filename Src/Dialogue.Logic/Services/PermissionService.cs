@@ -13,13 +13,8 @@ namespace Dialogue.Logic.Services
     public partial class PermissionService
     {
 
-        private readonly CategoryPermissionService _catPermissionService;
         private PermissionSet _permissions;
 
-        public PermissionService()
-        {
-            _catPermissionService = new CategoryPermissionService();
-        }
 
         public IEnumerable<Permission> GetAll()
         {
@@ -41,11 +36,10 @@ namespace Dialogue.Logic.Services
 
         public void Delete(Permission item)
         {
-            var catPermissionService = new CategoryPermissionService();
-            var catPermForRoles = catPermissionService.GetByPermission(item.Id);
+            var catPermForRoles = ServiceFactory.CategoryPermissionService.GetByPermission(item.Id);
             foreach (var categoryPermissionForRole in catPermForRoles)
             {
-                catPermissionService.Delete(categoryPermissionForRole);
+                ServiceFactory.CategoryPermissionService.Delete(categoryPermissionForRole);
             }
             ContextPerRequest.Db.Permission.Remove(item);
         }
@@ -130,7 +124,7 @@ namespace Dialogue.Logic.Services
 
             
             // Deny Access may have been set (or left null) for guest for the category, so need to read for it
-            var denyAccessPermission = _catPermissionService.GetByRole(memberGroup.Id)
+            var denyAccessPermission = ServiceFactory.CategoryPermissionService.GetByRole(memberGroup.Id)
                                .FirstOrDefault(x => x.CategoryId == category.Id &&
                                                     x.Permission.Name == AppConstants.PermissionDenyAccess &&
                                                     x.MemberGroupId == memberGroup.Id);
@@ -161,7 +155,7 @@ namespace Dialogue.Logic.Services
             var permissionList = GetAll();
 
             // Get the known permissions for this role and category
-            var categoryRow = _catPermissionService.GetCategoryRow(memberGroup.Id, category.Id);
+            var categoryRow = ServiceFactory.CategoryPermissionService.GetCategoryRow(memberGroup.Id, category.Id);
             //var categoryRowPermissions = categoryRow.ToDictionary(catRow => catRow.Permission);
 
             // Load up the results with the permisions for this role / cartegory. A null entry for a permissions results in a new

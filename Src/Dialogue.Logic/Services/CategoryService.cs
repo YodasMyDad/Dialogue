@@ -10,15 +10,13 @@ using Umbraco.Web;
 
 namespace Dialogue.Logic.Services
 {
-    public class CategoryService
+    public partial class CategoryService
     {
         private readonly IPublishedContent _forumRootNode;
-        private readonly PermissionService _permissionService;
 
         public CategoryService()
         {
             _forumRootNode = AppHelpers.GetNode(Dialogue.Settings().ForumId);
-            _permissionService = new PermissionService();
         }
         public Category Get(int id)
         {
@@ -82,7 +80,7 @@ namespace Dialogue.Logic.Services
             var allCats = GetAll();
             foreach (var category in allCats)
             {
-                var permissionSet = _permissionService.GetPermissions(category, role);
+                var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, role);
                 if (!permissionSet[AppConstants.PermissionDenyAccess].IsTicked)
                 {
                     filteredCats.Add(category);
