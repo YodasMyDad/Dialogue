@@ -4,25 +4,14 @@ using Dialogue.Logic.Constants;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
 using Umbraco.Web.Models;
 
 namespace Dialogue.Logic.Controllers
 {
     #region Render Controllers
-    /// <summary>
-    /// Create the controller name to be the same as the doctype you want
-    /// in this the doctype is 'Home'
-    /// </summary>
-    /// Example showing how to use DonutCaching, change web.config for different cache profiles.
-    //[DonutOutputCache(CacheProfile = "OneSecond")]
-    public partial class DialogueController : BaseController
+
+    public partial class DialogueController : BaseRenderController
     {
-        private readonly IMemberGroup UsersRole;
-        public DialogueController()
-        {
-            UsersRole = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-        }
 
         /// <summary>
         /// Create an actionresult to target a specific template
@@ -41,26 +30,13 @@ namespace Dialogue.Logic.Controllers
                 return Redirect(Settings.ForumRootUrl);
             }
 
-
-            // Map the home page into it's model, passing in the render model
-            // so we have access to the normal Model.Content etc.. in the view
-            // just in case we do need it, although we should be doing all logic in the
-            // controllers
             var forumRoot = DialogueMapper.MapRootForum(model.Content);
-
-            //using (_unitOfWorkManager.NewUnitOfWork())
-            //{
-            //    // loop through the categories and get the permissions
-            //    foreach (var category in forumRoot.MainCategories)
-            //    {
-            //        var permissionSet = _permissions.GetPermissions(category, UsersRole);
-            //    }
-            //}
 
             // Return the model to the current template
             return View(PathHelper.GetThemeViewPath("Dialogue"), forumRoot);
         }
     } 
+
     #endregion
 
     #region SurfaceControllers
@@ -76,7 +52,7 @@ namespace Dialogue.Logic.Controllers
                 var viewModel = new MainStatsViewModel
                 {
                     LatestMembers = ServiceFactory.MemberService.GetLatestUsers(10).ToDictionary(o => o.UserName,
-                                                                                      o => o.NiceUrl),
+                                                                                      o => o.Url),
                     MemberCount = ServiceFactory.MemberService.MemberCount(),
                     TopicCount = ServiceFactory.TopicService.TopicCount(),
                     PostCount = ServiceFactory.PostService.PostCount()
@@ -139,7 +115,5 @@ namespace Dialogue.Logic.Controllers
 
     } 
     #endregion
-
-
 
 }

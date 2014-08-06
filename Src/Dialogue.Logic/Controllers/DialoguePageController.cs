@@ -14,7 +14,7 @@ using Umbraco.Web.Models;
 
 namespace Dialogue.Logic.Controllers
 {
-    public class DialoguePageController : BaseController
+    public class DialoguePageController : BaseRenderController
     {
         private readonly IMemberGroup _membersGroup;
 
@@ -52,6 +52,12 @@ namespace Dialogue.Logic.Controllers
             if (pagename.ToLower().Contains(AppConstants.PageUrlActivityRss))
             {
                 return ActivityRss(page);
+            }
+
+            // Show latest category rss
+            if (pagename.ToLower().Contains(AppConstants.PageUrlCategoryRss))
+            {
+                return CategoryRss(page);
             }
 
             // Show Badges
@@ -128,9 +134,11 @@ namespace Dialogue.Logic.Controllers
                 // get an rss lit ready
                 var rssTopics = new List<RssItem>();
 
-                //TODO - Get Topics for only the current forum
+                // Get only the cats from this forum
+                var cats = ServiceFactory.CategoryService.GetAll();
+
                 // Get the latest topics
-                var topics = ServiceFactory.TopicService.GetRecentRssTopics(AppConstants.ActiveTopicsListSize);
+                var topics = ServiceFactory.TopicService.GetRecentRssTopics(AppConstants.ActiveTopicsListSize, cats.Select(x => x.Id).ToList());
 
                 // Get all the categories for this topic collection
                 var categories = topics.Select(x => x.Category).Distinct();
@@ -158,7 +166,7 @@ namespace Dialogue.Logic.Controllers
                         {
                             var firstOrDefault = topic.Posts.FirstOrDefault(x => x.IsTopicStarter);
                             if (firstOrDefault != null)
-                                rssTopics.Add(new RssItem { Description = firstOrDefault.PostContent, Link = topic.NiceUrl, Title = topic.Name, PublishedDate = topic.CreateDate });
+                                rssTopics.Add(new RssItem { Description = firstOrDefault.PostContent, Link = topic.Url, Title = topic.Name, PublishedDate = topic.CreateDate });
                         }
                     }
                 }
@@ -166,6 +174,53 @@ namespace Dialogue.Logic.Controllers
                 return new RssResult(rssTopics, Lang("Rss.LatestTopics.Title"), Lang("Rss.LatestTopics.Description"));
             }
 
+        }
+
+
+        public ActionResult CategoryRss(DialoguePage page)
+        {
+            using (UnitOfWorkManager.NewUnitOfWork())
+            {
+                // get an rss lit ready
+                var rssTopics = new List<RssItem>();
+
+                var catId = Request["id"];
+                if (!string.IsNullOrEmpty(catId))
+                {
+
+                    // Get the category
+                    var category = ServiceFactory.CategoryService.Get(Convert.ToInt32(catId));
+
+                    // check the user has permission to this category
+                    var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+
+                    if (!permissions[AppConstants.PermissionDenyAccess].IsTicked)
+                    {
+                        var topics = ServiceFactory.TopicService.GetRssTopicsByCategory(AppConstants.ActiveTopicsListSize, category.Id);
+
+                        rssTopics.AddRange(topics.Select(x =>
+                        {
+                            var firstOrDefault =
+                                x.Posts.FirstOrDefault(s => s.IsTopicStarter);
+                            return firstOrDefault != null
+                                       ? new RssItem
+                                       {
+                                           Description = firstOrDefault.PostContent,
+                                           Link = x.Url,
+                                           Title = x.Name,
+                                           PublishedDate = x.CreateDate
+                                       }
+                                       : null;
+                        }
+                                               ));
+
+                        return new RssResult(rssTopics, string.Format(Lang("Rss.Category.Title"), category.Name),
+                                             string.Format(Lang("Rss.Category.Description"), category.Name));
+                    }
+                }
+
+                return ErrorToHomePage(Lang("Errors.NothingToDisplay"));
+            }
         }
 
         [OutputCache(Duration = AppConstants.DefaultCacheLengthInSeconds)]

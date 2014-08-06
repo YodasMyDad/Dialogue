@@ -23,7 +23,7 @@
             
             <div class="col-md-10 col-sm-9 topicrowdetails">
                 <h3>
-                    <a title="@postToolTip" href="@Html.Raw(topic.NiceUrl)">
+                    <a title="@postToolTip" href="@Html.Raw(topic.Url)">
                         @if (topic.IsSticky)
                         {
                             <span class="glyphicon glyphicon-bullhorn"></span>
@@ -53,7 +53,7 @@
 
             <div class="col-md-2 col-sm-3 topicrecent">
                 <p class="topicrecentavatar">
-                    <a href="@topic.LastPost.Member.NiceUrl">
+                    <a href="@topic.LastPost.Member.Url">
                         <img src="@topic.LastPost.Member.MemberImage(AppConstants.GravatarTopicSize)" alt="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName" title="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName">
                     </a>
                 </p>

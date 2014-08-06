@@ -318,6 +318,25 @@ namespace Dialogue.Logic.Services
             _memberService.Save(baseMember);
         }
 
+        public void AddPostCount(Member member)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            var newPostCount = (member.PostCount + 1);
+            baseMember.Properties[AppConstants.PropMemberPostCount].Value = newPostCount;
+            _memberService.Save(baseMember);
+        }
+
+        public void RemovePostCount(Member member)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            if (member.PostCount > 0)
+            {
+                var newPostCount = (member.PostCount - 1);
+                baseMember.Properties[AppConstants.PropMemberPostCount].Value = newPostCount;
+                _memberService.Save(baseMember); 
+            }
+        }
+
         public int MemberCount()
         {
             return _memberService.GetMembersByMemberType(AppConstants.MemberTypeAlias).Count(x => x.IsApproved && !x.IsLockedOut);

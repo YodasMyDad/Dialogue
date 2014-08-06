@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Web;
+using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
+using Dialogue.Logic.Models.ViewModels;
 
 namespace Dialogue.Logic.Mapping
 {
@@ -23,7 +26,32 @@ namespace Dialogue.Logic.Mapping
                 entity.Member = member;
             }
             return entityList;
-        } 
+        }
+
+        public static ViewPostViewModel MapPostViewModel(PermissionSet permissions, 
+                                                            Post post, Member currentMember, 
+                                                                DialogueSettings settings, Topic topic,
+                                                                    List<Vote> allPostVotes, List<Favourite> favourites)
+        {
+            var postViewModel = new ViewPostViewModel
+            {
+                Permissions = permissions,
+                Post = post,
+                User = currentMember,
+                ParentTopic = topic,
+                Votes = allPostVotes.Where(x => x.Post.Id == post.Id).ToList(),
+                LoggedOnMemberId = currentMember != null ? currentMember.Id : 0,
+                AllowedToVote = (currentMember != null && currentMember.Id != post.MemberId &&
+                                 currentMember.TotalPoints > settings.AmountOfPointsBeforeAUserCanVote),
+                PostCount = post.Member.PostCount,
+                IsAdminOrMod = HttpContext.Current.User.IsInRole(AppConstants.AdminRoleName) || permissions[AppConstants.PermissionModerate].IsTicked,
+                HasFavourited = favourites.Any(x => x.PostId == post.Id),
+                IsTopicStarter = post.IsTopicStarter
+            };
+            postViewModel.UpVotes = postViewModel.Votes.Count(x => x.Amount > 0);
+            postViewModel.DownVotes = postViewModel.Votes.Count(x => x.Amount < 0);
+            return postViewModel;
+        }
         #endregion
 
         #region Uploaded Files

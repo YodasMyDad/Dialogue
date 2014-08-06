@@ -14,7 +14,7 @@ namespace Dialogue.Logic.Controllers
 {
     #region Render Controllers
 
-    public class DialogueMemberController : BaseController
+    public class DialogueMemberController : BaseRenderController
     {
         private readonly IMemberGroup _membersGroup;
 
@@ -49,7 +49,7 @@ namespace Dialogue.Logic.Controllers
                     User = member, 
                     LoggedOnUserId = loggedonId,
                     PageTitle = string.Concat(member.UserName, Lang("Members.ProfileTitle")),
-                    PostCount = ServiceFactory.PostService.GetMemberPostCount(member.Id)
+                    PostCount = member.PostCount
                 };
 
                 // Get the topic view slug

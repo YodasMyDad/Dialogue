@@ -20,7 +20,10 @@ namespace Dialogue.Logic.Application
             TopicsRss,
             Badges,
             Activity,
-            ActivityRss
+            ActivityRss,
+            CategoryRss,
+            FacebookLogin,
+            GoogleLogin
         }
 
         public static string UrlTypeName(UrlType e)
@@ -51,8 +54,14 @@ namespace Dialogue.Logic.Application
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlTopicsRss);
                 case UrlType.ActivityRss:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlActivityRss);
+                case UrlType.CategoryRss:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCategoryRss);
                 case UrlType.Badges:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlBadges);
+                case UrlType.GoogleLogin:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuthSurface/GoogleLogin");
+                case UrlType.FacebookLogin:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/FacebookOAuthSurface/FacebookLogin");
                 default:
                     return Dialogue.Settings().DialogueUrlName;
             }

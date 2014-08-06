@@ -55,7 +55,7 @@
     <div class="col-md-4 categoryrss">
         @if (Html.Settings().AllowRssFeeds)
         {
-            <a title="@Html.Lang("Home.Rss")" href="#" class="rsssubscribe">@Html.Lang("Home.Rss")</a>
+            <a title="@Html.Lang("Home.Rss")" href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.CategoryRss)?id=@Model.Category.Id" class="rsssubscribe">@Html.Lang("Home.Rss")</a>
         }
         @if (Model.User != null && Html.Settings().AllowEmailSubscriptions)
         {

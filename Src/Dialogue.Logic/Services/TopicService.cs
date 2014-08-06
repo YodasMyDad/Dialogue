@@ -226,6 +226,29 @@ namespace Dialogue.Logic.Services
         }
 
         /// <summary>
+        /// Returns a specified amount of most recent topics in a list used for RSS feeds
+        /// </summary>
+        /// <param name="amountToTake"></param>
+        /// <param name="catIds">onlys shows topics from these categories</param>
+        /// <returns></returns>
+        public IList<Topic> GetRecentRssTopics(int amountToTake, List<int> catIds)
+        {
+            // Get the topics using an efficient
+            var results = ContextPerRequest.Db.Topic
+                                .Include(x => x.Posts.Select(v => v.Votes))
+                                .Include(x => x.LastPost)
+                                .Where(x => x.Pending != true)
+                                .Where(x => catIds.Contains(x.CategoryId))
+                                .OrderByDescending(s => s.CreateDate)
+                                .Take(amountToTake)
+                                .ToList();
+
+            PopulateAll(results);
+
+            return results;
+        }
+
+        /// <summary>
         /// Gets ALL Topics including pending ones
         /// </summary>
         /// <param name="memberId"></param>

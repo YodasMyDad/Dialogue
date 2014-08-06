@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.Mvc;
+using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.OAuth;
+using Dialogue.Logic.Models.ViewModels;
+using Dialogue.Logic.Services;
 using Skybrud.Social.Google;
 using Skybrud.Social.Google.OAuth;
 
@@ -13,8 +15,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
     {
         public string ReturnUrl
         {
-            //TODO - Could be in a virtual directory!
-            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), "/umbraco/Surface/GoogleOAuthSurface/GoogleLogin"); }
+            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), UrlTypes.GenerateUrl(UrlTypes.UrlType.GoogleLogin)); }
         }
 
         public string Callback { get; private set; }
@@ -153,26 +154,32 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
 
                     // Get information about the authenticated user
                     var user = service.GetUserInfo();
-
-                    // Set the callback data
-                    var data = new GoogleOAuthData
+                    
+                    using (UnitOfWorkManager.NewUnitOfWork())
                     {
-                        Id = user.Id,
-                        Name = user.Name,
-                        Avatar = user.Picture,
-                        ClientId = client.ClientIdFull,
-                        ClientSecret = client.ClientSecret,
-                        RefreshToken = info.RefreshToken
-                    };
+                        var userExists = ServiceFactory.MemberService.GetByEmail(user.Email);
 
-                    resultMessage.Message = string.Format("Success<br/>Username: {0}", data.Name);
-                    resultMessage.MessageType = GenericMessages.Success;
+                        if (userExists != null)
+                        {
+                            // Users already exists, so log them in
+                            FormsAuthentication.SetAuthCookie(userExists.UserName, true);
+                            resultMessage.Message = Lang("Members.NowLoggedIn");
+                            resultMessage.MessageType = GenericMessages.Success;
+                        }
+                        else
+                        {
+                            // Not registered already so register them
+                            var viewModel = new RegisterViewModel
+                            {
+                                Email = user.Email,
+                                IsSocialLogin = true,
+                                Password = AppHelpers.RandomString(8),
+                                UserName = user.Name
+                            };
 
-                    // Update the UI and close the popup window
-                    //Page.ClientScript.RegisterClientScriptBlock(GetType(), "callback", String.Format(
-                    //    "self.opener." + Callback + "({0}); window.close();",
-                    //    data.Serialize()
-                    //), true);
+                            return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);
+                        }
+                    }
 
                 }
                 catch (Exception ex)

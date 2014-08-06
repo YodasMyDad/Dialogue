@@ -17,5 +17,6 @@ namespace Dialogue.Logic.Models
         public bool ModerateAllTopicsInThisCategory { get; set; }
         public bool ModerateAllPostsInThisCategory { get; set; }
         public List<Category> SubCategories { get; set; }
+        public List<Category> ParentCategories { get; set; }
     }
 }

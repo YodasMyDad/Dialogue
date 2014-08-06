@@ -292,5 +292,18 @@ namespace Dialogue.Logic.Services
             }
         }
 
+        public static FavouriteService FavouriteService
+        {
+            get
+            {
+                var key = string.Concat("dialogue-", "FavouriteService");
+                if (!HttpContext.Current.Items.Contains(key))
+                {
+                    HttpContext.Current.Items.Add(key, new FavouriteService());
+                }
+                return HttpContext.Current.Items[key] as FavouriteService;
+            }
+        }
+
     }
 }

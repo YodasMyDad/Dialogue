@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.OAuth;
+using Dialogue.Logic.Models.ViewModels;
+using Dialogue.Logic.Services;
 using Skybrud.Social.Facebook;
 using Skybrud.Social.Facebook.OAuth;
-using Skybrud.Social.Facebook.Responses;
 using Skybrud.Social.Json;
 
 namespace Dialogue.Logic.Controllers.OAuthControllers
@@ -14,7 +16,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
     {
         public string ReturnUrl
         {
-            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), "/umbraco/Surface/FacebookOAuthSurface/FacebookLogin"); }
+            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), UrlTypes.GenerateUrl(UrlTypes.UrlType.FacebookLogin)); }
         }
 
         public string Callback { get; private set; }
@@ -132,46 +134,61 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
 
                 try
                 {
-
-                    // Initialize the Facebook service (no calls are made here)
-                    var service = FacebookService.CreateFromAccessToken(userAccessToken);
-
-
-                    // Hack to get email
-                    // Get the raw string and parse it
-                    // we use this to get items manually including the email
-                    var response = service.Methods.Raw.Me();
-                    var obj = JsonObject.ParseJson(response);
-
-                    // Make a call to the Facebook API to get information about the user
-                    var me = service.Methods.Me();
-
-                    // Get debug information about the access token
-                    var debug = service.Methods.DebugToken(userAccessToken);
-
-                    // Set the callback data
-                    var data = new FacebookOAuthData
+                    if (string.IsNullOrEmpty(resultMessage.Message))
                     {
-                        Id = me.Id,
-                        Name = me.Name ?? me.UserName,
-                        AccessToken = userAccessToken,
-                        ExpiresAt = debug.ExpiresAt == null ? default(DateTime) : debug.ExpiresAt.Value,
-                        Scope = debug.Scopes,
-                        Email = obj.GetString("email")
-                    };
+                        // Initialize the Facebook service (no calls are made here)
+                        var service = FacebookService.CreateFromAccessToken(userAccessToken);
 
+                        // Hack to get email
+                        // Get the raw string and parse it
+                        // we use this to get items manually including the email
+                        var response = service.Methods.Raw.Me();
+                        var obj = JsonObject.ParseJson(response);
 
+                        // Make a call to the Facebook API to get information about the user
+                        var me = service.Methods.Me();
 
+                        // Get debug information about the access token
+                        var debug = service.Methods.DebugToken(userAccessToken);
 
-                    resultMessage.Message = string.Format("Success<br/>Username: {0}", data.Name);
-                    resultMessage.MessageType = GenericMessages.Success;
+                        // Set the callback data
+                        var data = new FacebookOAuthData
+                        {
+                            Id = me.Id,
+                            Name = me.Name ?? me.UserName,
+                            AccessToken = userAccessToken,
+                            ExpiresAt = debug.ExpiresAt == null ? default(DateTime) : debug.ExpiresAt.Value,
+                            Scope = debug.Scopes,
+                            Email = obj.GetString("email")
+                        };
 
-                    // Update the UI and close the popup window
-                    //Page.ClientScript.RegisterClientScriptBlock(GetType(), "callback", String.Format(
-                    //    "self.opener." + Callback + "({0}); window.close();",
-                    //    data.Serialize()
-                    //), true);
+                        // First see if this user has registered already - Use email address
+                        using (UnitOfWorkManager.NewUnitOfWork())
+                        {
+                            var userExists = ServiceFactory.MemberService.GetByEmail(data.Email);
 
+                            if (userExists != null)
+                            {
+                                // Users already exists, so log them in
+                                FormsAuthentication.SetAuthCookie(userExists.UserName, true);
+                                resultMessage.Message = Lang("Members.NowLoggedIn");
+                                resultMessage.MessageType = GenericMessages.Success;
+                            }
+                            else
+                            {
+                                // Not registered already so register them
+                                var viewModel = new RegisterViewModel
+                                {
+                                    Email = data.Email,
+                                    IsSocialLogin = true,
+                                    Password = AppHelpers.RandomString(8),
+                                    UserName = data.Name
+                                };
+
+                                return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

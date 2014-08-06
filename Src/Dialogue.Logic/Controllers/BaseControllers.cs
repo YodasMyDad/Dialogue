@@ -12,11 +12,97 @@ using Umbraco.Web.Mvc;
 namespace Dialogue.Logic.Controllers
 {
 
-    public class BaseController : RenderMvcController
+    public class BaseMvcController : Controller
     {
         protected readonly UnitOfWorkManager UnitOfWorkManager;
 
-        public BaseController()
+        public BaseMvcController()
+        {
+            UnitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
+        }
+        public void ShowMessage(GenericMessageViewModel messageViewModel)
+        {
+            // We have to put it on two because some umbraco redirects only work with ViewData!!
+            ViewData[AppConstants.MessageViewBagName] = messageViewModel;
+            TempData[AppConstants.MessageViewBagName] = messageViewModel;
+        }
+        internal string Lang(string key)
+        {
+            return AppHelpers.Lang(key);
+        }
+        internal void LogWarning(string message)
+        {
+            AppHelpers.LogError(message);
+        }
+        internal void LogError(string message, Exception ex)
+        {
+            AppHelpers.LogError(message, ex);
+        }
+        internal void LogError(Exception ex)
+        {
+            AppHelpers.LogError("Dialogue Package Exception", ex);
+        }
+        internal DialogueSettings Settings(int forumId)
+        {
+            return Dialogue.Settings(forumId);
+            
+        }
+        internal bool UserIsAuthenticated
+        {
+            get
+            {
+                return System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
+            }
+        }
+        protected string Username
+        {
+            get
+            {
+                return UserIsAuthenticated ? System.Web.HttpContext.Current.User.Identity.Name : null;
+            }
+        }
+
+        internal Member CurrentMember
+        {
+            get
+            {
+                if (UserIsAuthenticated)
+                {
+                    return ServiceFactory.MemberService.CurrentMember();
+                }
+                return null;
+            }
+        }
+        internal ActionResult ErrorToHomePage(string errorMessage, int forumId)
+        {
+            // Use temp data as its a redirect
+            ShowMessage(new GenericMessageViewModel
+            {
+                Message = errorMessage,
+                MessageType = GenericMessages.Danger
+            });
+            // Not allowed in here so
+            return Redirect(Settings(forumId).ForumRootUrl);
+        }
+
+        internal ActionResult MessageToHomePage(string errorMessage, int forumId)
+        {
+            // Use temp data as its a redirect
+            ShowMessage(new GenericMessageViewModel
+            {
+                Message = errorMessage,
+                MessageType = GenericMessages.Info
+            });
+            // Not allowed in here so
+            return Redirect(Settings(forumId).ForumRootUrl);
+        }
+    }
+
+    public class BaseRenderController : RenderMvcController
+    {
+        protected readonly UnitOfWorkManager UnitOfWorkManager;
+
+        public BaseRenderController()
         {
             UnitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
         }
@@ -70,7 +156,7 @@ namespace Dialogue.Logic.Controllers
             {
                 if (UserIsAuthenticated)
                 {
-                    return ServiceFactory.MemberService.CurrentMember();    
+                    return ServiceFactory.MemberService.CurrentMember();
                 }
                 return null;
             }
@@ -125,7 +211,7 @@ namespace Dialogue.Logic.Controllers
             {
                 message.Message = string.Concat("<ul>", fullMessage, "</ul>");
                 message.MessageType = GenericMessages.Danger;
-                ShowMessage(message); 
+                ShowMessage(message);
             }
         }
 

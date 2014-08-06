@@ -43,8 +43,10 @@ namespace Dialogue.Logic.Services
 
         public Post GetTopicStarterPost(Guid topicId)
         {
-            return ContextPerRequest.Db.Post
+            var topicStarter = ContextPerRequest.Db.Post
                 .FirstOrDefault(x => x.Topic.Id == topicId && x.IsTopicStarter);
+            PopulateMembers(new List<Post>{ topicStarter });
+            return topicStarter;
         }
 
         /// <summary>
@@ -54,15 +56,6 @@ namespace Dialogue.Logic.Services
         public IEnumerable<Post> GetAll()
         {
             return ContextPerRequest.Db.Post;
-        }
-
-        public int GetMemberPostCount(int memberId)
-        {
-            if (memberId > 0)
-            {
-                return ContextPerRequest.Db.Post.Count(x => x.MemberId == memberId && !x.Pending);   
-            }
-            return 0;
         }
 
         /// <summary>
@@ -163,7 +156,7 @@ namespace Dialogue.Logic.Services
                             .Skip((pageIndex - 1) * pageSize)
                             .Take(pageSize)
                             .ToList();
-            
+
             PopulateMembers(results);
 
             // Return a paged list
@@ -196,7 +189,7 @@ namespace Dialogue.Logic.Services
                                     .Include(x => x.Topic)
                                     .Include(x => x.Votes)
                                     .Include(x => x.Files)
-                                  .Where(x => x.Topic.Id == topicId && !x.IsTopicStarter && x.Pending != true);
+                                  .Where(x => x.Topic.Id == topicId && x.Pending != true);
 
             // Sort what order the posts are sorted in
             switch (order)
@@ -345,7 +338,9 @@ namespace Dialogue.Logic.Services
                 Member = user,
                 MemberId = user.Id,
                 Topic = topic,
-                IpAddress = AppHelpers.GetUsersIpAddress()
+                IpAddress = AppHelpers.GetUsersIpAddress(),
+                DateCreated = DateTime.UtcNow,
+                DateEdited = DateTime.UtcNow
             };
 
             newPost = SanitizePost(newPost);
@@ -364,7 +359,7 @@ namespace Dialogue.Logic.Services
             ServiceFactory.MemberPointsService.Add(new MemberPoints
             {
                 Points = Dialogue.Settings().PointsAddedPerNewPost,
-                Member = user
+                MemberId = user.Id
             });
 
             // add the last post to the topic

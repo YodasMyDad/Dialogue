@@ -468,17 +468,39 @@ namespace Dialogue.Logic.Services
                         {
                             // Re-fetch the badge otherwise system will try and create new badges!
                             var dbBadge = GetallBadges().FirstOrDefault(x => x.Id == badgeMapping.DbBadge.Id);
-                            if (dbBadge != null && dbBadge.AwardsPoints != null && dbBadge.AwardsPoints > 0)
+                            if (dbBadge != null)
                             {
-                                var points = new MemberPoints
+                                if (dbBadge.AwardsPoints != null && dbBadge.AwardsPoints > 0)
                                 {
-                                    DateAdded = DateTime.UtcNow,
-                                    Points = (int)dbBadge.AwardsPoints
-                                };
-                                ServiceFactory.MemberPointsService.Add(points);
+                                    var points = new MemberPoints
+                                    {
+                                        DateAdded = DateTime.UtcNow,
+                                        Points = (int)dbBadge.AwardsPoints,
+                                        MemberId = user.Id
+                                    };
+                                    ServiceFactory.MemberPointsService.Add(points);
+                                }
+
+                                var exists = ContextPerRequest.Db.BadgeToMember
+                                    .FirstOrDefault(x => x.DialogueBadgeId == dbBadge.Id && x.MemberId == user.Id);
+
+                                if (exists == null)
+                                {
+                                    // Add the badge mapping
+                                    var badgeMember = new BadgeToMember
+                                    {
+                                        DialogueBadgeId = dbBadge.Id,
+                                        MemberId = user.Id
+
+                                    };
+                                    ContextPerRequest.Db.BadgeToMember.Add(badgeMember);
+
+                                    // This needs to be 
+                                    //ContextPerRequest.Db.Badge.Add(dbBadge);
+                                    ServiceFactory.ActivityService.BadgeAwarded(badgeMapping.DbBadge, user, DateTime.UtcNow);
+                                }
+
                             }
-                            ContextPerRequest.Db.Badge.Add(dbBadge);
-                            ServiceFactory.ActivityService.BadgeAwarded(badgeMapping.DbBadge, user, DateTime.UtcNow);
                         }
                     }
                 }

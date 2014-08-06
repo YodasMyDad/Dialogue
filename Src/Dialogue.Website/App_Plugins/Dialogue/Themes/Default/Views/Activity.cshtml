@@ -44,7 +44,7 @@
 
                 <div class="activityinfo col-md-11">
                     <p class="activityinfotext">
-                        <a href="@Html.Raw(badgeActivity.User.NiceUrl)">@Html.Raw(badgeActivity.User.UserName)</a>
+                        <a href="@Html.Raw(badgeActivity.User.Url)">@Html.Raw(badgeActivity.User.UserName)</a>
                         @Html.Lang("Activity.UserAwardedBadge") @Html.Raw(badgeActivity.Badge.DisplayName) @Html.Lang("Activity.Badge")
                     </p>
                     <p class="activitybadgedescription">
@@ -69,7 +69,7 @@
 
                 <div class="activityinfo col-md-11">
                     <p class="activityinfotext">
-                        <a href="@Html.Raw(memberJoinedActivity.User.NiceUrl)">@Html.Raw(memberJoinedActivity.User.UserName)</a>
+                        <a href="@Html.Raw(memberJoinedActivity.User.Url)">@Html.Raw(memberJoinedActivity.User.UserName)</a>
                         @Html.Lang("Activity.UserJoined")
                     </p>
                     <p class="activitysubdate">
@@ -87,7 +87,7 @@
 
                 <div class="activityinfo col-md-11">
                     <p class="activityinfotext">
-                        <a href="@Html.Raw(profileUpdatedActivity.User.NiceUrl)">@Html.Raw(profileUpdatedActivity.User.UserName)</a>
+                        <a href="@Html.Raw(profileUpdatedActivity.User.Url)">@Html.Raw(profileUpdatedActivity.User.UserName)</a>
                         @Html.Lang("Activity.ProfileUpdated")
                     </p>
                     <p class="activitysubdate">

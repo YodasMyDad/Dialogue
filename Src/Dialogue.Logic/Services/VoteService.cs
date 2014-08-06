@@ -28,5 +28,10 @@ namespace Dialogue.Logic.Services
         {
             return ContextPerRequest.Db.Vote.Where(x => x.VotedByMemberId == memberId);
         }
+
+        public List<Vote> GetAllVotesForPosts(List<Guid> postids)
+        {
+            return ContextPerRequest.Db.Vote.Where(x => postids.Contains(x.Post.Id)).ToList();
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace Dialogue.Logic.Models
         public string PostContent { get; set; }
         public DateTime DateCreated { get; set; }
         public int VoteCount { get; set; }
-        public DateTime DateEdited { get; set; }
+        public DateTime? DateEdited { get; set; }
         public bool IsSolution { get; set; }
         public bool IsTopicStarter { get; set; }
         public bool FlaggedAsSpam { get; set; }

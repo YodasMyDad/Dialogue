@@ -93,6 +93,8 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.SqlServer.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\HtmlAgilityPack.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\interfaces.dll
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.dll
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Skybrud.Social.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Extensions.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Formatting.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Primitives.dll
@@ -106,7 +108,6 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\AutoMapper.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\ICSharpCode.SharpZipLib.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\TidyNet.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\ClientDependency.Core.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\CookComputing.XmlRpcV2.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Examine.dll
@@ -124,6 +125,7 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.SqlServer.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\HtmlAgilityPack.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\interfaces.xml
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Extensions.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Formatting.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Primitives.xml
@@ -133,7 +135,6 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Umbraco.Core.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.DataLayer.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.providers.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\AutoMapper.xml
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Lucene.Net.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Http.WebHost.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\UmbracoExamine.xml
@@ -141,3 +142,4 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.XmlSerializers.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.pdb
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.csprojResolveAssemblyReference.cache

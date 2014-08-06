@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using Dialogue.Logic.Application;
 using Dialogue.Logic.Application.Akismet;
 using Dialogue.Logic.Constants;
+using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Routes;
@@ -15,7 +17,7 @@ using System.Text;
 namespace Dialogue.Logic.Controllers
 {
     #region Render Controllers
-    public class DialogueTopicController : BaseController
+    public class DialogueTopicController : BaseRenderController
     {
         private readonly IMemberGroup _membersGroup;
 
@@ -41,23 +43,151 @@ namespace Dialogue.Logic.Controllers
                 throw new InvalidOperationException("The RenderModel.Content instance must be of type " + typeof(DialogueVirtualPage));
             }
 
-            //create a blog model of the main page
-            var viewModel = new ShowTopicViewModel(model.Content)
+            // Set the page index
+            var pageIndex = AppHelpers.ReturnCurrentPagingNo();
+
+            using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
-                Topic = ServiceFactory.TopicService.GetTopicBySlug(topicname)
-            };
+                // Get the topic
+                var topic = ServiceFactory.TopicService.GetTopicBySlug(topicname);
 
-            // Get the topic view slug
+                if (topic != null)
+                {
+                    // Note: Don't use topic.Posts as its not a very efficient SQL statement
+                    // Use the post service to get them as it includes other used entities in one
+                    // statement rather than loads of sql selects
 
+                    var sortQuerystring = Request.QueryString[AppConstants.PostOrderBy];
+                    var orderBy = !string.IsNullOrEmpty(sortQuerystring) ?
+                                              AppHelpers.EnumUtils.ReturnEnumValueFromString<PostOrderBy>(sortQuerystring) : PostOrderBy.Standard;
 
-            return View(PathHelper.GetThemeViewPath("Topic"), viewModel);
+                    // Store the amount per page
+                    var amountPerPage = Settings.PostsPerPage;
+
+                    if (sortQuerystring == AppConstants.AllPosts)
+                    {
+                        // Overide to show all posts
+                        amountPerPage = int.MaxValue;
+                    }
+
+                    // Get the posts
+                    var posts = ServiceFactory.PostService.GetPagedPostsByTopic(pageIndex,
+                                                                  amountPerPage,
+                                                                  int.MaxValue,
+                                                                  topic.Id,
+                                                                  orderBy);
+
+                    // Get the permissions for the category that this topic is in
+                    var permissions = ServiceFactory.PermissionService.GetPermissions(topic.Category, _membersGroup);
+
+                    // If this user doesn't have access to this topic then
+                    // redirect with message
+                    if (permissions[AppConstants.PermissionDenyAccess].IsTicked)
+                    {
+                        return ErrorToHomePage(Lang("Errors.NoPermission"));
+                    }
+
+                    // See if the user has subscribed to this topic or not
+                    var isSubscribed = UserIsAuthenticated && (ServiceFactory.TopicNotificationService.GetByUserAndTopic(CurrentMember, topic).Any());
+
+                    // Populate the view model for this page
+                    var viewModel = new ShowTopicViewModel(model.Content)
+                    {
+                        Topic = topic,
+                        PageIndex = posts.PageIndex,
+                        TotalCount = posts.TotalCount,
+                        Permissions = permissions,
+                        User = CurrentMember,
+                        IsSubscribed = isSubscribed,
+                        UserHasAlreadyVotedInPoll = false,
+                        TotalPages = posts.TotalPages
+                    };
+
+                    // Get all votes for all the posts
+                    var postIds = posts.Select(x => x.Id).ToList();
+                    var allPostVotes = ServiceFactory.VoteService.GetAllVotesForPosts(postIds);
+
+                    // Get all favourites for this user
+                    viewModel.Favourites = new List<Favourite>();
+                    if (CurrentMember != null)
+                    {
+                        viewModel.Favourites.AddRange(ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id));
+                    }
+
+                    // Map the topic Start
+                    // Get the topic starter post
+                    var topicStarter = ServiceFactory.PostService.GetTopicStarterPost(topic.Id);
+                    viewModel.TopicStarterPost = PostMapper.MapPostViewModel(permissions, topicStarter, CurrentMember, Settings, topic, allPostVotes, viewModel.Favourites);
+
+                    // Map the posts to the posts viewmodel
+                    viewModel.Posts = new List<ViewPostViewModel>();
+                    foreach (var post in posts)
+                    {
+                        var postViewModel = PostMapper.MapPostViewModel(permissions, post, CurrentMember, Settings, topic, allPostVotes, viewModel.Favourites);
+                        viewModel.Posts.Add(postViewModel);
+                    }
+
+                    // If there is a quote querystring
+                    var quote = Request["quote"];
+                    if (!string.IsNullOrEmpty(quote))
+                    {
+                        try
+                        {
+                            // Got a quote
+                            var postToQuote = ServiceFactory.PostService.Get(new Guid(quote));
+                            viewModel.PostContent = postToQuote.PostContent;
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError(ex);
+                        }
+                    }
+
+                    // See if the topic has a poll, and if so see if this user viewing has already voted
+                    if (topic.Poll != null)
+                    {
+                        // There is a poll and a user
+                        // see if the user has voted or not
+                        var votes = topic.Poll.PollAnswers.SelectMany(x => x.PollVotes).ToList();
+                        if (UserIsAuthenticated)
+                        {
+                            viewModel.UserHasAlreadyVotedInPoll = (votes.Count(x => x.MemberId == CurrentMember.Id) > 0);
+                        }
+                        viewModel.TotalVotesInPoll = votes.Count();
+                    }
+
+                    // update the topic view count only if this topic doesn't belong to the user looking at it
+                    var addView = true;
+                    if (UserIsAuthenticated && CurrentMember.Id != topic.MemberId)
+                    {
+                        addView = false;
+                    }
+
+                    if (!AppHelpers.UserIsBot() && addView)
+                    {
+                        // Cool, user doesn't own this topic
+                        topic.Views = (topic.Views + 1);
+                        try
+                        {
+                            unitOfWork.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError(ex);
+                        }
+                    }
+
+                    return View(PathHelper.GetThemeViewPath("Topic"), viewModel);
+                }
+
+            }
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
         }
-
 
     }
 
 
-    public partial class DialogueCreateTopicController : BaseController
+    public partial class DialogueCreateTopicController : BaseRenderController
     {
         private readonly IMemberGroup _membersGroup;
 
@@ -103,6 +233,21 @@ namespace Dialogue.Logic.Controllers
             _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
+        [ChildActionOnly]
+        public PartialViewResult GetTopicBreadcrumb(Topic topic)
+        {
+            var category = ServiceFactory.CategoryService.Get(topic.CategoryId, true);
+            var viewModel = new BreadCrumbViewModel
+            {
+                Categories = category.ParentCategories,
+                Topic = topic
+            };
+            if (!viewModel.Categories.Any())
+            {
+                viewModel.Categories.Add(topic.Category);
+            }
+            return PartialView(PathHelper.GetThemePartialViewPath("GetTopicBreadcrumb"), viewModel);
+        }
 
         public PartialViewResult LatestTopics(int? p)
         {
@@ -342,8 +487,11 @@ namespace Dialogue.Logic.Controllers
                         // Success so now send the emails
                         NotifyNewTopics(category);
 
+                        // Update the users post count - Do this to reduce sql calls
+                        ServiceFactory.MemberService.AddPostCount(CurrentMember);
+
                         // Redirect to the newly created topic
-                        return Redirect(string.Format("{0}?postbadges=true", topic.NiceUrl));
+                        return Redirect(string.Format("{0}?postbadges=true", topic.Url));
                     }
                     if (moderate)
                     {

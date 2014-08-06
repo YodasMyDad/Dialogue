@@ -18,9 +18,9 @@ namespace Dialogue.Logic.Services
         {
             _forumRootNode = AppHelpers.GetNode(Dialogue.Settings().ForumId);
         }
-        public Category Get(int id)
+        public Category Get(int id, bool getSubAndParentCats = false)
         {
-            return CategoryMapper.MapCategory(AppHelpers.GetNode(id));
+            return CategoryMapper.MapCategory(AppHelpers.GetNode(id), getSubAndParentCats);
         }
 
         public List<Category> Get(List<int> ids)
@@ -28,9 +28,10 @@ namespace Dialogue.Logic.Services
             var cats = new List<Category>();
             if (ids.Any())
             {
-                foreach (var catId in ids)
+                var allCats = AppHelpers.UmbHelper().TypedContent(ids);
+                foreach (var cat in allCats)
                 {
-                    cats.Add(CategoryMapper.MapCategory(AppHelpers.GetNode(catId)));
+                    cats.Add(CategoryMapper.MapCategory(cat));
                 }
             }
             return cats;

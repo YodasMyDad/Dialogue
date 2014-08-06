@@ -28,6 +28,12 @@ namespace Dialogue.Logic.Models.OAuth
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets the email of authenticated user
+        /// </summary>
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        /// <summary>
         /// Gets the URL to the profile picture (avatar) of the authenticated user.
         /// </summary>
         [JsonProperty("avatar")]

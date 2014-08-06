@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Dialogue.Logic.Application;
+using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
 using Umbraco.Core.Models;
@@ -63,44 +65,64 @@ namespace Dialogue.Logic.Mapping
         /// Maps a category, cached per request
         /// </summary>
         /// <param name="model"></param>
-        /// <param name="getAllSubCategories"></param>
+        /// <param name="getSubAndParentCats"></param>
         /// <returns></returns>
-        public static Category MapCategory(IPublishedContent model, bool getAllSubCategories = false)
+        public static Category MapCategory(IPublishedContent model, bool getSubAndParentCats = false)
         {
 
-            var key = string.Format("umb-cat{0}-{1}", model.Id, getAllSubCategories);
-            if (!HttpContext.Current.Items.Contains(key))
+            if (model != null)
             {
-
-                var pageModel = new Category(model);
-                pageModel.Description = model.GetPropertyValue<string>("description");
-                pageModel.Image = AppHelpers.GetMediaUrlFromProperty(model, "categoryImage");
-                pageModel.LockCategory = model.GetPropertyValue<bool>("lockCategory");
-                pageModel.ModerateAllTopicsInThisCategory = model.GetPropertyValue<bool>("moderateAllTopicsInThisCategory");
-                pageModel.ModerateAllPostsInThisCategory = model.GetPropertyValue<bool>("moderateAllPostsInThisCategory");
-                pageModel.SubCategories = new List<Category>();
-
-                // If this node has common properties then populate them
-                // I.e. SEO & Umbraco Properties
-                DialogueMapper.PopulateCommonUmbracoProperties(pageModel, model);
-
-                // Only get subcategories if the user has requested it
-                if (getAllSubCategories)
+                var key = string.Format("umb-cat{0}-{1}", model.Id, getSubAndParentCats);
+                if (!HttpContext.Current.Items.Contains(key))
                 {
-                    var subCategories = model.Children.ToList();
-                    if (model.Children.Any())
+
+                    var pageModel = new Category(model);
+                    pageModel.Description = model.GetPropertyValue<string>("description");
+                    pageModel.Image = AppHelpers.GetMediaUrlFromProperty(model, "categoryImage");
+                    pageModel.LockCategory = model.GetPropertyValue<bool>("lockCategory");
+                    pageModel.ModerateAllTopicsInThisCategory = model.GetPropertyValue<bool>("moderateAllTopicsInThisCategory");
+                    pageModel.ModerateAllPostsInThisCategory = model.GetPropertyValue<bool>("moderateAllPostsInThisCategory");
+                    pageModel.SubCategories = new List<Category>();
+                    pageModel.ParentCategories = new List<Category>();
+
+                    // If this node has common properties then populate them
+                    // I.e. SEO & Umbraco Properties
+                    DialogueMapper.PopulateCommonUmbracoProperties(pageModel, model);
+
+                    // Only get subcategories if the user has requested it
+                    if (getSubAndParentCats)
                     {
-                        foreach (var publishedContent in subCategories)
+                        var subCategories = model.Children.ToList();
+                        if (model.Children.Any())
                         {
-                            pageModel.SubCategories.Add(MapCategory(publishedContent, true));
+                            foreach (var publishedContent in subCategories)
+                            {
+                                pageModel.SubCategories.Add(MapCategory(publishedContent, true));
+                            }
+                        }
+
+                        var path = model.Path;
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            var catIds = path.Trim().Split(',').Select(x => Convert.ToInt32(x)).ToList();
+                            catIds.Remove(model.Id);
+                            var allNodes =
+                                AppHelpers.UmbHelper()
+                                    .TypedContent(catIds)
+                                    .Where(x => x != null && x.DocumentTypeAlias == AppConstants.DocTypeForumCategory);
+                            foreach (var cat in allNodes)
+                            {
+                                pageModel.ParentCategories.Add(MapCategory(cat));
+                            }
                         }
                     }
+
+                    HttpContext.Current.Items.Add(key, pageModel);
                 }
 
-                HttpContext.Current.Items.Add(key, pageModel);
+                return HttpContext.Current.Items[key] as Category;
             }
-
-            return HttpContext.Current.Items[key] as Category;
+            return null;
         }
 
         public static List<Category> MapCategory(List<IPublishedContent> cats)

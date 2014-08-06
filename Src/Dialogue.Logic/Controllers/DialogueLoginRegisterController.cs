@@ -5,8 +5,10 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
+using Dialogue.Logic.Data.UnitOfWork;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
+using Dialogue.Logic.Models.OAuth;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Services;
 using Umbraco.Core.Models;
@@ -16,7 +18,7 @@ using Member = Dialogue.Logic.Models.Member;
 namespace Dialogue.Logic.Controllers
 {
     #region Render Controllers
-    public partial class DialogueLoginController : BaseController
+    public partial class DialogueLoginController : BaseRenderController
     {
 
         [ModelStateToTempData]
@@ -40,7 +42,7 @@ namespace Dialogue.Logic.Controllers
 
     }
 
-    public partial class DialogueRegisterController : BaseController
+    public partial class DialogueRegisterController : BaseRenderController
     {
 
         [ModelStateToTempData]
@@ -236,19 +238,11 @@ namespace Dialogue.Logic.Controllers
         [ModelStateToTempData]
         public ActionResult Register(RegisterViewModel userModel)
         {
-            var forumReturnUrl = Settings.ForumRootUrl;
-            var newMemberGroup = Settings.Group;
-            if (userModel.ForumId != null && userModel.ForumId != Settings.ForumId)
-            {
-                var correctForum = Dialogue.Settings((int)userModel.ForumId);
-                forumReturnUrl = correctForum.ForumRootUrl;
-                newMemberGroup = correctForum.Group;
-            }
+
 
             if (Settings.SuspendRegistration != true)
             {
-                using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
-                {
+             
                     // First see if there is a spam question and if so, the answer matches
                     if (!string.IsNullOrEmpty(Settings.SpamQuestion))
                     {
@@ -261,132 +255,160 @@ namespace Dialogue.Logic.Controllers
                             return CurrentUmbracoPage();
                         }
                     }
+ 
+                    // Do the register logic
+                MemberRegisterLogic(userModel);
 
-                    // Secondly see if the email is banned
-                    if (ServiceFactory.BannedEmailService.EmailIsBanned(userModel.Email))
+            }
+
+            return CurrentUmbracoPage();
+        }
+
+        public ActionResult MemberRegisterLogic(RegisterViewModel userModel)
+        {
+            var forumReturnUrl = Settings.ForumRootUrl;
+            var newMemberGroup = Settings.Group;
+            if (userModel.ForumId != null && userModel.ForumId != Settings.ForumId)
+            {
+                var correctForum = Dialogue.Settings((int)userModel.ForumId);
+                forumReturnUrl = correctForum.ForumRootUrl;
+                newMemberGroup = correctForum.Group;
+            }
+
+            using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+            {
+                // Secondly see if the email is banned
+                if (ServiceFactory.BannedEmailService.EmailIsBanned(userModel.Email))
+                {
+                    ModelState.AddModelError(string.Empty, Lang("Error.EmailIsBanned"));
+
+                    if (userModel.IsSocialLogin)
                     {
-                        ModelState.AddModelError(string.Empty, Lang("Error.EmailIsBanned"));
-                        //ShowModelErrors();
-                        return CurrentUmbracoPage();
+                        ShowModelErrors();
+                        return Redirect(Settings.RegisterUrl);
+                    }
+                    return CurrentUmbracoPage();
+                }
+
+                var userToSave = AppHelpers.UmbMemberHelper().CreateRegistrationModel(AppConstants.MemberTypeAlias);
+                userToSave.Username = ServiceFactory.BannedWordService.SanitiseBannedWords(userModel.UserName);
+                userToSave.Name = userToSave.Username;
+                userToSave.UsernameIsEmail = false;
+                userToSave.Email = userModel.Email;
+                userToSave.Password = userModel.Password;
+
+                var homeRedirect = false;
+
+                //var createStatus = MembershipService.CreateUser(userToSave);
+                MembershipCreateStatus createStatus;
+                AppHelpers.UmbMemberHelper().RegisterMember(userToSave, out createStatus, false);
+
+                if (createStatus != MembershipCreateStatus.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ServiceFactory.MemberService.ErrorCodeToString(createStatus));
+                }
+                else
+                {
+                    // Get the umbraco member
+                    var umbracoMember = AppHelpers.UmbServices().MemberService.GetByUsername(userToSave.Username);
+
+                    // Set the role/group they should be in
+                    AppHelpers.UmbServices().MemberService.AssignRole(umbracoMember.Id, newMemberGroup.Name);
+
+                    // Now check settings, see if users need to be manually authorised
+                    // OR Does the user need to confirm their email
+                    var manuallyAuthoriseMembers = Settings.ManuallyAuthoriseNewMembers;
+                    var memberEmailAuthorisationNeeded = Settings.NewMembersMustConfirmAccountsViaEmail;
+                    if (manuallyAuthoriseMembers || memberEmailAuthorisationNeeded)
+                    {
+                        umbracoMember.IsApproved = false;
                     }
 
-                    var userToSave = AppHelpers.UmbMemberHelper().CreateRegistrationModel(AppConstants.MemberTypeAlias);
-                    userToSave.Username = ServiceFactory.BannedWordService.SanitiseBannedWords(userModel.UserName);
-                    userToSave.Name = userToSave.Username;
-                    userToSave.UsernameIsEmail = false;
-                    userToSave.Email = userModel.Email;
-                    userToSave.Password = userModel.Password;
+                    // Do a save on the member
+                    AppHelpers.UmbServices().MemberService.Save(umbracoMember);
 
-                    var homeRedirect = false;
-
-                    //var createStatus = MembershipService.CreateUser(userToSave);
-                    MembershipCreateStatus createStatus;
-                    AppHelpers.UmbMemberHelper().RegisterMember(userToSave, out createStatus, false);
-
-                    if (createStatus != MembershipCreateStatus.Success)
+                    if (Settings.EmailAdminOnNewMemberSignup)
                     {
-                        ModelState.AddModelError(string.Empty, ServiceFactory.MemberService.ErrorCodeToString(createStatus));
+                        var sb = new StringBuilder();
+                        sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.NewMemberRegistered"), Settings.ForumName, Settings.ForumRootUrl));
+                        sb.AppendFormat("<p>{0} - {1}</p>", userToSave.Username, userToSave.Email);
+                        var email = new Email
+                        {
+                            EmailTo = Settings.AdminEmailAddress,
+                            EmailFrom = Settings.NotificationReplyEmailAddress,
+                            NameTo = Lang("Members.Admin"),
+                            Subject = Lang("Members.NewMemberSubject")
+                        };
+                        email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
+                        ServiceFactory.EmailService.SendMail(email);
+                    }
+
+                    // Fire the activity Service
+                    ServiceFactory.ActivityService.MemberJoined(MemberMapper.MapMember(umbracoMember));
+
+                    var userMessage = new GenericMessageViewModel();
+
+                    // Set the view bag message here
+                    if (manuallyAuthoriseMembers)
+                    {
+                        userMessage.Message = Lang("Members.NowRegisteredNeedApproval");
+                        userMessage.MessageType = GenericMessages.Success;
+                    }
+                    else if (memberEmailAuthorisationNeeded)
+                    {
+                        userMessage.Message = Lang("Members.MemberEmailAuthorisationNeeded");
+                        userMessage.MessageType = GenericMessages.Success;
                     }
                     else
                     {
-                        // Get the umbraco member
-                        var umbracoMember = AppHelpers.UmbServices().MemberService.GetByUsername(userToSave.Username);
+                        // If not manually authorise then log the user in
+                        FormsAuthentication.SetAuthCookie(userToSave.Username, true);
+                        userMessage.Message = Lang("Members.NowRegistered");
+                        userMessage.MessageType = GenericMessages.Success;
+                    }
 
-                        // Set the role/group they should be in
-                        AppHelpers.UmbServices().MemberService.AssignRole(umbracoMember.Id, newMemberGroup.Name);
+                    //Show the message
+                    ShowMessage(userMessage);
 
-                        // Now check settings, see if users need to be manually authorised
-                        // OR Does the user need to confirm their email
-                        var manuallyAuthoriseMembers = Settings.ManuallyAuthoriseNewMembers;
-                        var memberEmailAuthorisationNeeded = Settings.NewMembersMustConfirmAccountsViaEmail;
-                        if (manuallyAuthoriseMembers || memberEmailAuthorisationNeeded)
+                    if (!manuallyAuthoriseMembers && !memberEmailAuthorisationNeeded)
+                    {
+                        homeRedirect = true;
+                    }
+
+                    try
+                    {
+                        unitOfWork.Commit();
+
+                        // Only send the email if the admin is not manually authorising emails or it's pointless
+                        SendEmailConfirmationEmail(umbracoMember);
+
+                        if (homeRedirect && !string.IsNullOrEmpty(forumReturnUrl))
                         {
-                            umbracoMember.IsApproved = false;
-                        }
-
-                        // Do a save on the member
-                        AppHelpers.UmbServices().MemberService.Save(umbracoMember);
-
-                        if (Settings.EmailAdminOnNewMemberSignup)
-                        {
-                            var sb = new StringBuilder();
-                            sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.NewMemberRegistered"), Settings.ForumName, Settings.ForumRootUrl));
-                            sb.AppendFormat("<p>{0} - {1}</p>", userToSave.Username, userToSave.Email);
-                            var email = new Email
+                            if (Url.IsLocalUrl(userModel.ReturnUrl) && userModel.ReturnUrl.Length > 1 && userModel.ReturnUrl.StartsWith("/")
+                            && !userModel.ReturnUrl.StartsWith("//") && !userModel.ReturnUrl.StartsWith("/\\"))
                             {
-                                EmailTo = Settings.AdminEmailAddress,
-                                EmailFrom = Settings.NotificationReplyEmailAddress,
-                                NameTo = Lang("Members.Admin"),
-                                Subject = Lang("Members.NewMemberSubject")
-                            };
-                            email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
-                            ServiceFactory.EmailService.SendMail(email);
-                        }
-
-                        // Fire the activity Service
-                        ServiceFactory.ActivityService.MemberJoined(MemberMapper.MapMember(umbracoMember));
-
-                        var userMessage = new GenericMessageViewModel();
-
-                        // Set the view bag message here
-                        if (manuallyAuthoriseMembers)
-                        {
-                            userMessage.Message = Lang("Members.NowRegisteredNeedApproval");
-                            userMessage.MessageType = GenericMessages.Success;
-                        }
-                        else if (memberEmailAuthorisationNeeded)
-                        {
-                            userMessage.Message = Lang("Members.MemberEmailAuthorisationNeeded");
-                            userMessage.MessageType = GenericMessages.Success;
-                        }
-                        else
-                        {
-                            // If not manually authorise then log the user in
-                            FormsAuthentication.SetAuthCookie(userToSave.Username, false);
-                            userMessage.Message = Lang("Members.NowRegistered");
-                            userMessage.MessageType = GenericMessages.Success;
-                        }
-
-                        //Show the message
-                        ShowMessage(userMessage);
-
-                        if (!manuallyAuthoriseMembers && !memberEmailAuthorisationNeeded)
-                        {
-                            homeRedirect = true;
-                        }
-
-                        try
-                        {
-                            unitOfWork.Commit();
-
-                            // Only send the email if the admin is not manually authorising emails or it's pointless
-                            SendEmailConfirmationEmail(umbracoMember);
-
-                            if (homeRedirect)
-                            {
-                                if (Url.IsLocalUrl(userModel.ReturnUrl) && userModel.ReturnUrl.Length > 1 && userModel.ReturnUrl.StartsWith("/")
-                                && !userModel.ReturnUrl.StartsWith("//") && !userModel.ReturnUrl.StartsWith("/\\"))
-                                {
-                                    return Redirect(userModel.ReturnUrl);
-                                }
-                                return Redirect(forumReturnUrl);
+                                return Redirect(userModel.ReturnUrl);
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            unitOfWork.Rollback();
-                            LogError("Eror during member registering", ex);
-                            FormsAuthentication.SignOut();
-                            ModelState.AddModelError(string.Empty, Lang("Errors.GenericMessage"));
+                            return Redirect(forumReturnUrl);
                         }
                     }
-                    //ShowModelErrors();
-                    return CurrentUmbracoPage();
+                    catch (Exception ex)
+                    {
+                        unitOfWork.Rollback();
+                        LogError("Eror during member registering", ex);
+                        FormsAuthentication.SignOut();
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
                 }
+                if (userModel.IsSocialLogin)
+                {
+                    ShowModelErrors();
+                    return Redirect(Settings.RegisterUrl);
+                }
+                return CurrentUmbracoPage();
             }
 
 
-            return Redirect(forumReturnUrl);
         }
 
         private void SendEmailConfirmationEmail(IMember userToSave)

@@ -24,5 +24,6 @@ namespace Dialogue.Logic.Models.ViewModels
         public int? ForumId { get; set; }
 
         public string ReturnUrl { get; set; }
+        public bool IsSocialLogin { get; set; }
     }
 }

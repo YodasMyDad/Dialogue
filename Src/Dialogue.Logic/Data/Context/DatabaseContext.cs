@@ -40,6 +40,7 @@ namespace Dialogue.Logic.Data.Context
         public DbSet<Permission> Permission { get; set; }
         public DbSet<CategoryPermission> CategoryPermission { get; set; }
         public DbSet<BadgeToMember> BadgeToMember { get; set; }
+        public DbSet<Favourite> DialogueFavourite  { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -67,6 +68,7 @@ namespace Dialogue.Logic.Data.Context
             modelBuilder.Configurations.Add(new CategoryPermissionMapping());
             modelBuilder.Configurations.Add(new BadgeToMemberMapping());
             modelBuilder.Configurations.Add(new VoteMapping());
+            modelBuilder.Configurations.Add(new FavouriteMapping());
 
             base.OnModelCreating(modelBuilder);
         }

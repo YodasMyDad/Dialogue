@@ -40,13 +40,13 @@ namespace Dialogue.Logic.Models
                 return Points != null ? Points.Select(x => x.Points).Sum() : 0;
             }
         }
-
+        public int PostCount { get; set; }
         // Populated only when full populate marked as true
         public IList<Vote> Votes { get; set; }
         public IList<Badge> Badges { get; set; }
         // Populated only when full populate marked as true
 
-        public string NiceUrl
+        public string Url
         {
             get { return UrlTypes.GenerateUrl(UrlTypes.UrlType.Member, Slug); }
         }

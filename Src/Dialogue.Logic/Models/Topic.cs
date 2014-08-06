@@ -29,7 +29,7 @@ namespace Dialogue.Logic.Models
         public virtual IList<TopicNotification> TopicNotifications { get; set; }
         public virtual Poll Poll { get; set; }
         public bool Pending { get; set; }
-        public string NiceUrl
+        public string Url
         {
             get
             {

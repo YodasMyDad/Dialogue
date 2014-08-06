@@ -50,6 +50,10 @@ namespace Dialogue.Logic.Constants
         public const int PagingGroupSize = 10;
         public const string PagingUrlFormat = "{0}?p={1}";
 
+        //Querystring names
+        public const string PostOrderBy = "order";
+        public const string AllPosts = "all";
+
         // Last Activity Time Check
         public const int TimeSpanInMinutesToDoCheck = 10;
         public const int TimeSpanInMinutesToShowMembers = 20;
@@ -62,6 +66,7 @@ namespace Dialogue.Logic.Constants
         public const string PageUrlActivity = "activity";
         public const string PageUrlTopicsRss = "topicsrss";
         public const string PageUrlActivityRss = "activityrss";
+        public const string PageUrlCategoryRss = "categoryrss";
         public const string PageUrlCreateTopic = "create";
         public const string PageUrlBadges = "badges";
 
@@ -102,6 +107,7 @@ namespace Dialogue.Logic.Constants
         public const string PropMemberDisablePosting = "disablePosting";
         public const string PropMemberDisablePrivateMessages = "disablePrivateMessages";
         public const string PropMemberDisableFileUploads = "disableFileUploads";
+        public const string PropMemberPostCount = "postCount";
         public const string PropMemberFacebookAccessToken = "facebookAccessToken";
         public const string PropMemberFacebookId = "facebookId";
         public const string PropMemberGoogleAccessToken = "googleAccessToken";

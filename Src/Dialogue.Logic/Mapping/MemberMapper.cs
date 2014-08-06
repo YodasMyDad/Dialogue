@@ -26,7 +26,7 @@ namespace Dialogue.Logic.Mapping
         {
             if (member != null)
             {
-                var key = string.Format("umb-member{0}", member.Id);
+                var key = string.Format("umb-member{0}{1}", member.Id, populateAll);
                 if (!HttpContext.Current.Items.Contains(key))
                 {
                     var siteMember = new Member();
@@ -157,6 +157,7 @@ namespace Dialogue.Logic.Mapping
             siteMember.DisablePosting = member.GetPropertyValue<bool>(AppConstants.PropMemberDisablePosting);
             siteMember.DisablePrivateMessages = member.GetPropertyValue<bool>(AppConstants.PropMemberDisablePrivateMessages);
             siteMember.DisableFileUploads = member.GetPropertyValue<bool>(AppConstants.PropMemberDisableFileUploads);
+            siteMember.PostCount = member.GetPropertyValue<int>(AppConstants.PropMemberPostCount);
 
             siteMember.FacebookAccessToken = member.GetPropertyValue<string>(AppConstants.PropMemberFacebookAccessToken);
             siteMember.FacebookId = member.GetPropertyValue<string>(AppConstants.PropMemberFacebookId);
