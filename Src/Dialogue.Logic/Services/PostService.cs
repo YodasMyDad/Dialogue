@@ -178,7 +178,7 @@ namespace Dialogue.Logic.Services
             // but there might not be 100 topics
             var total = ContextPerRequest.Db.Post
                                     .Include(x => x.Topic)
-                                    .Count(x => x.Topic.Id == topicId && x.Pending != true);
+                                    .Count(x => x.Topic.Id == topicId && !x.IsTopicStarter && x.Pending != true);
             if (amountToTake < total)
             {
                 total = amountToTake;
@@ -189,7 +189,7 @@ namespace Dialogue.Logic.Services
                                     .Include(x => x.Topic)
                                     .Include(x => x.Votes)
                                     .Include(x => x.Files)
-                                  .Where(x => x.Topic.Id == topicId && x.Pending != true);
+                                  .Where(x => x.Topic.Id == topicId && !x.IsTopicStarter && x.Pending != true);
 
             // Sort what order the posts are sorted in
             switch (order)
@@ -262,7 +262,16 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public Post Get(Guid postId)
         {
-            return ContextPerRequest.Db.Post.FirstOrDefault(x => x.Id == postId);
+            var post = ContextPerRequest.Db.Post.FirstOrDefault(x => x.Id == postId);
+            PopulateMembers(new List<Post>{post});
+            return post;
+        }
+
+        public List<Post> Get(List<Guid> posts)
+        {
+            var allPosts = ContextPerRequest.Db.Post.Where(x => posts.Contains(x.Id)).ToList();
+            PopulateMembers(allPosts);
+            return allPosts;
         }
 
 

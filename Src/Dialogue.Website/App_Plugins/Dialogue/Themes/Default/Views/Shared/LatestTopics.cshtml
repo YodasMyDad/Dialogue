@@ -17,7 +17,7 @@
         @if (Html.Settings().AllowRssFeeds)
         {
             @*@Url.Action("LatestRss", "Home")*@
-            <a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.TopicsRss)" class="rsssubscribe" title="@Html.Lang("Home.Rss")">@Html.Lang("Home.Rss")</a>
+            <a href="@Urls.GenerateUrl(Urls.UrlType.TopicsRss)" class="rsssubscribe" title="@Html.Lang("Home.Rss")">@Html.Lang("Home.Rss")</a>
         }
     </div>
 </div>

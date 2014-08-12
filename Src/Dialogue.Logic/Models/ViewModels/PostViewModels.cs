@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
+using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Models.ViewModels
 {
@@ -33,6 +34,15 @@ namespace Dialogue.Logic.Models.ViewModels
         public bool IsTopicStarter { get; set; }
     }
 
+    public class EditPostPageViewModel : MasterModel
+    {
+        public EditPostPageViewModel(IPublishedContent content) : base(content)
+        {
+        }
+
+        public EditPostViewModel EditPostViewModel { get; set; }
+    }
+
     public class EditPostViewModel
     {
         [DialogueDisplayName("Post.Label.TopicName")]
@@ -48,7 +58,7 @@ namespace Dialogue.Logic.Models.ViewModels
 
         [Required]
         [DialogueDisplayName("Post.label.TopicCategory")]
-        public Guid Category { get; set; }
+        public int Category { get; set; }
 
         public string Tags { get; set; }
 
@@ -66,6 +76,20 @@ namespace Dialogue.Logic.Models.ViewModels
         public bool IsTopicStarter { get; set; }
 
         public PermissionSet Permissions { get; set; }
+    }
+
+    public class ReportPostPageViewModel : MasterModel
+    {
+        public ReportPostPageViewModel(IPublishedContent content) : base(content)
+        {
+        }
+        public Guid PostId { get; set; }
+        public Post Post { get; set; }
+        public string PostCreatorUsername { get; set; }
+
+        [Required]
+        public string Reason { get; set; }
+
     }
 
     public class ReportPostViewModel

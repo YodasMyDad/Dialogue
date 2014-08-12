@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
@@ -48,6 +49,22 @@ namespace Dialogue.Logic
 
                 // General
                 settings.CloseForum = forumRootNode.GetPropertyValue<bool>("closeForum");
+
+                var extensions = forumRootNode.GetPropertyValue<string>("fileUploadAllowedExtensions");
+                if (!string.IsNullOrEmpty(extensions))
+                {
+                    settings.FileUploadAllowedExtensions = extensions.ToLower()
+                                                            .TrimStart(',').TrimEnd(',')
+                                                            .Split(',')
+                                                            .Where(x => !string.IsNullOrEmpty(x)).ToList();
+                }
+                else
+                {
+                    settings.FileUploadAllowedExtensions = new List<string>();
+                }
+
+                settings.FileUploadMaximumFilesize = forumRootNode.GetPropertyValue<int>("fileUploadMaximumFilesize");
+
                 settings.AllowRssFeeds = forumRootNode.GetPropertyValue<bool>("allowRssFeeds");
                 settings.SuspendRegistration = forumRootNode.GetPropertyValue<bool>("suspendRegistration");
                 settings.EnableSpamReporting = forumRootNode.GetPropertyValue<bool>("enableSpamReporting");

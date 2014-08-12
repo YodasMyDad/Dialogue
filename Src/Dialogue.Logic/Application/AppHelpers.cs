@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using Dialogue.Logic.Constants;
+using Dialogue.Logic.Models;
 using HtmlAgilityPack;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
@@ -88,7 +91,7 @@ namespace Dialogue.Logic.Application
 
         public static string CanonicalPagingTag(int totalItemCount, int pageSize, HtmlHelper helper)
         {
-            var urlHelper = new UrlHelper(helper.ViewContext.RequestContext, helper.RouteCollection);
+            var urlHelper = new System.Web.Mvc.UrlHelper(helper.ViewContext.RequestContext, helper.RouteCollection);
             var currentAction = helper.ViewContext.RouteData.GetRequiredString("Action");
             var url = urlHelper.Action(currentAction, new { });
 
@@ -231,6 +234,77 @@ namespace Dialogue.Logic.Application
         #endregion
 
         #region Media
+
+        public static UploadFileResult UploadFile(HttpPostedFileBase file, string uploadFolderPath, bool onlyImages = false)
+        {
+            var upResult = new UploadFileResult { UploadSuccessful = true };
+
+            var fileName = Path.GetFileName(file.FileName);
+            if (fileName != null)
+            {
+                //Before we do anything, check file size
+                if (file.ContentLength > Dialogue.Settings().FileUploadMaximumFilesize)
+                {
+                    //File is too big
+                    upResult.UploadSuccessful = false;
+                    upResult.ErrorMessage = Lang("Post.UploadFileTooBig");
+                    return upResult;
+                }
+
+                // now check allowed extensions
+                var allowedFileExtensions = Dialogue.Settings().FileUploadAllowedExtensions;
+
+                if (onlyImages)
+                {
+                    allowedFileExtensions = new List<string>
+                    {
+                        "jpg",
+                        "jpeg",
+                        "png",
+                        "gif"
+                    };
+                }
+
+                if (allowedFileExtensions.Any())
+                {
+
+                    // Get the file extension
+                    var fileExtension = Path.GetExtension(fileName.ToLower());
+
+                    // If can't work out extension then just error
+                    if (string.IsNullOrEmpty(fileExtension))
+                    {
+                        upResult.UploadSuccessful = false;
+                        upResult.ErrorMessage = Lang("Errors.GenericMessage");
+                        return upResult;
+                    }
+
+                    // Remove the dot then check against the extensions in the web.config settings
+                    fileExtension = fileExtension.TrimStart('.');
+                    if (!allowedFileExtensions.Contains(fileExtension))
+                    {
+                        upResult.UploadSuccessful = false;
+                        upResult.ErrorMessage = Lang("Post.UploadBannedFileExtension");
+                        return upResult;
+                    }
+                }
+
+                // Sort the file name
+                var newFileName = string.Format("{0}_{1}", GenerateComb(), fileName.Trim(' ').Replace("_", "-").Replace(" ", "-").ToLower());
+                var path = Path.Combine(uploadFolderPath, newFileName);
+
+                // Save the file to disk
+                file.SaveAs(path);
+
+                var hostingRoot = HostingEnvironment.MapPath("~/") ?? "";
+                var fileUrl = path.Substring(hostingRoot.Length).Replace('\\', '/').Insert(0, "/");
+
+                upResult.UploadedFileName = newFileName;
+                upResult.UploadedFileUrl = fileUrl;
+            }
+
+            return upResult;
+        }
 
         public static string ReturnBadgeUrl(string badgeFile)
         {

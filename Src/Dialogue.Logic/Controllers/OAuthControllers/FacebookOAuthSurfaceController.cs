@@ -16,7 +16,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
     {
         public string ReturnUrl
         {
-            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), UrlTypes.GenerateUrl(UrlTypes.UrlType.FacebookLogin)); }
+            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.FacebookLogin)); }
         }
 
         public string Callback { get; private set; }

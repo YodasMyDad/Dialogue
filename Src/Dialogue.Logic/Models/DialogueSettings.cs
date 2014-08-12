@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Models
@@ -27,6 +28,8 @@ namespace Dialogue.Logic.Models
 
         // General
         public bool CloseForum { get; set; }
+        public int FileUploadMaximumFilesize { get; set; }
+        public List<string> FileUploadAllowedExtensions { get; set; }
         public bool AllowRssFeeds { get; set; }
         public bool SuspendRegistration { get; set; }
         public bool EnableSpamReporting { get; set; }

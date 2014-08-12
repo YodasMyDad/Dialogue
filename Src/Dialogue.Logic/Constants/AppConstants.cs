@@ -48,6 +48,7 @@ namespace Dialogue.Logic.Constants
         // Pages and Paging
         public const int ActiveTopicsListSize = 20;
         public const int PagingGroupSize = 10;
+        public const int PrivateMessageListSize = 20;
         public const string PagingUrlFormat = "{0}?p={1}";
 
         //Querystring names
@@ -64,6 +65,13 @@ namespace Dialogue.Logic.Constants
         // Page Names
         public const string PageUrlLeaderboard = "leaderboard";
         public const string PageUrlActivity = "activity";
+        public const string PageUrlFavourites = "favourite";
+        public const string PageUrlPostReport = "postreport";
+        public const string PageUrlEditPost = "editpost";
+        public const string PageUrlMessageInbox = "messageinbox";
+        public const string PageUrlMessageOutbox = "messageoutbox";
+        public const string PageUrlCreatePrivateMessage = "createmessage";
+        public const string PageUrlViewPrivateMessage = "viewmessage";
         public const string PageUrlTopicsRss = "topicsrss";
         public const string PageUrlActivityRss = "activityrss";
         public const string PageUrlCategoryRss = "categoryrss";

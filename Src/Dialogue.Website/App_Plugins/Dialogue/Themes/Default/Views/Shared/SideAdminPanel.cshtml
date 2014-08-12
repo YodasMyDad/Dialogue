@@ -1,4 +1,5 @@
-﻿@model Dialogue.Logic.Models.ViewModels.ViewAdminSidePanelViewModel
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.ViewAdminSidePanelViewModel
 @{
     var logOutUrl = string.Format("{0}?{1}={1}", Dialogue.Logic.Dialogue.Settings().ForumRootUrl, AppConstants.LogOut);
 }
@@ -9,8 +10,16 @@
 <li class="divider"></li>
 @if (Html.Settings().AllowPrivateMessages && Model.CurrentUser.DisablePrivateMessages != true)
 {
-    var count = Model.NewPrivateMessageCount <= 0 ? null : string.Format("({0})", Model.NewPrivateMessageCount);
-    <li><a href="#">@Html.Lang("PM.PrivateMessages") @count</a></li>
+    <li>
+        <a href="@Urls.GenerateUrl(Urls.UrlType.MessageInbox)">
+            @Html.Lang("PM.PrivateMessages")
+        @if (Model.NewPrivateMessageCount > 0)
+        {
+            <span class="badge">@Model.NewPrivateMessageCount</span>
+        }
+    </a>
+</li>
 }
 
+<li><a href="@Urls.GenerateUrl(Urls.UrlType.Favourites)">@Html.Lang("Members.Favourites")</a></li>
 <li><a href="@logOutUrl">@Html.Lang("Members.LogOff")</a></li>

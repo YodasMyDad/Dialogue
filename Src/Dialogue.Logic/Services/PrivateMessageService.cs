@@ -3,18 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Data.Context;
+using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
 
 namespace Dialogue.Logic.Services
 {
     public partial class PrivateMessageService
     {
+        public void PopulateMembers(IList<PrivateMessage> entityList)
+        {
+            // Map full Members
+            var membersIds = entityList.Select(x => x.MemberFromId).ToList();
+            membersIds.AddRange(entityList.Select(x => x.MemberToId));
+            var members = MemberMapper.MapMember(membersIds.Distinct().ToList());
+            foreach (var entity in entityList)
+            {
+                var memberFrom = members.FirstOrDefault(x => x.Id == entity.MemberFromId);
+                var memberTo = members.FirstOrDefault(x => x.Id == entity.MemberToId);
+                entity.MemberFrom = memberFrom;
+                entity.MemberTo = memberTo;
+            }
+        }
+
         public PrivateMessage SanitizeMessage(PrivateMessage privateMessage)
         {
             privateMessage.Message = AppHelpers.GetSafeHtml(privateMessage.Message);
             privateMessage.Subject = AppHelpers.SafePlainText(privateMessage.Subject);
             return privateMessage;
         }
+
 
         /// <summary>
         /// Add a private message
@@ -53,7 +70,9 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public PrivateMessage Get(Guid id)
         {
-            return ContextPerRequest.Db.PrivateMessage.FirstOrDefault(x => x.Id == id);
+            var message = ContextPerRequest.Db.PrivateMessage.FirstOrDefault(x => x.Id == id);
+            PopulateMembers(new List<PrivateMessage>{message});
+            return message;
         }
 
         /// <summary>
@@ -75,6 +94,8 @@ namespace Dialogue.Logic.Services
                                 .Skip((pageIndex - 1) * pageSize)
                                 .Take(pageSize)
                                 .ToList();
+
+            PopulateMembers(results);
 
             // Return a paged list
             return new PagedList<PrivateMessage>(results, pageIndex, pageSize, totalCount);
@@ -99,7 +120,7 @@ namespace Dialogue.Logic.Services
                                 .Skip((pageIndex - 1) * pageSize)
                                 .Take(pageSize)
                                 .ToList();
-
+            PopulateMembers(results);
 
             // Return a paged list
             return new PagedList<PrivateMessage>(results, pageIndex, pageSize, totalCount);
@@ -112,13 +133,17 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public PrivateMessage GetLastSentPrivateMessage(int id)
         {
-            return ContextPerRequest.Db.PrivateMessage.FirstOrDefault(x => x.MemberFromId == id);
+            var message = ContextPerRequest.Db.PrivateMessage.FirstOrDefault(x => x.MemberFromId == id);
+            PopulateMembers(new List<PrivateMessage> { message });
+            return message;
         }
 
         public PrivateMessage GetMatchingSentPrivateMessage(string title, DateTime date, int senderId, int receiverId)
         {
-            return ContextPerRequest.Db.PrivateMessage
+            var message = ContextPerRequest.Db.PrivateMessage
                 .FirstOrDefault(x => x.Subject == title && x.DateSent == date && x.MemberFromId == senderId && x.MemberToId == receiverId && x.IsSentMessage == true);
+            PopulateMembers(new List<PrivateMessage> { message });
+            return message;
         }
 
         /// <summary>
@@ -128,17 +153,21 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<PrivateMessage> GetAllSentByUser(int id)
         {
-            return ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage
                                 .Where(x => x.MemberFromId == id)
                                 .OrderByDescending(x => x.DateSent)
                                 .ToList();
+            PopulateMembers(results);
+            return results;
         }
 
         public IList<PrivateMessage> GetAllByUserSentOrReceived(int id)
         {
-            return ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage
                                 .Where(x => x.MemberFromId == id || x.MemberToId == id)
                                 .ToList();
+            PopulateMembers(results);
+            return results;
         }
 
         /// <summary>
@@ -158,10 +187,12 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<PrivateMessage> GetAllReceivedByUser(int id)
         {
-            return ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage
                                 .Where(x => x.MemberToId == id)
                                 .OrderByDescending(x => x.DateSent)
                                 .ToList();
+            PopulateMembers(results);
+            return results;
         }
 
 
@@ -173,10 +204,12 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<PrivateMessage> GetAllByUserToAnotherUser(int senderId, int receiverId)
         {
-            return ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage
                                 .Where(x => x.MemberFromId == senderId && x.MemberToId == receiverId)
                                 .OrderByDescending(x => x.DateSent)
                                 .ToList();
+            PopulateMembers(results);
+            return results;
         }
 
         /// <summary>

@@ -117,7 +117,7 @@ namespace Dialogue.Logic.Controllers
                     // Map the topic Start
                     // Get the topic starter post
                     var topicStarter = ServiceFactory.PostService.GetTopicStarterPost(topic.Id);
-                    viewModel.TopicStarterPost = PostMapper.MapPostViewModel(permissions, topicStarter, CurrentMember, Settings, topic, allPostVotes, viewModel.Favourites);
+                    viewModel.TopicStarterPost = PostMapper.MapPostViewModel(permissions, topicStarter, CurrentMember, Settings, topic, topicStarter.Votes.ToList(), viewModel.Favourites);
 
                     // Map the posts to the posts viewmodel
                     viewModel.Posts = new List<ViewPostViewModel>();

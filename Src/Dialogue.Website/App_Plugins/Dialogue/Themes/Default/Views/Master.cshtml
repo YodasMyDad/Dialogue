@@ -16,7 +16,9 @@
     @ViewBag.Canonical
 
     <link href="@Url.Content("~/app_plugins/dialogue/content/css/bootstrap.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/app_plugins/dialogue/content/scripts/fancybox/jquery.fancybox.css")" rel="stylesheet" type="text/css" />
     <link href="@Url.Content(string.Format("~/app_plugins/dialogue/themes/{0}/content/css/styles.css", Dialogue.Logic.Dialogue.Settings().Theme))" rel="stylesheet" type="text/css" />
+
 
     <!--[if lt IE 9]>
               <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/html5shiv.js")"></script>
@@ -32,6 +34,7 @@
     <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/jquery.unobtrusive-ajax.js")"></script>
     <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/jquery.validate.js")"></script>
     <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/jquery.validate.unobtrusive.js")"></script>
+    <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/fancybox/jquery.fancybox.pack.js")"></script>
     <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/general.js")"></script>
 
 
@@ -63,20 +66,20 @@
                             <ul class="dropdown-menu" role="menu">
                                 @if (Model.Settings.AllowPoints)
                                 {
-                                    <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Leaderboard)">@Html.Lang("Layout.Nav.Leaderboard")</a></li>
+                                    <li><a href="@Urls.GenerateUrl(Urls.UrlType.Leaderboard)">@Html.Lang("Layout.Nav.Leaderboard")</a></li>
                                 }
 
-                                <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Activity)">@Html.Lang("Layout.Nav.Activity")</a></li>
-                                <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Badges)">@Html.Lang("Layout.Nav.Badges")</a></li>
+                                <li><a href="@Urls.GenerateUrl(Urls.UrlType.Activity)">@Html.Lang("Layout.Nav.Activity")</a></li>
+                                <li><a href="@Urls.GenerateUrl(Urls.UrlType.Badges)">@Html.Lang("Layout.Nav.Badges")</a></li>
                             </ul>
                         </li>
                         @if (!User.Identity.IsAuthenticated)
                         {
                             if (Model.Settings.SuspendRegistration != true)
                             {
-                                <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Register)">@Html.Lang("Layout.Nav.Register")</a></li>
+                                <li><a href="@Urls.GenerateUrl(Urls.UrlType.Register)">@Html.Lang("Layout.Nav.Register")</a></li>
                             }
-                            <li><a href="@UrlTypes.GenerateUrl(UrlTypes.UrlType.Login)">@Html.Lang("Layout.Nav.Logon")</a></li>
+                            <li><a href="@Urls.GenerateUrl(Urls.UrlType.Login)">@Html.Lang("Layout.Nav.Logon")</a></li>
                         }
                     </ul>
 

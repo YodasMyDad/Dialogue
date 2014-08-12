@@ -23,7 +23,7 @@ namespace Dialogue.Logic.Models
         }
         public string FilePath
         {
-            get { return string.Format(AppConstants.MemberUploadPath, Member.Id, Filename); }
+            get { return string.Format(AppConstants.MemberUploadPath, MemberId, Filename); }
         }
     }
 }

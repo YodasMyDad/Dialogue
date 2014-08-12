@@ -84,6 +84,16 @@ namespace Dialogue.Logic.Controllers
             // Not allowed in here so
             return Redirect(Settings(forumId).ForumRootUrl);
         }
+        public ActionResult NoPermission(Topic topic)
+        {
+            var message = new GenericMessageViewModel
+            {
+                Message = Lang("Errors.NoPermission"),
+                MessageType = GenericMessages.Warning
+            };
+            ShowMessage(message);
+            return Redirect(topic.Url);
+        }
 
         internal ActionResult MessageToHomePage(string errorMessage, int forumId)
         {
@@ -119,6 +129,17 @@ namespace Dialogue.Logic.Controllers
         internal void LogWarning(string message)
         {
             AppHelpers.LogError(message);
+        }
+        public ActionResult NoPermission(Topic topic)
+        {
+            // Trying to be a sneaky mo fo, so tell them
+            var message = new GenericMessageViewModel
+            {
+                Message = Lang("Errors.NoPermission"),
+                MessageType = GenericMessages.Warning
+            };
+            ShowMessage(message);
+            return Redirect(topic.Url);
         }
         internal void LogError(string message, Exception ex)
         {
@@ -214,7 +235,17 @@ namespace Dialogue.Logic.Controllers
                 ShowMessage(message);
             }
         }
-
+        public ActionResult NoPermission(Topic topic)
+        {
+            // Trying to be a sneaky mo fo, so tell them
+            var message = new GenericMessageViewModel
+            {
+                Message = Lang("Errors.NoPermission"),
+                MessageType = GenericMessages.Warning
+            };
+            ShowMessage(message);
+            return Redirect(topic.Url);
+        }
         internal ActionResult ErrorToHomePage(string errorMessage)
         {
             // Use temp data as its a redirect

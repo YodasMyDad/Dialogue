@@ -33,7 +33,7 @@ namespace Dialogue.Logic.Models
         {
             get
             {
-                return UrlTypes.GenerateUrl(UrlTypes.UrlType.Topic, Slug);
+                return Urls.GenerateUrl(Urls.UrlType.Topic, Slug);
             }
         }
 

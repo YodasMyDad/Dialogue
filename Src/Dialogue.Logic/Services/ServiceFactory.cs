@@ -292,6 +292,9 @@ namespace Dialogue.Logic.Services
             }
         }
 
+        /// <summary>
+        /// Get an instance of the favourite service
+        /// </summary>
         public static FavouriteService FavouriteService
         {
             get
@@ -302,6 +305,22 @@ namespace Dialogue.Logic.Services
                     HttpContext.Current.Items.Add(key, new FavouriteService());
                 }
                 return HttpContext.Current.Items[key] as FavouriteService;
+            }
+        }
+
+        /// <summary>
+        /// Gets and instance of the report service
+        /// </summary>
+        public static ReportService ReportService
+        {
+            get
+            {
+                var key = string.Concat("dialogue-", "ReportService");
+                if (!HttpContext.Current.Items.Contains(key))
+                {
+                    HttpContext.Current.Items.Add(key, new ReportService());
+                }
+                return HttpContext.Current.Items[key] as ReportService;
             }
         }
 

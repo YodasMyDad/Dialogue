@@ -1,5 +1,4 @@
 ﻿@using Dialogue.Logic.Application
-@using Dialogue.Logic.Models
 @model Dialogue.Logic.Models.ViewModels.ViewPostViewModel
 @{
     var postId = Model.Post.Id;
@@ -17,7 +16,8 @@
             }
         </div>
         <div id="postcontent-@postId" class="postcontent">
-            <p>@Html.Raw(AppHelpers.ConvertPostContent(Model.Post.PostContent))</p>
+            @Html.Raw(AppHelpers.ConvertPostContent(Model.Post.PostContent))
+
             @if (Model.Post.DateEdited > Model.Post.DateCreated)
             {
                 <p class="postlastedited">
@@ -70,68 +70,73 @@
                 }
             </div>
                 @if (Html.Settings().AllowMemberSignatures && !string.IsNullOrEmpty(Model.Post.Member.Signature))
-            {
-                    <div class="userpostsignature">@Html.Raw(AppHelpers.ConvertPostContent(Model.Post.Member.Signature))</div>
-            }
+                {
+                        <div class="userpostsignature">@Html.Raw(AppHelpers.ConvertPostContent(Model.Post.Member.Signature))</div>
+                }
             </div>
                     @if (Model.Post.Files != null && Model.Post.Files.Any())
-        {
+                    {
+                        <p class="uploadfileheading">
+                            @Html.Lang("Post.FileUpoadedHeading")
+                        </p>
                         <div class="postuploadedfilesholder clearfix">
                             @foreach (var file in Model.Post.Files.OrderByDescending(o => o.DateCreated))
-                {
-                                <div class="fileupload">
+                            {
+                                <div class="fileupload pills pills-large">
                                     <a href="@Html.Raw(Url.Content(file.FilePath))">@Html.Raw(file.FriendlyFilename)</a>
                                     @if (Model.Post.Member.Id == Model.LoggedOnMemberId || User.IsInRole(AppConstants.AdminRoleName))
-                        {
+                                    {
                                         <span class="deleteupload" title="@Html.Lang("Post.Delete")">
-                                            <a href="@Url.Action("DeleteUploadedFile", "Upload", new { file.Id })">x</a>
+                                            <a href="@Urls.GenerateUrl(Urls.UrlType.FileDelete)?id=@file.Id ">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </a>
                                         </span>
-                        }
+                                    }
                                 </div>
-                }
+                            }
                         </div>
-        }
+                    }
                 </div>
                     <div class="postinfo col-md-2">
 
                         <a href="@Html.Raw(Model.Post.Member.Url)" class="postmemberavatar">
-                            <img src="@Model.Post.Member.MemberImage(AppConstants.GravatarPostSize)" alt="@Model.Post.Member.UserName : @Model.PostCount @Html.Lang("Post.Posts")" title="@Model.Post.Member.UserName : @Model.PostCount @Html.Lang("Post.Posts")">
+                            <img src="@Model.Post.Member.MemberImage(AppConstants.GravatarPostSize)" alt="@Model.Post.Member.UserName" title="@Model.Post.Member.UserName">
                         </a>
 
                         <div class="postadminui">
                             @if (Model.User != null)
-            {
+                            {
 
-                if (Model.Post.Member.Id != Model.LoggedOnMemberId && Model.LoggedOnMemberId != 0 && Html.Settings().EnableSpamReporting)
-                {
-                    <a href="@Url.Action("Report", "Post", new { id = Model.Post.Id })" class="pills pills-full">@Html.Lang("Post.Report")</a>
-                }
-                if (Model.Post.Member.Id == Model.LoggedOnMemberId || Model.IsAdminOrMod)
-                {
-                    <a onclick="return confirm('@(Html.Lang("Post.DeleteConfirmation"))')" href="@Url.Action("DeletePost", "Post", new { id = Model.Post.Id })" class="pills pills-full">@Html.Lang("Post.Delete")</a>
-                }
-                if (Model.Post.Member.Id == Model.LoggedOnMemberId || Model.IsAdminOrMod)
-                {
-                    <a href="@Url.Action("EditPost", "Post", new { id = Model.Post.Id })" class="pills pills-full">@Html.Lang("Post.Edit")</a>
-                }
-                <a href="?quote=@Model.Post.Id#createpost" class="pills pills-full">@Html.Lang("Post.Quote")</a>
-                if ((Model.Post.Member.Id == Model.LoggedOnMemberId && Model.Permissions[AppConstants.PermissionAttachFiles].IsTicked) || Model.IsAdminOrMod)
-                {
-                    if (Model.Post.Member.DisableFileUploads != true)
-                    {
-                        <a class="postshowattach pills pills-full" href="#">@Html.Lang("Post.Attach")</a>
-                    }
-                }
+                                if (Model.Post.Member.Id != Model.LoggedOnMemberId && Model.LoggedOnMemberId != 0 && Html.Settings().EnableSpamReporting)
+                                {
+                                    <a href="@Urls.GenerateUrl(Urls.UrlType.PostReport)?id=@Model.Post.Id" class="pills pills-full">@Html.Lang("Post.Report")</a>
+                                }
+                                if (Model.Post.Member.Id == Model.LoggedOnMemberId || Model.IsAdminOrMod)
+                                {
+                                    <a onclick="return confirm('@(Html.Lang("Post.DeleteConfirmation"))')" href="@Urls.GenerateUrl(Urls.UrlType.PostDelete)?id=@Model.Post.Id" class="pills pills-full">@Html.Lang("Post.Delete")</a>
+                                }
+                                if (Model.Post.Member.Id == Model.LoggedOnMemberId || Model.IsAdminOrMod)
+                                {
+                                    <a href="@Urls.GenerateUrl(Urls.UrlType.EditPost)?id=@Model.Post.Id" class="pills pills-full">@Html.Lang("Post.Edit")</a>
+                                }
+                                <a href="?quote=@Model.Post.Id#createpost" class="pills pills-full">@Html.Lang("Post.Quote")</a>
+                                if ((Model.Post.Member.Id == Model.LoggedOnMemberId && Model.Permissions[AppConstants.PermissionAttachFiles].IsTicked) || Model.IsAdminOrMod)
+                                {
+                                    if (Model.Post.Member.DisableFileUploads != true)
+                                    {
+                                        <a class="postshowattach pills pills-full" href="#">@Html.Lang("Post.Attach")</a>
+                                    }
+                                }
 
-            }
+                            }
                         </div>
                     </div>
 
                     @if ((Model.Permissions[AppConstants.PermissionAttachFiles].IsTicked && Model.Post.Member.DisableFileUploads != true) || Model.IsAdminOrMod)
-    {
+                    {
                         <div class="postuploadholder row">
-                            @using (Html.BeginForm("UploadPostFiles", "Upload", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", role = "form" }))
-            {
+                            @using (Html.BeginForm("UploadPostFiles", "DialogueUploadSurface", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", role = "form" }))
+                            {
                                 <div class="col-md-12">
                                     <span style="display: none;" class="ajaxspinner" title="@Html.Lang("Post.PleaseWait")">@Html.Lang("Post.PleaseWait")</span>
                                     <div class="form-group">
@@ -140,7 +145,7 @@
                                     </div>
                                     <button type="submit" class="btn btn-default postuploadbutton">@Html.Lang("Post.Upload")</button>
                                 </div>
-            }
+                            }
                         </div>
-    }
+                    }
                 </div>

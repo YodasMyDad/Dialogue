@@ -34,6 +34,9 @@ namespace Dialogue.Logic.Controllers
                 throw new InvalidOperationException("The RenderModel.Content instance must be of type " + typeof(DialogueVirtualPage));
             }
 
+            // TODO - Must be a better way of doing this
+            // TODO - I'd just like to be able to call the action based on the pagename
+
             var page = new DialoguePage(model.Content.Parent);
 
             // Show leaderboard
@@ -51,7 +54,7 @@ namespace Dialogue.Logic.Controllers
             // Show latest activity rss
             if (pagename.ToLower().Contains(AppConstants.PageUrlActivityRss))
             {
-                return ActivityRss(page);
+                return ActivityRss(page);                
             }
 
             // Show latest category rss
@@ -66,17 +69,287 @@ namespace Dialogue.Logic.Controllers
                 return Badges(page);
             }
 
-            // Show Activities
-            if (pagename.ToLower().Contains(AppConstants.PageUrlActivity))
+            // Show Favourites
+            if (pagename.ToLower().Contains(AppConstants.PageUrlFavourites))
             {
-                return Activity(page);
+                return Favourites(page);
             }
-            
+
+            // Post Report
+            if (pagename.ToLower().Contains(AppConstants.PageUrlPostReport))
+            {
+                return Report(page);
+            }
+
+            // Edit Post
+            if (pagename.ToLower().Contains(AppConstants.PageUrlEditPost))
+            {
+                return EditPost(page);
+            }
+
+            // Private Messages Inbox
+            if (pagename.ToLower().Contains(AppConstants.PageUrlMessageInbox))
+            {
+                return PrivateMessages(page);
+            }
+
+            // Private Messages Outbox
+            if (pagename.ToLower().Contains(AppConstants.PageUrlMessageOutbox))
+            {
+                return PrivateMessagesSent(page);
+            }
+
+            // Private Messages Create
+            if (pagename.ToLower().Contains(AppConstants.PageUrlCreatePrivateMessage))
+            {
+                return PrivateMessagesCreate(page);
+            }
+
+            // Private Messages View
+            if (pagename.ToLower().Contains(AppConstants.PageUrlViewPrivateMessage))
+            {
+                return ViewPrivateMessage(page);
+            }
+
             // We return null here as this actionresult is purely used
             // to display virtual dialogue pages
             return null;
         }
 
+        [Authorize]
+        public ActionResult PrivateMessages(DialoguePage page)
+        {
+            if (CurrentMember.DisablePrivateMessages)
+            {
+                var message = new GenericMessageViewModel
+                {
+                    Message = Lang("Errors.NoPermission"),
+                    MessageType = GenericMessages.Danger
+                };
+                ShowMessage(message);
+                return Redirect(Settings.ForumRootUrl);
+            }
+            using (UnitOfWorkManager.NewUnitOfWork())
+            {
+                var pageIndex = AppHelpers.ReturnCurrentPagingNo();
+                var pagedMessages = ServiceFactory.PrivateMessageService.GetPagedReceivedMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
+                var viewModel = new PageListPrivateMessageViewModel(page)
+                {
+                    ListPrivateMessageViewModel = new ListPrivateMessageViewModel
+                    {
+                        Messages = pagedMessages,
+                        PageIndex = pageIndex,
+                        TotalCount = pagedMessages.TotalCount
+                    },
+                    PageTitle = Lang("PM.ReceivedPrivateMessages")
+                };
+                return View(PathHelper.GetThemeViewPath("PrivateMessages"), viewModel);
+            }
+        }
+
+        [Authorize]
+        public ActionResult ViewPrivateMessage(DialoguePage page)
+        {
+            using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+            {
+                var id = Request["id"];
+                var message = ServiceFactory.PrivateMessageService.Get(new Guid(id));
+
+                if (message.MemberToId == CurrentMember.Id | message.MemberFromId == CurrentMember.Id)
+                {
+                    //Mark as read if this is the receiver of the message
+                    if (message.MemberToId == CurrentMember.Id)
+                    {
+                        // Update message as read
+                        message.IsRead = true;
+
+                        // Get the sent version and update that too
+                        var sentMessage = ServiceFactory.PrivateMessageService.GetMatchingSentPrivateMessage(message.Subject, message.DateSent, message.MemberFromId, message.MemberToId);
+                        if (sentMessage != null)
+                        {
+                            sentMessage.IsRead = true;
+                        }
+
+                        try
+                        {
+                            unitOfWork.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            unitOfWork.Rollback();
+                            LogError(ex);
+                        }
+                    }
+
+                    return View(new ViewPrivateMessageViewModel { Message = message });
+                }
+
+                return ErrorToHomePage(Lang("Errors.NoPermission"));
+            }
+        }
+
+
+        [Authorize]
+        public ActionResult PrivateMessagesSent(DialoguePage page)
+        {
+            using (UnitOfWorkManager.NewUnitOfWork())
+            {
+                var pageIndex = AppHelpers.ReturnCurrentPagingNo();
+                var pagedMessages = ServiceFactory.PrivateMessageService.GetPagedSentMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
+                var viewModel = new ListPrivateMessageViewModel
+                {
+                    Messages = pagedMessages
+                };
+                return View(viewModel);
+            }
+        }
+
+        [Authorize]
+        public ActionResult PrivateMessagesCreate(DialoguePage page)
+        {
+            var to = Request["to"];
+            var id = Request["id"];
+
+            // Check if private messages are enabled
+            if (!Settings.AllowPrivateMessages || CurrentMember.DisablePrivateMessages)
+            {
+                return ErrorToHomePage(Lang("Errors.GenericMessage"));
+            }
+
+            // Check flood control
+            var lastMessage = ServiceFactory.PrivateMessageService.GetLastSentPrivateMessage(CurrentMember.Id);
+            if (lastMessage != null && AppHelpers.TimeDifferenceInMinutes(DateTime.UtcNow, lastMessage.DateSent) < Settings.PrivateMessageFloodControl)
+            {
+                ShowMessage(new GenericMessageViewModel
+                {
+                    Message = Lang("PM.SendingToQuickly"),
+                    MessageType = GenericMessages.Danger
+                });
+                return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageInbox));
+            }
+
+            // Check outbox size
+            var senderCount = ServiceFactory.PrivateMessageService.GetAllSentByUser(CurrentMember.Id).Count;
+            if (senderCount > Settings.PrivateMessageInboxSize)
+            {
+                ShowMessage(new GenericMessageViewModel
+                {
+                    Message = Lang("PM.SentItemsOverCapcity"),
+                    MessageType = GenericMessages.Danger
+                });
+                return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageInbox));
+            }
+
+            var viewModel = new CreatePrivateMessageViewModel();
+
+            // add the username to the to box if available
+            if (to != null)
+            {
+                var userTo = ServiceFactory.MemberService.Get(Convert.ToInt32(to));
+                viewModel.UserToUsername = userTo.UserName;
+            }
+
+            // See if this is a reply or not
+            if (id != null)
+            {
+                var previousMessage = ServiceFactory.PrivateMessageService.Get(new Guid(id));
+                // Its a reply, get the details
+                viewModel.UserToUsername = previousMessage.MemberFrom.UserName;
+                viewModel.Subject = previousMessage.Subject;
+                viewModel.PreviousMessage = previousMessage.Message;
+            }
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult EditPost(DialoguePage page)
+        {
+            using (UnitOfWorkManager.NewUnitOfWork())
+            {
+                // Got to get a lot of things here as we have to check permissions
+                // Get the post
+                var id = Request["id"];
+                var post = ServiceFactory.PostService.Get(new Guid(id));
+
+                // Get the topic
+                var topic = post.Topic;
+                var category = ServiceFactory.CategoryService.Get(topic.CategoryId);
+
+                // get the users permissions
+                var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+
+                if (post.MemberId == CurrentMember.Id || permissions[AppConstants.PermissionModerate].IsTicked)
+                {
+                    var viewModel = new EditPostViewModel { Content = Server.HtmlDecode(post.PostContent), Id = post.Id, Permissions = permissions };
+
+                    // Now check if this is a topic starter, if so add the rest of the field
+                    if (post.IsTopicStarter)
+                    {
+                        viewModel.Category = topic.CategoryId;
+                        viewModel.IsLocked = topic.IsLocked;
+                        viewModel.IsSticky = topic.IsSticky;
+                        viewModel.IsTopicStarter = post.IsTopicStarter;
+
+
+                        viewModel.Name = topic.Name;
+                        viewModel.Categories = ServiceFactory.CategoryService.GetAllowedCategories(_membersGroup).ToList();
+                        if (topic.Poll != null && topic.Poll.PollAnswers.Any())
+                        {
+                            // Has a poll so add it to the view model
+                            viewModel.PollAnswers = topic.Poll.PollAnswers;
+                        }
+                    }
+
+                    var pageViewModel = new EditPostPageViewModel(page)
+                    {
+                        EditPostViewModel = viewModel,
+                        PageTitle = Lang("Post.EditPostPageTitle")
+                    };
+
+                    return View(PathHelper.GetThemeViewPath("EditPost"), pageViewModel);
+                }
+                return NoPermission(topic);
+            }
+        }
+
+        [Authorize]
+        public ActionResult Report(DialoguePage page)
+        {
+            if (Settings.EnableSpamReporting)
+            {
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var id = Request["id"];
+                    var post = ServiceFactory.PostService.Get(new Guid(id));
+                    var viewModel = new ReportPostPageViewModel(page)
+                    {
+                        PostId = post.Id,
+                        Post = post,
+                        PostCreatorUsername = post.Member.UserName,
+                        PageTitle = string.Concat(Lang("Report.ReportPostBy"), post.Member.UserName)
+                    };
+                    return View(PathHelper.GetThemeViewPath("PostReport"), viewModel);
+                }
+            }
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
+        }
+
+        [Authorize]
+        public ActionResult Favourites(DialoguePage page)
+        {
+            using (UnitOfWorkManager.NewUnitOfWork())
+            {
+                var viewModel = new ViewFavouritesViewModel(page)
+                {
+                    PageTitle = Lang("Favourites.PageTitle")
+                };
+
+                var postIds = ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id).Select(x => x.PostId);
+                var allPosts = ServiceFactory.PostService.Get(postIds.ToList());
+                viewModel.Posts = allPosts;           
+                return View(PathHelper.GetThemeViewPath("Favourites"), viewModel);
+            }
+        }
 
         public ActionResult Badges(DialoguePage page)
         {
@@ -233,7 +506,7 @@ namespace Dialogue.Logic.Controllers
 
                 var activities = ServiceFactory.ActivityService.GetAll(20).OrderByDescending(x => x.ActivityMapped.Timestamp);
 
-                var activityLink = UrlTypes.GenerateUrl(UrlTypes.UrlType.Activity);
+                var activityLink = Urls.GenerateUrl(Urls.UrlType.Activity);
 
                 // Now loop through the topics and remove any that user does not have permission for
                 foreach (var activity in activities)

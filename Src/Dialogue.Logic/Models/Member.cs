@@ -48,7 +48,7 @@ namespace Dialogue.Logic.Models
 
         public string Url
         {
-            get { return UrlTypes.GenerateUrl(UrlTypes.UrlType.Member, Slug); }
+            get { return Urls.GenerateUrl(Urls.UrlType.Member, Slug); }
         }
 
         public string MemberImage(int size)

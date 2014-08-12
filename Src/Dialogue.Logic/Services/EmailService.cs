@@ -47,8 +47,6 @@ namespace Dialogue.Logic.Services
         /// <summary>
         /// Send multiple emails
         /// </summary>
-        /// <param name="email"></param>
-        /// NOTE: This implementation has a max send of 100 to stop mail server black listing
         public void SendMail(List<Email> email)
         {
             try

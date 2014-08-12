@@ -3,8 +3,9 @@ using Dialogue.Logic.Constants;
 
 namespace Dialogue.Logic.Application
 {
-    public static partial class UrlTypes
+    public static partial class Urls
     {
+        //TODO - Refactor this, must be a better way?
         public enum UrlType
         {
             Topic,
@@ -23,7 +24,16 @@ namespace Dialogue.Logic.Application
             ActivityRss,
             CategoryRss,
             FacebookLogin,
-            GoogleLogin
+            GoogleLogin,
+            Favourites,
+            PostDelete,
+            PostReport,
+            EditPost,
+            FileDelete,
+            MessageInbox,
+            MessageOutbox,
+            MessageCreate,
+            MessageView
         }
 
         public static string UrlTypeName(UrlType e)
@@ -58,10 +68,28 @@ namespace Dialogue.Logic.Application
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCategoryRss);
                 case UrlType.Badges:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlBadges);
+                case UrlType.Favourites:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlFavourites);
+                case UrlType.PostReport:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlPostReport);
+                case UrlType.EditPost:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEditPost);
+                case UrlType.MessageInbox:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlMessageInbox);
+                case UrlType.MessageOutbox:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlMessageOutbox);
+                case UrlType.MessageCreate:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCreatePrivateMessage);
+                case UrlType.MessageView:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlViewPrivateMessage);
                 case UrlType.GoogleLogin:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuthSurface/GoogleLogin");
                 case UrlType.FacebookLogin:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/FacebookOAuthSurface/FacebookLogin");
+                case UrlType.PostDelete:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialoguePostSurface/DeletePost");
+                case UrlType.FileDelete:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueUploadSurface/DeleteUploadedFile");
                 default:
                     return Dialogue.Settings().DialogueUrlName;
             }
