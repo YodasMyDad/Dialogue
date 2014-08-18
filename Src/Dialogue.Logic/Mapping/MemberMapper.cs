@@ -165,7 +165,7 @@ namespace Dialogue.Logic.Mapping
             siteMember.GoogleId = member.GetPropertyValue<string>(AppConstants.PropMemberGoogleId);
 
             siteMember.IsApproved = member.GetPropertyValue<bool>(AppConstants.PropMemberUmbracoMemberApproved);
-            siteMember.IsLockedOut = member.GetPropertyValue<bool>(AppConstants.PropMemberUmbracoMemberLastLockoutDate);
+            siteMember.IsLockedOut = member.GetPropertyValue<bool>(AppConstants.PropMemberUmbracoMemberLockedOut);
             siteMember.LastLoginDate = member.GetPropertyValue<DateTime>(AppConstants.PropMemberUmbracoMemberLastLogin);
 
             var roleNames = AppHelpers.UmbServices().MemberService.GetAllRoles(siteMember.Id).ToList();

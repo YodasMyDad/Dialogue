@@ -1,0 +1,33 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.PageReportMemberViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+@using (Html.BeginForm("Report", "DialogueMemberSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+{
+    @Html.ValidationSummary(false)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Reason)
+        @Html.TextAreaFor(m => m.Reason, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Reason)
+    </div>
+
+    @Html.HiddenFor(x => x.MemberId)
+    @Html.HiddenFor(x => x.Username)
+
+    <div class="submit-holder">
+        <input type="submit" class="btn btn-large btn-success" value="@Html.Lang("Buttons.Send")" />
+    </div>
+
+}

@@ -17,6 +17,7 @@ namespace Dialogue.Logic.Application
             TopicCreate,
             EditMember,
             SearchMembers,
+            Search,
             PrivateMessageCreate,
             TopicsRss,
             Badges,
@@ -33,7 +34,12 @@ namespace Dialogue.Logic.Application
             MessageInbox,
             MessageOutbox,
             MessageCreate,
-            MessageView
+            MessageView,
+            KillSpammer,
+            BanMember,
+            UnBanMember,
+            ReportMember,
+            ChangePassword
         }
 
         public static string UrlTypeName(UrlType e)
@@ -50,12 +56,6 @@ namespace Dialogue.Logic.Application
                     return Dialogue.Settings().RegisterUrl;
                 case UrlType.TopicCreate:
                     return Dialogue.Settings().CreateTopicUrl;
-                case UrlType.EditMember:
-                    return Dialogue.Settings().EditMemberUrl;
-                case UrlType.SearchMembers:
-                    return Dialogue.Settings().SearchMembersUrl;
-                case UrlType.PrivateMessageCreate:
-                    return Dialogue.Settings().CreatePrivateMessageUrl;
                 case UrlType.Leaderboard:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlLeaderboard);
                 case UrlType.Activity:
@@ -82,6 +82,14 @@ namespace Dialogue.Logic.Application
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCreatePrivateMessage);
                 case UrlType.MessageView:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlViewPrivateMessage);
+                case UrlType.ReportMember:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlViewReportMember);
+                case UrlType.EditMember:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEditMember);
+                case UrlType.ChangePassword:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlChangePassword);
+                case UrlType.Search:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlSearch);
                 case UrlType.GoogleLogin:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuthSurface/GoogleLogin");
                 case UrlType.FacebookLogin:
@@ -90,6 +98,12 @@ namespace Dialogue.Logic.Application
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialoguePostSurface/DeletePost");
                 case UrlType.FileDelete:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueUploadSurface/DeleteUploadedFile");
+                case UrlType.KillSpammer:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMemberSurface/KillSpammer");
+                case UrlType.BanMember:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMemberSurface/BanMember");
+                case UrlType.UnBanMember:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMemberSurface/UnBanMember");
                 default:
                     return Dialogue.Settings().DialogueUrlName;
             }

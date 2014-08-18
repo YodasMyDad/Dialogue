@@ -19,6 +19,15 @@ namespace Dialogue.Logic.Models.ViewModels
         public ListPrivateMessageViewModel ListPrivateMessageViewModel { get; set; }
     }
 
+    public class PageCreatePrivateMessageViewModel : MasterModel
+    {
+        public PageCreatePrivateMessageViewModel(IPublishedContent content) : base(content)
+        {
+        }
+
+        public CreatePrivateMessageViewModel CreatePrivateMessageViewModel { get; set; }
+    }
+
     #endregion
 
     #region ViewModels
@@ -47,8 +56,12 @@ namespace Dialogue.Logic.Models.ViewModels
 
     }
 
-    public class ViewPrivateMessageViewModel
+    public class ViewPrivateMessageViewModel : MasterModel
     {
+        public ViewPrivateMessageViewModel(IPublishedContent content) : base(content)
+        {
+        }
+
         public PrivateMessage Message { get; set; }
     }
 

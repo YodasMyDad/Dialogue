@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Web.Mvc;
+using System.Web.Security;
+using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
@@ -46,7 +50,7 @@ namespace Dialogue.Logic.Controllers
                 var loggedonId = UserIsAuthenticated ? CurrentMember.Id : 0;
                 var viewModel = new ViewMemberViewModel(model.Content)
                 {
-                    User = member, 
+                    User = member,
                     LoggedOnUserId = loggedonId,
                     PageTitle = string.Concat(member.UserName, Lang("Members.ProfileTitle")),
                     PostCount = member.PostCount
@@ -72,6 +76,337 @@ namespace Dialogue.Logic.Controllers
             _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(PostChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var changePasswordSucceeded = ServiceFactory.MemberService.ResetPassword(CurrentMember, model.ChangePasswordViewModel.NewPassword);
+                    if (changePasswordSucceeded)
+                    {
+                        ShowMessage(new GenericMessageViewModel
+                        {
+                            Message = Lang("Members.ChangePassword.Success"),
+                            MessageType = GenericMessages.Success
+                        });
+                        return Redirect(Urls.GenerateUrl(Urls.UrlType.ChangePassword));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
+            }
+            ShowMessage(new GenericMessageViewModel
+            {
+                Message = Lang("Members.ChangePassword.Error"),
+                MessageType = GenericMessages.Danger
+            });
+            return Redirect(Urls.GenerateUrl(Urls.UrlType.ChangePassword));
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(PostMemberEditViewModel userModel)
+        {
+            using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+            {
+                var user = ServiceFactory.MemberService.Get(userModel.MemberEditViewModel.Id);
+                var userEditUrl = string.Format("{0}?id={1}", Urls.GenerateUrl(Urls.UrlType.EditMember), user.Id);
+
+                // Sort image out first
+                if (userModel.MemberEditViewModel.Files != null)
+                {
+                    // Before we save anything, check the user already has an upload folder and if not create one
+                    var uploadFolderPath = Server.MapPath(string.Concat(AppConstants.UploadFolderPath, CurrentMember.Id));
+                    if (!Directory.Exists(uploadFolderPath))
+                    {
+                        Directory.CreateDirectory(uploadFolderPath);
+                    }
+
+                    // Loop through each file and get the file info and save to the users folder and Db
+                    var file = userModel.MemberEditViewModel.Files[0];
+                    if (file != null)
+                    {
+                        // If successful then upload the file
+                        var uploadResult = AppHelpers.UploadFile(file, uploadFolderPath, true);
+
+                        if (!uploadResult.UploadSuccessful)
+                        {
+                            ShowMessage(new GenericMessageViewModel
+                            {
+                                Message = uploadResult.ErrorMessage,
+                                MessageType = GenericMessages.Danger
+                            });
+                            return Redirect(userEditUrl);
+                        }
+
+
+                        // Save avatar to user
+                        user.Avatar = uploadResult.UploadedFileName;
+
+                    }
+                }
+
+                user.Signature = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.ScrubHtml(userModel.MemberEditViewModel.Signature));
+                user.Twitter = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Twitter));
+                user.Website = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Website));
+                user.Comments = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Comments));
+
+
+                // User is trying to change username, need to check if a user already exists
+                // with the username they are trying to change to
+                var changedUsername = false;
+                var sanitisedUsername = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.UserName));
+                if (sanitisedUsername != user.UserName)
+                {
+                    if (ServiceFactory.MemberService.Get(sanitisedUsername) != null)
+                    {
+                        unitOfWork.Rollback();
+                        ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateUserName"));
+                        ShowModelErrors();
+                        return Redirect(userEditUrl);
+                    }
+
+                    user.UserName = sanitisedUsername;
+                    changedUsername = true;
+                }
+
+                // User is trying to update their email address, need to 
+                // check the email is not already in use
+                if (userModel.MemberEditViewModel.Email != user.Email)
+                {
+                    // Add get by email address
+                    var sanitisedEmail = AppHelpers.SafePlainText(userModel.MemberEditViewModel.Email);
+                    if (ServiceFactory.MemberService.GetByEmail(sanitisedEmail) != null)
+                    {
+                        unitOfWork.Rollback();
+                        ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateEmail"));
+                        ShowModelErrors();
+                        return Redirect(user.Url);
+                    }
+                    user.Email = sanitisedEmail;
+                }
+
+                // Update Everything
+                ServiceFactory.MemberService.SaveMember(user, changedUsername);
+                ServiceFactory.ActivityService.ProfileUpdated(user);
+
+                ShowMessage(new GenericMessageViewModel
+                {
+                    Message = Lang("Member.ProfileUpdated"),
+                    MessageType = GenericMessages.Success
+                });
+
+                try
+                {
+
+                    // Need to save member here
+
+                    unitOfWork.Commit();
+
+                    if (changedUsername)
+                    {
+                        // User has changed their username so need to log them in
+                        // as there new username of 
+                        var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+                        if (authCookie != null)
+                        {
+                            var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+                            if (authTicket != null)
+                            {
+                                var newFormsIdentity = new FormsIdentity(new FormsAuthenticationTicket(authTicket.Version,
+                                                                                                       user.UserName,
+                                                                                                       authTicket.IssueDate,
+                                                                                                       authTicket.Expiration,
+                                                                                                       authTicket.IsPersistent,
+                                                                                                       authTicket.UserData));
+                                var roles = authTicket.UserData.Split("|".ToCharArray());
+                                var newGenericPrincipal = new GenericPrincipal(newFormsIdentity, roles);
+                                System.Web.HttpContext.Current.User = newGenericPrincipal;
+                            }
+                        }
+
+                        // sign out current user
+                        FormsAuthentication.SignOut();
+
+                        // Abandon the session
+                        Session.Abandon();
+
+                        // Sign in new user
+                        FormsAuthentication.SetAuthCookie(user.UserName, false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    unitOfWork.Rollback();
+                    LogError(ex);
+                    ModelState.AddModelError(string.Empty, Lang("Errors.GenericMessage"));
+                }
+
+                ShowModelErrors();
+                return Redirect(userEditUrl);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult Report(ReportMemberViewModel viewModel)
+        {
+            if (Settings.EnableMemberReporting)
+            {
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var user = ServiceFactory.MemberService.Get(viewModel.MemberId);
+                    var report = new Report
+                    {
+                        Reason = viewModel.Reason,
+                        ReportedMember = user,
+                        Reporter = CurrentMember
+                    };
+                    ServiceFactory.ReportService.MemberReport(report);
+                    ShowMessage(new GenericMessageViewModel
+                    {
+                        Message = Lang("Report.ReportSent"),
+                        MessageType = GenericMessages.Success
+                    });
+                    return Redirect(user.Url);
+                }
+            }
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
+        }
+
+        [Authorize]
+        public ActionResult KillSpammer()
+        {
+            //Check permission
+            if (User.IsInRole(AppConstants.AdminRoleName) || CurrentMember.CanEditOtherMembers)
+            {
+
+                using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var id = Request["id"];
+                    if (id != null)
+                    {
+                        // Get the member
+                        var member = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+
+                        // Delete all their posts and votes and delete etc..
+                        ServiceFactory.MemberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork);
+
+                        // SAVE UOW
+                        var message = new GenericMessageViewModel
+                        {
+                            Message = Lang("Member.SpammerIsKilled"),
+                            MessageType = GenericMessages.Success
+                        };
+
+                        try
+                        {
+                            unitOfWork.Commit();
+
+                            // Clear the website and signature fields and ban them
+                            ServiceFactory.MemberService.ClearWebsiteAndSignature(member, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError(ex);
+                            message.MessageType = GenericMessages.Danger;
+                            message.Message = ex.Message;
+                        }
+                        ShowMessage(message);
+                        return Redirect(member.Url);
+                    }
+                }
+
+
+            }
+            return ErrorToHomePage(Lang("Errors.NoPermission"));
+        }
+
+        [Authorize]
+        public ActionResult BanMember()
+        {
+            //Check permission
+            if (User.IsInRole(AppConstants.AdminRoleName) || CurrentMember.CanEditOtherMembers)
+            {
+
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var id = Request["id"];
+                    if (id != null)
+                    {
+                        // Get the member
+                        var member = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+
+                        var message = new GenericMessageViewModel
+                        {
+                            Message = Lang("Member.IsBanned"),
+                            MessageType = GenericMessages.Success
+                        };
+
+                        try
+                        {
+                            ServiceFactory.MemberService.BanMember(member);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError(ex);
+                            message.MessageType = GenericMessages.Danger;
+                            message.Message = ex.Message;
+                        }
+                        ShowMessage(message);
+                        return Redirect(member.Url);
+                    }
+                }
+            }
+            return ErrorToHomePage(Lang("Errors.NoPermission"));
+        }
+
+        [Authorize]
+        public ActionResult UnBanMember()
+        {
+            //Check permission
+            if (User.IsInRole(AppConstants.AdminRoleName) || CurrentMember.CanEditOtherMembers)
+            {
+
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var id = Request["id"];
+                    if (id != null)
+                    {
+                        // Get the member
+                        var member = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+
+                        var message = new GenericMessageViewModel
+                        {
+                            Message = Lang("Member.IsUnBanned"),
+                            MessageType = GenericMessages.Success
+                        };
+
+                        try
+                        {
+                            ServiceFactory.MemberService.UnBanMember(member);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError(ex);
+                            message.MessageType = GenericMessages.Danger;
+                            message.Message = ex.Message;
+                        }
+                        ShowMessage(message);
+                        return Redirect(member.Url);
+                    }
+                }
+            }
+            return ErrorToHomePage(Lang("Errors.NoPermission"));
+        }
+
         [Authorize]
         public PartialViewResult SideAdminPanel()
         {
@@ -89,7 +424,6 @@ namespace Dialogue.Logic.Controllers
                 return PartialView(PathHelper.GetThemePartialViewPath("SideAdminPanel"),
                             new ViewAdminSidePanelViewModel { CurrentUser = CurrentMember, NewPrivateMessageCount = count });
             }
-
         }
 
         [HttpPost]

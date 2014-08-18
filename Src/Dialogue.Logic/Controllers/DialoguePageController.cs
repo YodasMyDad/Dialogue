@@ -35,85 +35,206 @@ namespace Dialogue.Logic.Controllers
             }
 
             // TODO - Must be a better way of doing this
-            // TODO - I'd just like to be able to call the action based on the pagename
+            // TODO - I'd just like to be able to call the action with a string based on the pagename
+            // TODO - Like Action("ActionName", viewModel) ??
 
             var page = new DialoguePage(model.Content.Parent);
+            var pageLowered = pagename.ToLower();
 
-            // Show leaderboard
-            if (pagename.ToLower().Contains(AppConstants.PageUrlLeaderboard))
+            switch (pageLowered)
             {
-                return Leaderboard(page);
+                case AppConstants.PageUrlLeaderboard:
+                    return Leaderboard(page);
+
+                case AppConstants.PageUrlTopicsRss:
+                    return TopicsRss(page);
+
+                case AppConstants.PageUrlActivityRss:
+                    return ActivityRss(page);
+
+                case AppConstants.PageUrlActivity:
+                    return Activity(page);
+
+                case AppConstants.PageUrlCategoryRss:
+                    return CategoryRss(page);
+
+                case AppConstants.PageUrlBadges:
+                    return Badges(page);
+
+                case AppConstants.PageUrlFavourites:
+                    return Favourites(page);
+
+                case AppConstants.PageUrlPostReport:
+                    return Report(page);
+
+                case AppConstants.PageUrlEditPost:
+                    return EditPost(page);
+
+                case AppConstants.PageUrlMessageInbox:
+                    return PrivateMessages(page);
+
+                case AppConstants.PageUrlMessageOutbox:
+                    return PrivateMessagesSent(page);
+
+                case AppConstants.PageUrlCreatePrivateMessage:
+                    return PrivateMessagesCreate(page);
+
+                case AppConstants.PageUrlViewPrivateMessage:
+                    return ViewPrivateMessage(page);
+
+                case AppConstants.PageUrlViewReportMember:
+                    return ReportMember(page);
+
+                case AppConstants.PageUrlEditMember:
+                    return EditMember(page);
+
+                case AppConstants.PageUrlChangePassword:
+                    return ChangePassword(page);
+
+                case AppConstants.PageUrlSearch:
+                    return Search(page);
+                    
+                default:
+                    return null;
+
             }
 
-            // Show latest topics rss
-            if (pagename.ToLower().Contains(AppConstants.PageUrlTopicsRss))
+        }
+
+        public ActionResult Search(DialoguePage page)
+        {
+            var term = Request["term"];
+            if (!string.IsNullOrEmpty(term))
             {
-                return TopicsRss(page);
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    // Set the page index
+                    var pageIndex = AppHelpers.ReturnCurrentPagingNo();
+
+                    // Returns the formatted string to search on
+                    var formattedSearchTerm = AppHelpers.ReturnSearchString(term);
+
+                    // Create an empty viewmodel
+                    var viewModel = new SearchViewModel(page)
+                    {
+                        Topics = new PagedList<Topic>(new List<Topic>(), 1, 20, 0),
+                        AllPermissionSets = new Dictionary<Category, PermissionSet>(),
+                        PageIndex = pageIndex,
+                        TotalCount = 0,
+                        Term = term
+                    };
+
+                    // if there are no results from the filter return an empty search view model.
+                    if (string.IsNullOrWhiteSpace(formattedSearchTerm))
+                    {
+                        return View(PathHelper.GetThemeViewPath("Search"), viewModel);
+                    }
+
+                    //// Get all the topics based on the search value
+                    var topics = ServiceFactory.TopicService.SearchTopics(pageIndex,
+                                                         Settings.TopicsPerPage,
+                                                         AppConstants.ActiveTopicsListSize,
+                                                         term);
+
+
+                    // Get all the categories for this topic collection
+                    var categories = topics.Select(x => x.Category).Distinct();
+
+                    // create the view model
+                    viewModel = new SearchViewModel(page)
+                    {
+                        Topics = topics,
+                        AllPermissionSets = new Dictionary<Category, PermissionSet>(),
+                        PageIndex = pageIndex,
+                        TotalCount = topics.TotalCount,
+                        Term = formattedSearchTerm
+                    };
+
+                    // loop through the categories and get the permissions
+                    foreach (var category in categories)
+                    {
+                        var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                        viewModel.AllPermissionSets.Add(category, permissionSet);
+                    }
+
+                    return View(PathHelper.GetThemeViewPath("Search"), viewModel);
+                }
             }
 
-            // Show latest activity rss
-            if (pagename.ToLower().Contains(AppConstants.PageUrlActivityRss))
+            return Redirect(Settings.ForumRootUrl);
+        }
+
+        [Authorize]
+        public ActionResult ChangePassword(DialoguePage page)
+        {
+
+            var viewModel = new PageChangePasswordViewModel(page)
             {
-                return ActivityRss(page);                
+                PageTitle = Lang("Members.ChangePassword.Title")
+            };
+            return View(PathHelper.GetThemeViewPath("ChangePassword"), viewModel);
+        }
+
+        [Authorize]
+        public ActionResult EditMember(DialoguePage page)
+        {
+            var id = Request["id"];
+            if (id != null)
+            {
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var user = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                    var viewModel = new PageMemberEditViewModel(page)
+                    {
+                        MemberEditViewModel = new MemberEditViewModel
+                        {
+                            Id = user.Id,
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            Signature = user.Signature,
+                            Website = user.Website,
+                            Twitter = user.Twitter,
+                            Avatar = user.Avatar,
+                            Comments = user.Comments,
+
+                            DisableFileUploads = user.DisableFileUploads,
+                            DisableEmailNotifications = user.DisableEmailNotifications,
+                            DisablePosting = user.DisablePosting,
+                            DisablePrivateMessages = user.DisablePrivateMessages,
+                            CanEditOtherMembers = user.CanEditOtherMembers
+                        },
+                        PageTitle = string.Format(Lang("Members.EditProfile"), user.UserName)
+                    };
+
+                    return View(PathHelper.GetThemeViewPath("EditMember"), viewModel);
+                }
             }
 
-            // Show latest category rss
-            if (pagename.ToLower().Contains(AppConstants.PageUrlCategoryRss))
-            {
-                return CategoryRss(page);
-            }
+            return Redirect(Settings.ForumRootUrl);
+        }
 
-            // Show Badges
-            if (pagename.ToLower().Contains(AppConstants.PageUrlBadges))
-            {
-                return Badges(page);
-            }
 
-            // Show Favourites
-            if (pagename.ToLower().Contains(AppConstants.PageUrlFavourites))
-            {
-                return Favourites(page);
-            }
 
-            // Post Report
-            if (pagename.ToLower().Contains(AppConstants.PageUrlPostReport))
-            {
-                return Report(page);
-            }
+        [Authorize]
+        public ActionResult ReportMember(DialoguePage page)
+        {
+            var id = Request["id"];
 
-            // Edit Post
-            if (pagename.ToLower().Contains(AppConstants.PageUrlEditPost))
+            if (Settings.EnableMemberReporting)
             {
-                return EditPost(page);
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var user = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                    var viewModel = new PageReportMemberViewModel(page)
+                    {
+                        MemberId = user.Id, 
+                        Username = user.UserName,
+                        PageTitle = Lang("Report.MemberReport")
+                    };
+                    return View(PathHelper.GetThemeViewPath("ReportMember"), viewModel);
+                }
             }
-
-            // Private Messages Inbox
-            if (pagename.ToLower().Contains(AppConstants.PageUrlMessageInbox))
-            {
-                return PrivateMessages(page);
-            }
-
-            // Private Messages Outbox
-            if (pagename.ToLower().Contains(AppConstants.PageUrlMessageOutbox))
-            {
-                return PrivateMessagesSent(page);
-            }
-
-            // Private Messages Create
-            if (pagename.ToLower().Contains(AppConstants.PageUrlCreatePrivateMessage))
-            {
-                return PrivateMessagesCreate(page);
-            }
-
-            // Private Messages View
-            if (pagename.ToLower().Contains(AppConstants.PageUrlViewPrivateMessage))
-            {
-                return ViewPrivateMessage(page);
-            }
-
-            // We return null here as this actionresult is purely used
-            // to display virtual dialogue pages
-            return null;
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
         }
 
         [Authorize]
@@ -180,14 +301,17 @@ namespace Dialogue.Logic.Controllers
                             LogError(ex);
                         }
                     }
-
-                    return View(new ViewPrivateMessageViewModel { Message = message });
+                    var viewModel = new ViewPrivateMessageViewModel(page)
+                    {
+                        Message = message,
+                        PageTitle = message.Subject
+                    };
+                    return View(PathHelper.GetThemeViewPath("PrivateMessageView"), viewModel);
                 }
 
                 return ErrorToHomePage(Lang("Errors.NoPermission"));
             }
         }
-
 
         [Authorize]
         public ActionResult PrivateMessagesSent(DialoguePage page)
@@ -196,11 +320,15 @@ namespace Dialogue.Logic.Controllers
             {
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
                 var pagedMessages = ServiceFactory.PrivateMessageService.GetPagedSentMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
-                var viewModel = new ListPrivateMessageViewModel
+                var viewModel = new PageListPrivateMessageViewModel(page)
                 {
-                    Messages = pagedMessages
+                    ListPrivateMessageViewModel = new ListPrivateMessageViewModel
+                    {
+                        Messages = pagedMessages
+                    },
+                    PageTitle = Lang("PM.SentPrivateMessages")
                 };
-                return View(viewModel);
+                return View(PathHelper.GetThemeViewPath("PrivateMessagesSent"), viewModel);
             }
         }
 
@@ -240,13 +368,17 @@ namespace Dialogue.Logic.Controllers
                 return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageInbox));
             }
 
-            var viewModel = new CreatePrivateMessageViewModel();
+            var viewModel = new PageCreatePrivateMessageViewModel(page)
+            {
+                CreatePrivateMessageViewModel = new CreatePrivateMessageViewModel(),
+                PageTitle = Lang("PM.CreatePrivateMessage")
+            };
 
             // add the username to the to box if available
             if (to != null)
             {
                 var userTo = ServiceFactory.MemberService.Get(Convert.ToInt32(to));
-                viewModel.UserToUsername = userTo.UserName;
+                viewModel.CreatePrivateMessageViewModel.UserToUsername = userTo.UserName;
             }
 
             // See if this is a reply or not
@@ -254,11 +386,11 @@ namespace Dialogue.Logic.Controllers
             {
                 var previousMessage = ServiceFactory.PrivateMessageService.Get(new Guid(id));
                 // Its a reply, get the details
-                viewModel.UserToUsername = previousMessage.MemberFrom.UserName;
-                viewModel.Subject = previousMessage.Subject;
-                viewModel.PreviousMessage = previousMessage.Message;
+                viewModel.CreatePrivateMessageViewModel.UserToUsername = previousMessage.MemberFrom.UserName;
+                viewModel.CreatePrivateMessageViewModel.Subject = previousMessage.Subject;
+                viewModel.CreatePrivateMessageViewModel.PreviousMessage = previousMessage.Message;
             }
-            return View(viewModel);
+            return View(PathHelper.GetThemeViewPath("PrivateMessagesCreate"), viewModel);
         }
 
         [Authorize]

@@ -169,7 +169,94 @@ $(function () {
     });
     // **** Email subscription End **** //
 
+    //** Topic More Posts **//
+    $(".showmoreposts").click(function (e) {
+        e.preventDefault();
+        var topicId = $('#topicId').val();
+        var pageIndex = $('#pageIndex');
+        var totalPages = parseInt($('#totalPages').val());
+        var activeText = $('span.smpactive');
+        var loadingText = $('span.smploading');
+        var showMoreLink = $(this);
+
+        activeText.hide();
+        loadingText.show();
+
+        var getMorePostsViewModel = new Object();
+        getMorePostsViewModel.TopicId = topicId;
+        getMorePostsViewModel.PageIndex = pageIndex.val();
+        getMorePostsViewModel.Order = $.QueryString["order"];
+
+        // Ajax call to post the view model to the controller
+        var strung = JSON.stringify(getMorePostsViewModel);
+
+        $.ajax({
+            url: app_base + 'umbraco/Surface/DialogueTopicSurface/AjaxMorePosts',
+            type: 'POST',
+            dataType: 'html',
+            data: strung,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+
+                // Now add the new posts
+                showMoreLink.before(data);
+
+                // Update the page index value
+                var newPageIdex = (parseInt(pageIndex.val()) + parseInt(1));
+                pageIndex.val(newPageIdex);
+
+                // If the new pageindex is greater than the total pages, then hide the show more button
+                if (newPageIdex > totalPages) {
+                    showMoreLink.hide();
+                }
+
+                // Lastly reattch the click events
+                AddPostClickEvents();
+                ShowFileUploadClickHandler();
+                DisplayWaitForPostUploadClickHandler();
+                activeText.show();
+                loadingText.hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                ShowUserMessage("Error: " + xhr.status + " " + thrownError);
+                activeText.show();
+                loadingText.hide();
+            }
+        });
+    });
+
+    //**** Private Messages ****//
+    $(".privatemessagedelete").click(function (e) {
+        var linkClicked = $(this);
+        var messageId = linkClicked.data('messageid');
+        var deletePrivateMessageViewModel = new Object();
+        deletePrivateMessageViewModel.Id = messageId;
+
+        // Ajax call to post the view model to the controller
+        var strung = JSON.stringify(deletePrivateMessageViewModel);
+
+        $.ajax({
+            url: app_base + 'umbraco/Surface/DialogueMessageSurface/Delete',
+            type: 'POST',
+            data: strung,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                // deleted, remove table row
+                RemovePrivateMessageTableRow(linkClicked);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                ShowUserMessage("Error: " + xhr.status + " " + thrownError);
+            }
+        });
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+
 });
+
+function RemovePrivateMessageTableRow(linkClicked) {
+    linkClicked.parents('tr').first().fadeOut();
+}
 
 function DisplayWaitForPostUploadClickHandler() {
     var postUploadButton = $('.postuploadbutton');
@@ -476,6 +563,7 @@ function AjaxPostSuccess() {
     // Attached the upload click events
     ShowFileUploadClickHandler();
     DisplayWaitForPostUploadClickHandler();
+    AddPostClickEvents();    
 }
 
 function AjaxPostBegin() {

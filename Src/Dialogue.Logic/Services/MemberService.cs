@@ -295,7 +295,7 @@ namespace Dialogue.Logic.Services
                 AppHelpers.LogError("Error trying to delete Dialogue member", ex);
             }
             return false;
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -303,11 +303,61 @@ namespace Dialogue.Logic.Services
         /// They use signature and website fields for urls. This clears both
         /// </summary>
         /// <param name="member"></param>
-        public void ClearWebsiteAndSignature(Member member)
+        /// <param name="banMemberToo"></param>
+        public void ClearWebsiteAndSignature(Member member, bool banMemberToo = false)
         {
             var baseMember = _memberService.GetById(member.Id);
-            baseMember.Properties[AppConstants.PropMemberWebsite].Value = "";
-            baseMember.Properties[AppConstants.PropMemberSignature].Value = "";
+            baseMember.Properties[AppConstants.PropMemberWebsite].Value = string.Empty;
+            baseMember.Properties[AppConstants.PropMemberSignature].Value = string.Empty;
+            if (banMemberToo)
+            {
+                baseMember.Properties[AppConstants.PropMemberUmbracoMemberLockedOut].Value = 1;
+            }
+            _memberService.Save(baseMember);
+        }
+
+        /// <summary>
+        /// Saves a front end member
+        /// </summary>
+        /// <param name="member"></param>
+        /// <param name="changedUsername"></param>
+        public void SaveMember(Member member, bool changedUsername)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            
+            // Only change username if it's different
+            if (changedUsername)
+            {
+                baseMember.Username = member.UserName;
+                baseMember.Name = member.UserName;
+            }
+
+            baseMember.Properties[AppConstants.PropMemberEmail].Value = member.Email;            
+            baseMember.Properties[AppConstants.PropMemberSignature].Value = member.Signature;
+            baseMember.Properties[AppConstants.PropMemberWebsite].Value = member.Website;
+            baseMember.Properties[AppConstants.PropMemberTwitter].Value = member.Twitter;
+            baseMember.Properties[AppConstants.PropMemberAvatar].Value = member.Avatar;
+            baseMember.Properties[AppConstants.PropMemberCanEditOtherUsers].Value = member.CanEditOtherMembers;
+            baseMember.Properties[AppConstants.PropMemberDisableEmailNotifications].Value = member.DisableEmailNotifications;
+            baseMember.Properties[AppConstants.PropMemberDisablePosting].Value = member.DisablePosting;
+            baseMember.Properties[AppConstants.PropMemberDisablePrivateMessages].Value = member.DisablePrivateMessages;
+            baseMember.Properties[AppConstants.PropMemberDisableFileUploads].Value = member.DisableFileUploads;
+            baseMember.Properties[AppConstants.PropMemberUmbracoMemberComments].Value = member.Comments;
+
+            _memberService.Save(baseMember);
+        }
+
+        public void BanMember(Member member)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            baseMember.Properties[AppConstants.PropMemberUmbracoMemberLockedOut].Value = 1;
+            _memberService.Save(baseMember);
+        }
+
+        public void UnBanMember(Member member)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            baseMember.Properties[AppConstants.PropMemberUmbracoMemberLockedOut].Value = 0;
             _memberService.Save(baseMember);
         }
 
@@ -333,7 +383,7 @@ namespace Dialogue.Logic.Services
             {
                 var newPostCount = (member.PostCount - 1);
                 baseMember.Properties[AppConstants.PropMemberPostCount].Value = newPostCount;
-                _memberService.Save(baseMember); 
+                _memberService.Save(baseMember);
             }
         }
 
@@ -413,7 +463,7 @@ namespace Dialogue.Logic.Services
                 return false;
             }
 
-        } 
+        }
         #endregion
 
         #region Member Groups

@@ -24,9 +24,9 @@
                 });
             TimeBadges();
         });
-            function TimeBadges() {
-                var timeBadgeViewModel = new Object();
-                timeBadgeViewModel.Id = '@Model.User.Id';
+        function TimeBadges() {
+            var timeBadgeViewModel = new Object();
+            timeBadgeViewModel.Id = '@Model.User.Id';
             var strung = JSON.stringify(timeBadgeViewModel);
             $.ajax({
                 url: app_base + 'umbraco/Surface/DialogueBadgeSurface/Time',
@@ -56,40 +56,53 @@
             <p><img src="@Model.User.MemberImage(AppConstants.GravatarProfileSize)" alt="@Model.User.UserName"></p>
             @if (User.Identity.IsAuthenticated && Model.User.UserName != User.Identity.Name)
             {
-                <p><a href="@(Html.Settings().CreatePrivateMessageUrl)?id=@Model.User.Id" class="btn btn-default">@Html.Lang("Members.MessageMe")</a></p>
+                <p>
+                    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageCreate)?to=@Model.User.Id" class="btn btn-default">
+                        @Html.Lang("Members.MessageMe")
+                    </a>
+                </p>
             }
 
             @if (User.Identity.IsAuthenticated && Html.Settings().EnableMemberReporting && Model.User.Id != Model.LoggedOnUserId)
             {
-                <p><a href="@Url.Action("Report", "Members", new { id = Model.User.Id }, null)" class="btn btn-default">@Html.Lang("Buttons.Report")</a></p>
+                <p>
+                    <a href="@Urls.GenerateUrl(Urls.UrlType.ReportMember)?id=@Model.User.Id" class="btn btn-default">
+                        @Html.Lang("Buttons.Report")
+                    </a>
+                </p>
             }
 
-            @if (User.IsInRole(AppConstants.AdminRoleName) || Model.User.CanEditOtherMembers)
+            @if (User.Identity.IsAuthenticated && (User.IsInRole(AppConstants.AdminRoleName) || Html.CurrentMember().CanEditOtherMembers))
             {
                 // If this is an admins profile then do not show
                 if (!Model.User.Groups.Any(x => x.Name.Contains(AppConstants.AdminRoleName)))
                 {
-                    <div class="memberprofileadminsection">
-                        <div class="adminprofiletools">
 
-                            <p><a href="@Url.Action("DeleteUsersPosts", "Account", new { id = Model.User.Id, profileClick = true }, null)" class="btn btn-default" onclick="return confirm('@Html.Lang("Confirmation.DeleteMembersPosts")')">@Html.Lang("Members.DeleteAllPosts")</a></p>
+                    <div class="adminprofiletools">
 
-                            @if (!Model.User.IsLockedOut)
-                            {
-                                <p><a href="@Url.Action("BanMember", "Account", new { id = Model.User.Id }, null)" class="btn btn-default">@Html.Lang("Members.BanUser")</a></p>
-                            }
-                            else
-                            {
-                                <p><a href="@Url.Action("UnBanMember", "Account", new { id = Model.User.Id }, null)" class="btn btn-default">@Html.Lang("Members.UnBanUser")</a></p>
-                            }
+                        <p>
+                            <a href="@Urls.GenerateUrl(Urls.UrlType.KillSpammer)?id=@Model.User.Id" class="btn btn-default" onclick="return confirm('@Html.Lang("Confirmation.ClenseSpammerDesc")')">
+                                @Html.Lang("Members.SpammerBeGone")
+                            </a>
+                        </p>
 
-                            @if (User.IsInRole(AppConstants.AdminRoleName))
-                            {
-                                <p><a href="@Url.Action("Edit", "Account", new { Model.User.Id }, null)" class="btn btn-default">@Html.Lang("Members.EditMember")</a></p>
-                            }
-                        
-                        </div>
+                        @if (!Model.User.IsLockedOut)
+                        {
+                            <p>
+                                <a href="@Urls.GenerateUrl(Urls.UrlType.BanMember)?id=@Model.User.Id" class="btn btn-default">
+                                    @Html.Lang("Members.BanUser")
+                                </a>
+                            </p>
+                        }
+                        else
+                        {
+                            <p><a href="@Urls.GenerateUrl(Urls.UrlType.UnBanMember)?id=@Model.User.Id" class="btn btn-default">@Html.Lang("Members.UnBanUser")</a></p>
+                        }
+
+                        <p><a href="@Urls.GenerateUrl(Urls.UrlType.EditMember)?id=@Model.User.Id" class="btn btn-default">@Html.Lang("Members.EditMember")</a></p>
+
                     </div>
+
                 }
             }
         </div>

@@ -94,7 +94,7 @@ namespace Dialogue.Logic.Models.ViewModels
 
     public class ShowMorePostsViewModel
     {
-        public PagedList<Post> Posts { get; set; }
+        public List<ViewPostViewModel> Posts { get; set; }
         public PermissionSet Permissions { get; set; }
         public Member User { get; set; }
         public Topic Topic { get; set; }
@@ -133,5 +133,20 @@ namespace Dialogue.Logic.Models.ViewModels
     public class NotifyNewTopicViewModel
     {
         public Guid CategoryId { get; set; }
+    }
+
+
+
+    public class SearchViewModel : MasterModel
+    {
+        public SearchViewModel(IPublishedContent content) : base(content)
+        {
+        }
+
+        public PagedList<Topic> Topics { get; set; }
+        public Dictionary<Category, PermissionSet> AllPermissionSets { get; set; }
+        public string Term { get; set; }
+        public int? PageIndex { get; set; }
+        public int? TotalCount { get; set; }
     }
 }

@@ -233,6 +233,59 @@ namespace Dialogue.Logic.Controllers
             _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
+        [HttpPost]
+        public PartialViewResult AjaxMorePosts(GetMorePostsViewModel getMorePostsViewModel)
+        {
+            // Get the topic
+            var topic = ServiceFactory.TopicService.Get(getMorePostsViewModel.TopicId);
+
+            // Get the permissions for the category that this topic is in
+            var permissions = ServiceFactory.PermissionService.GetPermissions(topic.Category, _membersGroup);
+
+            // If this user doesn't have access to this topic then just return nothing
+            if (permissions[AppConstants.PermissionDenyAccess].IsTicked)
+            {
+                return null;
+            }
+
+            var orderBy = !string.IsNullOrEmpty(getMorePostsViewModel.Order) ?
+                                      AppHelpers.EnumUtils.ReturnEnumValueFromString<PostOrderBy>(getMorePostsViewModel.Order) : PostOrderBy.Standard;
+
+
+
+            var viewModel = new ShowMorePostsViewModel
+            {
+                Topic = topic,
+                Permissions = permissions,
+                User = CurrentMember
+            };
+
+            // Map the posts to the posts viewmodel
+
+            // Get all favourites for this user
+            var favourites = new List<Favourite>();
+            if (CurrentMember != null)
+            {
+                favourites.AddRange(ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id));
+            }
+
+            // Get the posts
+            var posts = ServiceFactory.PostService.GetPagedPostsByTopic(getMorePostsViewModel.PageIndex, Settings.PostsPerPage, int.MaxValue, topic.Id, orderBy);
+
+            // Get all votes for all the posts
+            var postIds = posts.Select(x => x.Id).ToList();
+            var allPostVotes = ServiceFactory.VoteService.GetAllVotesForPosts(postIds);
+
+            viewModel.Posts = new List<ViewPostViewModel>();
+            foreach (var post in posts)
+            {
+                var postViewModel = PostMapper.MapPostViewModel(permissions, post, CurrentMember, Settings, topic, allPostVotes, favourites);
+                viewModel.Posts.Add(postViewModel);
+            }
+
+            return PartialView(PathHelper.GetThemePartialViewPath("AjaxMorePosts"), viewModel);
+        }
+
         [ChildActionOnly]
         public PartialViewResult GetTopicBreadcrumb(Topic topic)
         {

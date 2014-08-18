@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Application.Akismet;
 using Dialogue.Logic.Constants;
+using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Services;
@@ -77,16 +78,9 @@ namespace Dialogue.Logic.Controllers
             {
 
                 // Create the view model
-                var viewModel = new ViewPostViewModel
-                {
-                    Permissions = permissions,
-                    Post = newPost,
-                    User = CurrentMember,
-                    ParentTopic = topic
-                };
+                var viewModel = PostMapper.MapPostViewModel(permissions, newPost, CurrentMember, Settings, topic, new List<Vote>(), new List<Favourite>());
 
                 // Success send any notifications
-
                 NotifyNewTopics(topic);
 
                 return PartialView(PathHelper.GetThemePartialViewPath("Post"), viewModel);

@@ -38,14 +38,14 @@ namespace Dialogue.Logic
                 var createTopic = forumRootNode.Descendant(AppConstants.DocTypeCreateTopic) ?? forumRootNode.Ancestor(AppConstants.DocTypeCreateTopic);
                 settings.CreateTopicUrl = createTopic != null ? createTopic.Url : "/Unable-to-find-Create-Topic-page";
 
-                var editMemberUrl = forumRootNode.Descendant(AppConstants.DocTypeEditMember) ?? forumRootNode.Ancestor(AppConstants.DocTypeEditMember);
-                settings.EditMemberUrl = editMemberUrl != null ? editMemberUrl.Url : "/Unable-to-find-EditMember-page";
+                //var editMemberUrl = forumRootNode.Descendant(AppConstants.DocTypeEditMember) ?? forumRootNode.Ancestor(AppConstants.DocTypeEditMember);
+                //settings.EditMemberUrl = editMemberUrl != null ? editMemberUrl.Url : "/Unable-to-find-EditMember-page";
 
-                var searchMembersUrl = forumRootNode.Descendant(AppConstants.DocTypeSearchMembers) ?? forumRootNode.Ancestor(AppConstants.DocTypeSearchMembers);
-                settings.SearchMembersUrl = searchMembersUrl != null ? searchMembersUrl.Url : "/Unable-to-find-Search-members-page";
+                //var searchMembersUrl = forumRootNode.Descendant(AppConstants.DocTypeSearchMembers) ?? forumRootNode.Ancestor(AppConstants.DocTypeSearchMembers);
+                //settings.SearchMembersUrl = searchMembersUrl != null ? searchMembersUrl.Url : "/Unable-to-find-Search-members-page";
 
-                var sendPrivateMessageUrl = forumRootNode.Descendant(AppConstants.DocTypeSendPrivateMessage) ?? forumRootNode.Ancestor(AppConstants.DocTypeSendPrivateMessage);
-                settings.CreatePrivateMessageUrl = sendPrivateMessageUrl != null ? sendPrivateMessageUrl.Url : "/Unable-to-find-create-private-message-page";
+                //var sendPrivateMessageUrl = forumRootNode.Descendant(AppConstants.DocTypeSendPrivateMessage) ?? forumRootNode.Ancestor(AppConstants.DocTypeSendPrivateMessage);
+                //settings.CreatePrivateMessageUrl = sendPrivateMessageUrl != null ? sendPrivateMessageUrl.Url : "/Unable-to-find-create-private-message-page";
 
                 // General
                 settings.CloseForum = forumRootNode.GetPropertyValue<bool>("closeForum");

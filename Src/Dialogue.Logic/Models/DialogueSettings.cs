@@ -17,9 +17,6 @@ namespace Dialogue.Logic.Models
         public string LoginUrl { get; set; }
         public string RegisterUrl { get; set; }
         public string CreateTopicUrl { get; set; }
-        public string EditMemberUrl { get; set; }
-        public string SearchMembersUrl { get; set; }
-        public string CreatePrivateMessageUrl { get; set; }
 
         // Urls
         public string TopicUrlName { get; set; }

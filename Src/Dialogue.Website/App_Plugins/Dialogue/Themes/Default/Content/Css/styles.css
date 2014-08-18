@@ -84,6 +84,7 @@ input[type="radio"].pollanswerselect { margin: 3px 0 0 0; float: left; }
 .post .postadminui .pills { margin-bottom: 5px; }
 .post .postuploadholder { display: none; }
 .post.solution-true .badge { background-color: #7bbc78; }
+.showmoreposts { margin: 17px 0 25px;}
 
 /*--- Post Report ---*/
 .beingreported { padding: 25px 0 0 0; }
@@ -93,6 +94,11 @@ input[type="radio"].pollanswerselect { margin: 3px 0 0 0; float: left; }
 .postuploadedfilesholder .pills { float: left; }
 .postuploadedfilesholder .pills .glyphicon-remove { font-size: 16px; padding-left: 8px; }
 p.uploadfileheading { margin: 0 0 0 0; padding: 6px 0 4px 0;font-size: 13px; font-style: italic;color: #ccc; }
+
+/*--- Private Messages ---*/
+.pm-buttons { padding-top: 0;padding-bottom: 20px;}
+.privatemessagedelete {}
+.privatemessagedelete span.glyphicon-remove { cursor: pointer;font-size: 19px;}
 
 /*.label-success {
 background-color: #5cb85c;

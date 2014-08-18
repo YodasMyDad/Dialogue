@@ -5,7 +5,7 @@
 }
 
 <li>
-    <a href="#">@Html.Lang("Buttons.Edit") @Model.CurrentUser.UserName</a>
+    <a href="@Urls.GenerateUrl(Urls.UrlType.EditMember)?id=@Model.CurrentUser.Id">@Html.Lang("Buttons.Edit") @Model.CurrentUser.UserName</a>
 </li>
 <li class="divider"></li>
 @if (Html.Settings().AllowPrivateMessages && Model.CurrentUser.DisablePrivateMessages != true)

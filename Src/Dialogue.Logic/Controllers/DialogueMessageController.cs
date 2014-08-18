@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Web.Mvc;
-using Dialogue.Logic.Constants;
+using Dialogue.Logic.Application;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Services;
@@ -10,6 +10,7 @@ namespace Dialogue.Logic.Controllers
 {
     public class DialogueMessageSurfaceController : BaseSurfaceController
     {
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(CreatePrivateMessageViewModel createPrivateMessageViewModel)
@@ -84,7 +85,7 @@ namespace Dialogue.Logic.Controllers
                                         ServiceFactory.EmailService.SendMail(email);
                                     }
 
-                                    return RedirectToAction("Index");
+                                    return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageInbox));
                                 }
                                 catch (Exception ex)
                                 {
@@ -105,10 +106,43 @@ namespace Dialogue.Logic.Controllers
                         ModelState.AddModelError(string.Empty, Lang("PM.TalkToSelf"));
                     }
                 }
-                ViewData[AppConstants.MessageViewBagName] = null;
-                TempData[AppConstants.MessageViewBagName] = null;
-                return View(createPrivateMessageViewModel);
+                ShowModelErrors();
+                return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageCreate));
             }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Delete(DeletePrivateMessageViewModel deletePrivateMessageViewModel)
+        {
+            using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    var privateMessage = ServiceFactory.PrivateMessageService.Get(deletePrivateMessageViewModel.Id);
+                    if (privateMessage.MemberToId == CurrentMember.Id | privateMessage.MemberFromId == CurrentMember.Id)
+                    {
+                        ServiceFactory.PrivateMessageService.DeleteMessage(privateMessage);
+                    }
+                    else
+                    {
+                        throw new Exception(Lang("Errors.NoPermission"));
+                    }
+                }
+
+                try
+                {
+                    unitOfWork.Commit();
+                }
+                catch (Exception ex)
+                {
+                    unitOfWork.Rollback();
+                    LogError(ex);
+                    throw new Exception(Lang("Errors.GenericMessage"));
+                }
+            }
+
+            return null;
         }
     }
 }

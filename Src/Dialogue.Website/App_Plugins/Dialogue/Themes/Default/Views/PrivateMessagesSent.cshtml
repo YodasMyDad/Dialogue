@@ -10,7 +10,7 @@
 }
 
 <div class="btn-group pm-buttons">
-    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageOutbox)" class="btn btn-default">@Html.Lang("PM.SentPrivateMessages")</a>
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageInbox)" class="btn btn-default">@Html.Lang("PM.PrivateMessages")</a>
     <a href="@Urls.GenerateUrl(Urls.UrlType.MessageCreate)" class="btn btn-default">@Html.Lang("PM.Create")</a>
 </div>
 
@@ -22,7 +22,7 @@
                 <tr>
                     <th>@Html.Lang("PM.Subject")</th>
                     <th>@Html.Lang("PM.Date")</th>
-                    <th>@Html.Lang("PM.From")</th>
+                    <th>@Html.Lang("PM.To")</th>
                     <th>@Html.Lang("PM.Delete")</th>
                 </tr>
             </thead>
@@ -39,8 +39,8 @@
                         </td>
                         <td>@message.DateSent.ToShortDateString()</td>
                         <td>
-                            <a href="@Html.Raw(message.MemberFrom.Url)">
-                                @Html.Raw(message.MemberFrom.UserName)
+                            <a href="@Html.Raw(message.MemberTo.Url)">
+                                @Html.Raw(message.MemberTo.UserName)
                             </a>
                         </td>
                         <td>

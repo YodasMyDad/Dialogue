@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
+using Dialogue.Logic.Services;
 using Umbraco.Core.Models;
 using Umbraco.Web;
 
@@ -138,6 +139,10 @@ namespace Dialogue.Logic.Application.ExtensionMethods
             }        
         }
 
+        public static Models.Member CurrentMember(this HtmlHelper html)
+        {
+            return ServiceFactory.MemberService.CurrentMember();
+        }
         public static IHtmlString ThemedPartial(this HtmlHelper html, string partialName, ViewDataDictionary viewData = null)
         {
             var path = PathHelper.GetThemePartialViewPath(partialName);

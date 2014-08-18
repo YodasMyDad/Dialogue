@@ -1,0 +1,31 @@
+﻿@using Dialogue.Logic.Models.ViewModels
+@model SearchViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@if (Model.Topics.Any())
+{
+    foreach (var topic in Model.Topics)
+    {
+        // Get the permissions for this topic via its parent category
+        var permissions = Model.AllPermissionSets[topic.Category];
+
+        var viewModel = new ViewTopicViewModel { Permissions = permissions, Topic = topic, ShowCategoryName = false };
+        Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("TopicRow"), viewModel);
+    }
+
+    if (Model.Topics.TotalPages > 1)
+    {
+        @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().TopicsPerPage, Convert.ToInt32(Model.TotalCount), new { term = Model.Term })
+    }
+}
+else
+{
+    @Html.Lang("Search.NoResults")
+}
+

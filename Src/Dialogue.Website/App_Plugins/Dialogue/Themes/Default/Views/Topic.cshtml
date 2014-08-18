@@ -96,23 +96,23 @@
 @if (Model.Topic.Poll != null)
 {    <div class="pollcontainer">
         @{
-            // Show the poll if there is one
-            var viewModel = new ShowPollViewModel { Poll = Model.Topic.Poll, TotalVotesInPoll = Model.TotalVotesInPoll, UserHasAlreadyVoted = Model.UserHasAlreadyVotedInPoll, UserAllowedToVote = Model.Permissions[AppConstants.PermissionVoteInPolls].IsTicked };
-            Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Poll"), viewModel);
+    // Show the poll if there is one
+    var viewModel = new ShowPollViewModel { Poll = Model.Topic.Poll, TotalVotesInPoll = Model.TotalVotesInPoll, UserHasAlreadyVoted = Model.UserHasAlreadyVotedInPoll, UserAllowedToVote = Model.Permissions[AppConstants.PermissionVoteInPolls].IsTicked };
+    Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Poll"), viewModel);
         }
     </div>
 }
 
 <div class="topicstarterpost">
-    @{       
+    @{
         Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), Model.TopicStarterPost);
     }
 
-    @if ((totalCount - 1) > 0)
+    @if ((totalCount) > 0)
     {
         <div class="row topicstarterpostbeginpostsheading">
             <div class="col-md-8 topicstarterpostcomments">
-                @(totalCount - 1) @Html.Lang("Topic.CommentsDetails")
+                @(totalCount) @Html.Lang("Topic.CommentsDetails")
             </div>
             <div class="col-md-4 topicpostorderfilter">
                 @Html.Lang("Post.Filter.OrderBy")
@@ -131,7 +131,10 @@
 
 @if (Model.TotalPages > 1)
 {
-    <a href="#" class="showmoreposts btn"><span class="smpactive">@Html.Lang("Topic.ShowMorePosts")</span><span class="smploading" style="display: none;">@Html.Lang("Topic.ShowMorePostsLoading")</span></a>
+    <a class="showmoreposts btn btn-success btn-fullwidth">
+        <span class="smpactive">@Html.Lang("Topic.ShowMorePosts")</span>
+        <span class="smploading" style="display: none;">@Html.Lang("Topic.ShowMorePostsLoading")</span>
+    </a>
 }
 
 @if (!Model.Topic.IsLocked)

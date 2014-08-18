@@ -72,6 +72,10 @@ namespace Dialogue.Logic.Constants
         public const string PageUrlMessageOutbox = "messageoutbox";
         public const string PageUrlCreatePrivateMessage = "createmessage";
         public const string PageUrlViewPrivateMessage = "viewmessage";
+        public const string PageUrlViewReportMember = "reportmember";
+        public const string PageUrlEditMember = "editmember";
+        public const string PageUrlChangePassword = "changepassword";
+        public const string PageUrlSearch = "search";
         public const string PageUrlTopicsRss = "topicsrss";
         public const string PageUrlActivityRss = "activityrss";
         public const string PageUrlCategoryRss = "categoryrss";
@@ -121,6 +125,7 @@ namespace Dialogue.Logic.Constants
         public const string PropMemberGoogleAccessToken = "googleAccessToken";
         public const string PropMemberGoogleId = "googleId";
         public const string PropMemberUmbracoMemberApproved = "umbracoMemberApproved";
+        public const string PropMemberUmbracoMemberLockedOut = "umbracoMemberLockedOut";
         public const string PropMemberUmbracoMemberLastLockoutDate = "umbracoMemberLastLockoutDate";
         public const string PropMemberUmbracoMemberLastLogin = "umbracoMemberLastLogin";
         

@@ -6,6 +6,7 @@ using Dialogue.Logic.Application;
 using Dialogue.Logic.Data.Context;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
+using Umbraco.Core;
 
 namespace Dialogue.Logic.Services
 {
@@ -70,7 +71,7 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <returns></returns>
         public IList<Topic> GetAll()
-        {            
+        {
             return ContextPerRequest.Db.Topic.ToList();
         }
 
@@ -262,7 +263,7 @@ namespace Dialogue.Logic.Services
 
             if (populateAll)
             {
-                PopulateAll(results);   
+                PopulateAll(results);
             }
             return results;
         }
@@ -383,7 +384,13 @@ namespace Dialogue.Logic.Services
             var search = AppHelpers.ReturnSearchString(searchTerm);
             // We might only want to display the top 100
             // but there might not be 100 topics
-            var total = ContextPerRequest.Db.Post.Count(x => x.PostContent.Contains(search) | x.Topic.Name.Contains(search));
+            var total = ContextPerRequest.Db.Post
+                .Include(x => x.Topic)
+                .Where(x => (x.PostContent.Contains(search) | x.Topic.Name.Contains(search)))
+                .Where(x => x.Pending != true)
+                .DistinctBy(x => x.Topic.Id)
+                .Count();
+
             if (amountToTake < total)
             {
                 total = amountToTake;
@@ -397,6 +404,7 @@ namespace Dialogue.Logic.Services
                             .Include(x => x.Votes)
                             .Where(x => x.PostContent.Contains(search) | x.Topic.Name.Contains(search))
                             .Where(x => x.Pending != true)
+                            .DistinctBy(x => x.Topic.Id)
                             .OrderByDescending(x => x.DateCreated)
                             .Skip((pageIndex - 1) * pageSize)
                             .Take(pageSize)
@@ -509,30 +517,30 @@ namespace Dialogue.Logic.Services
         {
             var solved = false;
 
-  
-                // Make sure this user owns the topic, if not do nothing
-                if (topic.MemberId == marker.Id)
+
+            // Make sure this user owns the topic, if not do nothing
+            if (topic.MemberId == marker.Id)
+            {
+                // Update the post
+                post.IsSolution = true;
+
+                // Update the topic
+                topic.Solved = true;
+
+                // Assign points
+                // Do not give points to the user if they are marking their own post as the solution
+                if (marker.Id != solutionWriter.Id)
                 {
-                    // Update the post
-                    post.IsSolution = true;
-
-                    // Update the topic
-                    topic.Solved = true;
-
-                    // Assign points
-                    // Do not give points to the user if they are marking their own post as the solution
-                    if (marker.Id != solutionWriter.Id)
+                    ServiceFactory.MemberPointsService.Add(new MemberPoints
                     {
-                        ServiceFactory.MemberPointsService.Add(new MemberPoints
-                        {
-                            Points = Dialogue.Settings().PointsAddedForASolution,
-                            Member = solutionWriter
-                        });
-                    }
-
-                    solved = true;
+                        Points = Dialogue.Settings().PointsAddedForASolution,
+                        Member = solutionWriter
+                    });
                 }
-      
+
+                solved = true;
+            }
+
 
             return solved;
         }

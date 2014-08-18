@@ -578,7 +578,7 @@ namespace Dialogue.Logic.Application
         {
             return new List<string>
                 {
-                    "the", "be",  "to",  
+                    "the", "be",  "to", 
                     "of",  
                     "and",
                     "a",

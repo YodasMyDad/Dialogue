@@ -12,17 +12,21 @@ namespace Dialogue.Logic.Services
     {
         public void PopulateMembers(IList<PrivateMessage> entityList)
         {
-            // Map full Members
-            var membersIds = entityList.Select(x => x.MemberFromId).ToList();
-            membersIds.AddRange(entityList.Select(x => x.MemberToId));
-            var members = MemberMapper.MapMember(membersIds.Distinct().ToList());
-            foreach (var entity in entityList)
+            if (entityList != null && entityList.Any())
             {
-                var memberFrom = members.FirstOrDefault(x => x.Id == entity.MemberFromId);
-                var memberTo = members.FirstOrDefault(x => x.Id == entity.MemberToId);
-                entity.MemberFrom = memberFrom;
-                entity.MemberTo = memberTo;
+                // Map full Members
+                var membersIds = entityList.Select(x => x.MemberFromId).ToList();
+                membersIds.AddRange(entityList.Select(x => x.MemberToId));
+                var members = MemberMapper.MapMember(membersIds.Distinct().ToList());
+                foreach (var entity in entityList)
+                {
+                    var memberFrom = members.FirstOrDefault(x => x.Id == entity.MemberFromId);
+                    var memberTo = members.FirstOrDefault(x => x.Id == entity.MemberToId);
+                    entity.MemberFrom = memberFrom;
+                    entity.MemberTo = memberTo;
+                }
             }
+
         }
 
         public PrivateMessage SanitizeMessage(PrivateMessage privateMessage)
@@ -71,7 +75,10 @@ namespace Dialogue.Logic.Services
         public PrivateMessage Get(Guid id)
         {
             var message = ContextPerRequest.Db.PrivateMessage.FirstOrDefault(x => x.Id == id);
-            PopulateMembers(new List<PrivateMessage>{message});
+            if (message != null)
+            {
+                PopulateMembers(new List<PrivateMessage> { message });
+            }
             return message;
         }
 
@@ -134,7 +141,10 @@ namespace Dialogue.Logic.Services
         public PrivateMessage GetLastSentPrivateMessage(int id)
         {
             var message = ContextPerRequest.Db.PrivateMessage.FirstOrDefault(x => x.MemberFromId == id);
-            PopulateMembers(new List<PrivateMessage> { message });
+            if (message != null)
+            {
+                PopulateMembers(new List<PrivateMessage> { message });
+            }
             return message;
         }
 
@@ -142,7 +152,10 @@ namespace Dialogue.Logic.Services
         {
             var message = ContextPerRequest.Db.PrivateMessage
                 .FirstOrDefault(x => x.Subject == title && x.DateSent == date && x.MemberFromId == senderId && x.MemberToId == receiverId && x.IsSentMessage == true);
-            PopulateMembers(new List<PrivateMessage> { message });
+            if (message != null)
+            {
+                PopulateMembers(new List<PrivateMessage> { message });
+            }
             return message;
         }
 
