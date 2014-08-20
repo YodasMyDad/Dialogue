@@ -16,7 +16,6 @@ namespace Dialogue.Logic.Models
         // Page Urls
         public string LoginUrl { get; set; }
         public string RegisterUrl { get; set; }
-        public string CreateTopicUrl { get; set; }
 
         // Urls
         public string TopicUrlName { get; set; }
@@ -24,7 +23,6 @@ namespace Dialogue.Logic.Models
         public string DialogueUrlName { get; set; }     
 
         // General
-        public bool CloseForum { get; set; }
         public int FileUploadMaximumFilesize { get; set; }
         public List<string> FileUploadAllowedExtensions { get; set; }
         public bool AllowRssFeeds { get; set; }

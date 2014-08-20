@@ -1,7 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Security;
 using Dialogue.Logic.Application;
+using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.OAuth;
 using Dialogue.Logic.Models.ViewModels;
@@ -184,6 +189,10 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                     Password = AppHelpers.RandomString(8),
                                     UserName = data.Name
                                 };
+
+                                // Get the image and save it
+                                var getImageUrl = string.Format("http://graph.facebook.com/{0}/picture?type=normal", me.UserName);
+                                viewModel.SocialProfileImageUrl = getImageUrl;
 
                                 return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);
                             }

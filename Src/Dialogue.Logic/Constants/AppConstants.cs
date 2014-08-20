@@ -81,6 +81,7 @@ namespace Dialogue.Logic.Constants
         public const string PageUrlCategoryRss = "categoryrss";
         public const string PageUrlCreateTopic = "create";
         public const string PageUrlBadges = "badges";
+        public const string PageUrlEmailConfirmation = "emailconfirmation";
 
         // Default Member Group
         public const string MemberGroupDefault = "Dialogue Standard";

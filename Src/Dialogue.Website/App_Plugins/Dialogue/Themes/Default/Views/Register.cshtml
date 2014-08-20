@@ -13,6 +13,7 @@
     @Model.MetaDesc
 }
 
-@Html.Action("RegisterForm", "DialogueLoginRegisterSurface")
-
-@*@Html.Partial("_SocialLoginButtons")*@
+@if (Html.Settings().SuspendRegistration != true)
+{
+    @Html.Action("RegisterForm", "DialogueLoginRegisterSurface")
+}

@@ -186,40 +186,6 @@ namespace Dialogue.Logic.Controllers
 
     }
 
-
-    public partial class DialogueCreateTopicController : BaseRenderController
-    {
-        private readonly IMemberGroup _membersGroup;
-
-        public DialogueCreateTopicController()
-        {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-        }
-
-        public override ActionResult Index(RenderModel model)
-        {
-            if (UserIsAuthenticated)
-            {
-                using (UnitOfWorkManager.NewUnitOfWork())
-                {
-                    var allowedCategories = ServiceFactory.CategoryService.GetAllowedCategories(_membersGroup).ToList();
-                    if (allowedCategories.Any() && CurrentMember.DisablePosting != true)
-                    {
-                        var viewModel = new CreateTopic(model.Content)
-                        {
-                            Categories = allowedCategories,
-                            LoggedOnUser = CurrentMember,
-                            PageTitle = Lang("Topic.CreateTopic")
-                        };
-
-                        return View(PathHelper.GetThemeViewPath("Create"), viewModel);
-                    }
-                }
-            }
-            return ErrorToHomePage(Lang("Errors.NoPermission"));
-        }
-
-    }
     #endregion
 
     #region Surface controllers

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -82,7 +83,7 @@ namespace Dialogue.Logic.Controllers
         public ActionResult RegisterForm()
         {
             var viewModel = new RegisterViewModel();
-            
+
             // See if a return url is present or not and add it
             var returnUrl = Request["ReturnUrl"];
             if (!string.IsNullOrEmpty(returnUrl))
@@ -128,7 +129,7 @@ namespace Dialogue.Logic.Controllers
                             {
                                 return Redirect(model.ReturnUrl);
                             }
-                            
+
                             message.Message = Lang("Members.NowLoggedIn");
                             message.MessageType = GenericMessages.Success;
 
@@ -166,10 +167,10 @@ namespace Dialogue.Logic.Controllers
             {
                 LogError("Error when user logging in", ex);
             }
-            
+
             // Hack to show form validation
             ShowModelErrors();
-            
+
             return CurrentUmbracoPage();
         }
 
@@ -242,21 +243,21 @@ namespace Dialogue.Logic.Controllers
 
             if (Settings.SuspendRegistration != true)
             {
-             
-                    // First see if there is a spam question and if so, the answer matches
-                    if (!string.IsNullOrEmpty(Settings.SpamQuestion))
+
+                // First see if there is a spam question and if so, the answer matches
+                if (!string.IsNullOrEmpty(Settings.SpamQuestion))
+                {
+                    // There is a spam question, if answer is wrong return with error
+                    if (userModel.SpamAnswer == null || userModel.SpamAnswer.ToLower().Trim() != Settings.SpamAnswer.ToLower())
                     {
-                        // There is a spam question, if answer is wrong return with error
-                        if (userModel.SpamAnswer == null || userModel.SpamAnswer.ToLower().Trim() != Settings.SpamAnswer.ToLower())
-                        {
-                            // POTENTIAL SPAMMER!
-                            ModelState.AddModelError(string.Empty, Lang("Error.WrongAnswerRegistration"));
-                            //ShowModelErrors();
-                            return CurrentUmbracoPage();
-                        }
+                        // POTENTIAL SPAMMER!
+                        ModelState.AddModelError(string.Empty, Lang("Error.WrongAnswerRegistration"));
+                        //ShowModelErrors();
+                        return CurrentUmbracoPage();
                     }
- 
-                    // Do the register logic
+                }
+
+                // Do the register logic
                 MemberRegisterLogic(userModel);
 
             }
@@ -299,7 +300,6 @@ namespace Dialogue.Logic.Controllers
 
                 var homeRedirect = false;
 
-                //var createStatus = MembershipService.CreateUser(userToSave);
                 MembershipCreateStatus createStatus;
                 AppHelpers.UmbMemberHelper().RegisterMember(userToSave, out createStatus, false);
 
@@ -314,6 +314,25 @@ namespace Dialogue.Logic.Controllers
 
                     // Set the role/group they should be in
                     AppHelpers.UmbServices().MemberService.AssignRole(umbracoMember.Id, newMemberGroup.Name);
+
+                    // See if this is a social login and we have their profile pic
+                    if (!string.IsNullOrEmpty(userModel.SocialProfileImageUrl))
+                    {
+                        // We have an image url - Need to save it to their profile
+                        var image = AppHelpers.GetImageFromExternalUrl(userModel.SocialProfileImageUrl);
+
+                        // Upload folder path for member
+                        var uploadFolderPath = AppHelpers.GetMemberUploadPath(umbracoMember.Id);
+
+                        // Upload the file
+                        var uploadResult = AppHelpers.UploadFile(image, uploadFolderPath);
+
+                        // Don't throw error if problem saving avatar, just don't save it.
+                        if (uploadResult.UploadSuccessful)
+                        {                            
+                            umbracoMember.Properties[AppConstants.PropMemberAvatar].Value = uploadResult.UploadedFileName;
+                        }
+                    }
 
                     // Now check settings, see if users need to be manually authorised
                     // OR Does the user need to confirm their email
@@ -379,7 +398,7 @@ namespace Dialogue.Logic.Controllers
                     {
                         unitOfWork.Commit();
 
-                        // Only send the email if the admin is not manually authorising emails or it's pointless
+                        // Only send the email if the admin is not manually authorising emails or it's pointless                        
                         SendEmailConfirmationEmail(umbracoMember);
 
                         if (homeRedirect && !string.IsNullOrEmpty(forumReturnUrl))
@@ -421,8 +440,7 @@ namespace Dialogue.Logic.Controllers
                 {
                     // SEND AUTHORISATION EMAIL
                     var sb = new StringBuilder();
-                    //TODO - Sort email confirmation link
-                    var confirmationLink = string.Concat(AppHelpers.ReturnCurrentDomain(), Url.Action("EmailConfirmation", new { id = userToSave.Id }));
+                    var confirmationLink = string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.EmailConfirmation), "?id=", userToSave.Id);
                     sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.MemberEmailAuthorisation.EmailBody"),
                                                 Settings.ForumName,
                                                 string.Format("<p><a href=\"{0}\">{0}</a></p>", confirmationLink)));
@@ -438,34 +456,16 @@ namespace Dialogue.Logic.Controllers
 
                     // ADD COOKIE
                     // We add a cookie for 7 days, which will display the resend email confirmation button
-                    // This cookie is removed when they click the confirmation link
+                    // This cookie is removed when they click the confirmation link and they are logged in
                     var myCookie = new HttpCookie(AppConstants.MemberEmailConfirmationCookieName)
                     {
-                        Value = string.Format("{0}#{1}", userToSave.Email, userToSave.Username),
+                        Value = string.Format("{0}#{1}", userToSave.Id, userToSave.Username),
                         Expires = DateTime.Now.AddDays(7)
                     };
                     // Add the cookie.
                     Response.Cookies.Add(myCookie);
                 }
             }
-        }
-
-        public ActionResult ResendEmailConfirmation(string username)
-        {
-            using (UnitOfWorkManager.NewUnitOfWork())
-            {
-                var user = AppHelpers.UmbServices().MemberService.GetByUsername(username);
-                if (user != null)
-                {
-                    SendEmailConfirmationEmail(user);
-                    ShowMessage(new GenericMessageViewModel
-                    {
-                        Message = Lang("Members.MemberEmailAuthorisationNeeded"),
-                        MessageType = GenericMessages.Success
-                    });
-                }
-            }
-            return RedirectToUmbracoPage(Settings.ForumId);
         }
 
         /// <summary>

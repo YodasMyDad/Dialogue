@@ -35,8 +35,8 @@ namespace Dialogue.Logic
                 var registerPage = forumRootNode.Descendant(AppConstants.DocTypeRegister) ?? forumRootNode.Ancestor(AppConstants.DocTypeRegister);
                 settings.RegisterUrl = registerPage != null ? registerPage.Url : "/Unable-to-find-Register-page";
 
-                var createTopic = forumRootNode.Descendant(AppConstants.DocTypeCreateTopic) ?? forumRootNode.Ancestor(AppConstants.DocTypeCreateTopic);
-                settings.CreateTopicUrl = createTopic != null ? createTopic.Url : "/Unable-to-find-Create-Topic-page";
+                //var createTopic = forumRootNode.Descendant(AppConstants.DocTypeCreateTopic) ?? forumRootNode.Ancestor(AppConstants.DocTypeCreateTopic);
+                //settings.CreateTopicUrl = createTopic != null ? createTopic.Url : "/Unable-to-find-Create-Topic-page";
 
                 //var editMemberUrl = forumRootNode.Descendant(AppConstants.DocTypeEditMember) ?? forumRootNode.Ancestor(AppConstants.DocTypeEditMember);
                 //settings.EditMemberUrl = editMemberUrl != null ? editMemberUrl.Url : "/Unable-to-find-EditMember-page";
@@ -48,7 +48,6 @@ namespace Dialogue.Logic
                 //settings.CreatePrivateMessageUrl = sendPrivateMessageUrl != null ? sendPrivateMessageUrl.Url : "/Unable-to-find-create-private-message-page";
 
                 // General
-                settings.CloseForum = forumRootNode.GetPropertyValue<bool>("closeForum");
 
                 var extensions = forumRootNode.GetPropertyValue<string>("fileUploadAllowedExtensions");
                 if (!string.IsNullOrEmpty(extensions))

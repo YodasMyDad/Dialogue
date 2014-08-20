@@ -123,11 +123,7 @@ namespace Dialogue.Logic.Controllers
                 if (userModel.MemberEditViewModel.Files != null)
                 {
                     // Before we save anything, check the user already has an upload folder and if not create one
-                    var uploadFolderPath = Server.MapPath(string.Concat(AppConstants.UploadFolderPath, CurrentMember.Id));
-                    if (!Directory.Exists(uploadFolderPath))
-                    {
-                        Directory.CreateDirectory(uploadFolderPath);
-                    }
+                    var uploadFolderPath = AppHelpers.GetMemberUploadPath(CurrentMember.Id);
 
                     // Loop through each file and get the file info and save to the users folder and Db
                     var file = userModel.MemberEditViewModel.Files[0];
@@ -159,6 +155,25 @@ namespace Dialogue.Logic.Controllers
                 user.Comments = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Comments));
 
 
+                // User is trying to update their email address, need to 
+                // check the email is not already in use
+                if (userModel.MemberEditViewModel.Email != user.Email)
+                {
+                    // Add get by email address
+                    var sanitisedEmail = AppHelpers.SafePlainText(userModel.MemberEditViewModel.Email);
+                    var userWithSameEmail = ServiceFactory.MemberService.GetByEmail(sanitisedEmail);
+
+                    // If the username doesn't match this user then someone else has this email address already
+                    if (userWithSameEmail != null && userWithSameEmail.UserName != user.UserName)
+                    {
+                        unitOfWork.Rollback();
+                        ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateEmail"));
+                        ShowModelErrors();
+                        return Redirect(user.Url);
+                    }
+                    user.Email = sanitisedEmail;
+                }
+
                 // User is trying to change username, need to check if a user already exists
                 // with the username they are trying to change to
                 var changedUsername = false;
@@ -175,22 +190,6 @@ namespace Dialogue.Logic.Controllers
 
                     user.UserName = sanitisedUsername;
                     changedUsername = true;
-                }
-
-                // User is trying to update their email address, need to 
-                // check the email is not already in use
-                if (userModel.MemberEditViewModel.Email != user.Email)
-                {
-                    // Add get by email address
-                    var sanitisedEmail = AppHelpers.SafePlainText(userModel.MemberEditViewModel.Email);
-                    if (ServiceFactory.MemberService.GetByEmail(sanitisedEmail) != null)
-                    {
-                        unitOfWork.Rollback();
-                        ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateEmail"));
-                        ShowModelErrors();
-                        return Redirect(user.Url);
-                    }
-                    user.Email = sanitisedEmail;
                 }
 
                 // Update Everything

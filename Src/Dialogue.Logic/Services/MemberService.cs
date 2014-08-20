@@ -332,7 +332,8 @@ namespace Dialogue.Logic.Services
                 baseMember.Name = member.UserName;
             }
 
-            baseMember.Properties[AppConstants.PropMemberEmail].Value = member.Email;            
+            baseMember.Email = member.Email;
+            //baseMember.Properties[AppConstants.PropMemberEmail].Value = member.Email;            
             baseMember.Properties[AppConstants.PropMemberSignature].Value = member.Signature;
             baseMember.Properties[AppConstants.PropMemberWebsite].Value = member.Website;
             baseMember.Properties[AppConstants.PropMemberTwitter].Value = member.Twitter;

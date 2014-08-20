@@ -39,7 +39,8 @@ namespace Dialogue.Logic.Application
             BanMember,
             UnBanMember,
             ReportMember,
-            ChangePassword
+            ChangePassword,
+            EmailConfirmation
         }
 
         public static string UrlTypeName(UrlType e)
@@ -55,7 +56,9 @@ namespace Dialogue.Logic.Application
                 case UrlType.Register:
                     return Dialogue.Settings().RegisterUrl;
                 case UrlType.TopicCreate:
-                    return Dialogue.Settings().CreateTopicUrl;
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEmailConfirmation);
+                case UrlType.EmailConfirmation:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCreateTopic);
                 case UrlType.Leaderboard:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlLeaderboard);
                 case UrlType.Activity:

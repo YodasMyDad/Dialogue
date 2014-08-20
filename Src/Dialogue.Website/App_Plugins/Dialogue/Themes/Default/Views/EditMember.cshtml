@@ -36,7 +36,7 @@
             <div class="col-md-10">
                 <div class="form-group">
                     @Html.LabelFor(x => x.MemberEditViewModel.Files)
-                    <input type="file" name="files" id="files" value="" />
+                    @Html.TextBoxFor(x => x.MemberEditViewModel.Files, new { type = "file" })
                     @Html.ValidationMessageFor(x => x.MemberEditViewModel.Files)
                 </div>
             </div>

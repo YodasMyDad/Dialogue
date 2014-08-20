@@ -64,7 +64,7 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.Lang("Layout.Nav.Utilities")<span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                @if (Model.Settings.AllowPoints)
+                                @if (Html.Settings().AllowPoints)
                                 {
                                     <li><a href="@Urls.GenerateUrl(Urls.UrlType.Leaderboard)">@Html.Lang("Layout.Nav.Leaderboard")</a></li>
                                 }
@@ -75,7 +75,7 @@
                         </li>
                         @if (!User.Identity.IsAuthenticated)
                         {
-                            if (Model.Settings.SuspendRegistration != true)
+                            if (Html.Settings().SuspendRegistration != true)
                             {
                                 <li><a href="@Urls.GenerateUrl(Urls.UrlType.Register)">@Html.Lang("Layout.Nav.Register")</a></li>
                             }

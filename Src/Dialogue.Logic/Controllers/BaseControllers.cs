@@ -12,102 +12,7 @@ using Umbraco.Web.Mvc;
 namespace Dialogue.Logic.Controllers
 {
 
-    public class BaseMvcController : Controller
-    {
-        protected readonly UnitOfWorkManager UnitOfWorkManager;
-
-        public BaseMvcController()
-        {
-            UnitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
-        }
-        public void ShowMessage(GenericMessageViewModel messageViewModel)
-        {
-            // We have to put it on two because some umbraco redirects only work with ViewData!!
-            ViewData[AppConstants.MessageViewBagName] = messageViewModel;
-            TempData[AppConstants.MessageViewBagName] = messageViewModel;
-        }
-        internal string Lang(string key)
-        {
-            return AppHelpers.Lang(key);
-        }
-        internal void LogWarning(string message)
-        {
-            AppHelpers.LogError(message);
-        }
-        internal void LogError(string message, Exception ex)
-        {
-            AppHelpers.LogError(message, ex);
-        }
-        internal void LogError(Exception ex)
-        {
-            AppHelpers.LogError("Dialogue Package Exception", ex);
-        }
-        internal DialogueSettings Settings(int forumId)
-        {
-            return Dialogue.Settings(forumId);
-            
-        }
-        internal bool UserIsAuthenticated
-        {
-            get
-            {
-                return System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
-            }
-        }
-        protected string Username
-        {
-            get
-            {
-                return UserIsAuthenticated ? System.Web.HttpContext.Current.User.Identity.Name : null;
-            }
-        }
-
-        internal Member CurrentMember
-        {
-            get
-            {
-                if (UserIsAuthenticated)
-                {
-                    return ServiceFactory.MemberService.CurrentMember();
-                }
-                return null;
-            }
-        }
-        internal ActionResult ErrorToHomePage(string errorMessage, int forumId)
-        {
-            // Use temp data as its a redirect
-            ShowMessage(new GenericMessageViewModel
-            {
-                Message = errorMessage,
-                MessageType = GenericMessages.Danger
-            });
-            // Not allowed in here so
-            return Redirect(Settings(forumId).ForumRootUrl);
-        }
-        public ActionResult NoPermission(Topic topic)
-        {
-            var message = new GenericMessageViewModel
-            {
-                Message = Lang("Errors.NoPermission"),
-                MessageType = GenericMessages.Warning
-            };
-            ShowMessage(message);
-            return Redirect(topic.Url);
-        }
-
-        internal ActionResult MessageToHomePage(string errorMessage, int forumId)
-        {
-            // Use temp data as its a redirect
-            ShowMessage(new GenericMessageViewModel
-            {
-                Message = errorMessage,
-                MessageType = GenericMessages.Info
-            });
-            // Not allowed in here so
-            return Redirect(Settings(forumId).ForumRootUrl);
-        }
-    }
-
+    #region Render Controller
     public class BaseRenderController : RenderMvcController
     {
         protected readonly UnitOfWorkManager UnitOfWorkManager;
@@ -205,8 +110,10 @@ namespace Dialogue.Logic.Controllers
             // Not allowed in here so
             return new RedirectToUmbracoPageResult(Dialogue.Settings().ForumId);
         }
-    }
+    } 
+    #endregion
 
+    #region Surface Controller
     public class BaseSurfaceController : SurfaceController
     {
         protected readonly UnitOfWorkManager UnitOfWorkManager;
@@ -324,6 +231,7 @@ namespace Dialogue.Logic.Controllers
                 return null;
             }
         }
-    }
+    } 
+    #endregion
 
 }

@@ -29,6 +29,7 @@ namespace Dialogue.Logic.Models.ViewModels
 
         public string ReturnUrl { get; set; }
         public bool IsSocialLogin { get; set; }
+        public string SocialProfileImageUrl { get; set; }
     }
 
     public class PageReportMemberViewModel : MasterModel

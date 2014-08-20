@@ -153,8 +153,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                     var service = GoogleService.CreateFromRefreshToken(client.ClientIdFull, client.ClientSecret, info.RefreshToken);
 
                     // Get information about the authenticated user
-                    var user = service.GetUserInfo();
-                    
+                    var user = service.GetUserInfo();                    
                     using (UnitOfWorkManager.NewUnitOfWork())
                     {
                         var userExists = ServiceFactory.MemberService.GetByEmail(user.Email);
@@ -174,7 +173,8 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                 Email = user.Email,
                                 IsSocialLogin = true,
                                 Password = AppHelpers.RandomString(8),
-                                UserName = user.Name
+                                UserName = user.Name,
+                                SocialProfileImageUrl = user.Picture
                             };
 
                             return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);

@@ -1,23 +1,26 @@
 TODO
 --------------------------
-No image dependants in Theme - Use bootstrap icons
+When marking as solution, make the count button go green too via JS.
+Move Banned Words and Banned Emails to the forum node. Use multiple text box
+Add a Spam overview for admins (Lowest point members and posts)
+Authorise Members, Topics and posts in front end (Only Admins)
+Do away with the Umbraco backoffice tree (For v1)
+Permissions - Check all permissions work. Also check Moderate and Admin permissions are correct
+Go through check all settings including deleting a spammer and posts etc...
+Go through code and tidy up controllers and other areas (CHECK TODO's)
+Put up a test version on the server (Allow some trusted members to be admins)
+Create the package (See notes below)
+Documentation (See what I can use from MVCForum)
 Create ReadMe.md
 
 Packaging Notes
 ------------------------
-EditorTemplates in Views/Shared = Include. Can't figure out custom editortemplate locations yet
-Create Tables (Package Actions)
-Create initial data for forum (As in set theme etc...)
+EditorTemplates in root Views/Shared = Include. Can't figure out custom editortemplate locations yet
+Create Tables (Want a robust checker. Check tables exists, Check properties exists, create if not.)
+Create initial data for forum (As in set theme etc... - See Shannons Articulate package)
 
-Notes
+Social Logins
 ------------------------
-Try and remove as many external dependencies as possible
-Remove all other 'play' code
-
-
-Social Logsin
-------------------------
-
 Facebook uses OAuth 2.0 for authentication and communication. In order for
 users to authenticate with the Facebook API, you must specify the ID, secret and redirect
 URI of your Facebook app. You can create a new app at the following URL:

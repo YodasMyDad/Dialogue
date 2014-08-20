@@ -1,14 +1,14 @@
-﻿@using Dialogue.Logic.Constants
+﻿@using Dialogue.Logic.Application
 @using Dialogue.Logic.Application.ExtensionMethods;
     @{
         var emailCookie = Request.Cookies[AppConstants.MemberEmailConfirmationCookieName];
         if (emailCookie != null)
         {
             var splitCookie = emailCookie.Value.Split('#');
-            <div class="alert alert-block alert-info">
-                <a href="#" data-dismiss="alert" class="close">&times;</a>
+            <div class="alert alert-info alert-dismissable" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 @Html.Lang("Members.MemberEmailAuthorisationNeededMessage")
-                <a class="btn" href="@Url.Action("ResendEmailConfirmation", "DialogueLoginRegisterSurface", new { username = splitCookie[1] })">
+                <a class="btn btn-default" href="@Urls.GenerateUrl(Urls.UrlType.EmailConfirmation)?id=@splitCookie[0]">
                     @Html.Lang("Members.MemberEmailAuthorisationResend")
                 </a>
             </div>

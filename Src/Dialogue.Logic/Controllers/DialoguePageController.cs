@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
@@ -93,12 +95,90 @@ namespace Dialogue.Logic.Controllers
 
                 case AppConstants.PageUrlSearch:
                     return Search(page);
+
+                case AppConstants.PageUrlCreateTopic:
+                    return Create(page);
+
+                case AppConstants.PageUrlEmailConfirmation:
+                    return EmailConfirmation(page);
                     
                 default:
                     return null;
 
             }
 
+        }
+
+        public ActionResult EmailConfirmation(DialoguePage page)
+        {
+            var id = Request["id"];
+            if (id != null)
+            {
+                    try
+                    {
+                        var user = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+
+                        // Checkconfirmation
+                        if (user != null)
+                        {
+                            // Set the user to active
+                            user.IsApproved = true;
+
+                            // Delete Cookie and log them in if this cookie is present
+                            if (Request.Cookies[AppConstants.MemberEmailConfirmationCookieName] != null)
+                            {
+                                var myCookie = new HttpCookie(AppConstants.MemberEmailConfirmationCookieName)
+                                {
+                                    Expires = DateTime.Now.AddDays(-1)
+                                };
+                                Response.Cookies.Add(myCookie);
+
+                                // Login code
+                                FormsAuthentication.SetAuthCookie(user.UserName, false);
+                            }
+
+                            // Show a new message
+                            // We use temp data because we are doing a redirect
+                            ShowMessage(new GenericMessageViewModel
+                            {
+                                Message = Lang("Members.NowApproved"),
+                                MessageType = GenericMessages.Success
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(ex);
+                    }
+      
+
+                return Redirect(Settings.ForumRootUrl);
+            }
+
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
+        }
+
+        public ActionResult Create(DialoguePage page)
+        {
+            if (UserIsAuthenticated)
+            {
+                using (UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var allowedCategories = ServiceFactory.CategoryService.GetAllowedCategories(_membersGroup).ToList();
+                    if (allowedCategories.Any() && CurrentMember.DisablePosting != true)
+                    {
+                        var viewModel = new CreateTopic(page)
+                        {
+                            Categories = allowedCategories,
+                            LoggedOnUser = CurrentMember,
+                            PageTitle = Lang("Topic.CreateTopic")
+                        };
+
+                        return View(PathHelper.GetThemeViewPath("Create"), viewModel);
+                    }
+                }
+            }
+            return ErrorToHomePage(Lang("Errors.NoPermission"));
         }
 
         public ActionResult Search(DialoguePage page)

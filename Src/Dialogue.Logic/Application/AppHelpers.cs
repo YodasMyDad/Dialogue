@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -61,7 +64,7 @@ namespace Dialogue.Logic.Application
 
         public static string GetGravatarImage(string email, int size)
         {
-            return IsValidEmail(email) ? string.Format("http://www.gravatar.com/avatar/{0}?s={1}", md5HashString(email), size) : "";
+            return IsValidEmail(email) ? string.Format("http://www.gravatar.com/avatar/{0}?s={1}&d=identicon", md5HashString(email), size) : "";
         }
 
         #endregion
@@ -235,6 +238,30 @@ namespace Dialogue.Logic.Application
 
         #region Media
 
+        public static Image GetImageFromExternalUrl(string url)
+        {
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+
+            using (var httpWebReponse = (HttpWebResponse)httpWebRequest.GetResponse())
+            {
+                using (var stream = httpWebReponse.GetResponseStream())
+                {
+                    if (stream != null) return Image.FromStream(stream);
+                }
+            }
+            return null;
+        }
+
+        public static string GetMemberUploadPath(int memberId)
+        {
+            var uploadFolderPath = HttpContext.Current.Server.MapPath(string.Concat(AppConstants.UploadFolderPath, memberId));
+            if (!Directory.Exists(uploadFolderPath))
+            {
+                Directory.CreateDirectory(uploadFolderPath);
+            }
+            return uploadFolderPath;
+        }
+
         public static UploadFileResult UploadFile(HttpPostedFileBase file, string uploadFolderPath, bool onlyImages = false)
         {
             var upResult = new UploadFileResult { UploadSuccessful = true };
@@ -303,6 +330,53 @@ namespace Dialogue.Logic.Application
                 upResult.UploadedFileUrl = fileUrl;
             }
 
+            return upResult;
+        }
+
+        public static UploadFileResult UploadFile(Image file, string uploadFolderPath)
+        {
+
+            var upResult = new UploadFileResult { UploadSuccessful = true };
+            var fileName = string.Concat(GenerateComb(), ".jpg").ToLower();
+
+            // now check allowed extensions
+            var allowedFileExtensions = Dialogue.Settings().FileUploadAllowedExtensions;
+
+            if (allowedFileExtensions.Any())
+            {
+
+                // Get the file extension
+                var fileExtension = Path.GetExtension(fileName.ToLower());
+
+                // If can't work out extension then just error
+                if (string.IsNullOrEmpty(fileExtension))
+                {
+                    upResult.UploadSuccessful = false;
+                    upResult.ErrorMessage = Lang("Errors.GenericMessage");
+                    return upResult;
+                }
+
+                // Remove the dot then check against the extensions in the web.config settings
+                fileExtension = fileExtension.TrimStart('.');
+                if (!allowedFileExtensions.Contains(fileExtension))
+                {
+                    upResult.UploadSuccessful = false;
+                    upResult.ErrorMessage = Lang("Post.UploadBannedFileExtension");
+                    return upResult;
+                }
+            }
+
+            // Sort the file name
+            var path = Path.Combine(uploadFolderPath, fileName);
+
+            // Save the file to disk
+            file.Save(path, ImageFormat.Jpeg);
+
+            var hostingRoot = HostingEnvironment.MapPath("~/") ?? "";
+            var fileUrl = path.Substring(hostingRoot.Length).Replace('\\', '/').Insert(0, "/");
+
+            upResult.UploadedFileName = fileName;
+            upResult.UploadedFileUrl = fileUrl;
             return upResult;
         }
 
@@ -693,7 +767,7 @@ namespace Dialogue.Logic.Application
             }
             else
             {
-               return slug;
+                return slug;
             }
 
 
