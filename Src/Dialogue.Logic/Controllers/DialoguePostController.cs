@@ -39,6 +39,12 @@ namespace Dialogue.Logic.Controllers
                     throw new Exception(Lang("Errors.NoAccess"));
                 }
 
+                // Check for banned links
+                if (ServiceFactory.BannedLinkService.ContainsBannedLink(post.PostContent))
+                {
+                    throw new Exception(Lang("Errors.BannedLink"));
+                }
+
                 topic = ServiceFactory.TopicService.Get(post.Topic);
 
                 var postContent = ServiceFactory.BannedWordService.SanitiseBannedWords(post.PostContent);
@@ -205,6 +211,18 @@ namespace Dialogue.Logic.Controllers
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
                     var post = ServiceFactory.PostService.Get(viewModel.PostId);
+
+                    // Banned link?
+                    if (ServiceFactory.BannedLinkService.ContainsBannedLink(viewModel.Reason))
+                    {
+                        ShowMessage(new GenericMessageViewModel
+                        {
+                            Message = Lang("Errors.BannedLink"),
+                            MessageType = GenericMessages.Danger
+                        });
+                        return Redirect(post.Topic.Url);
+                    }
+
                     var report = new Report
                     {
                         Reason = viewModel.Reason,

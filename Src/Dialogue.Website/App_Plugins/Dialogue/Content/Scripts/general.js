@@ -295,6 +295,7 @@ function AddPostClickEvents() {
         e.preventDefault();
         var solutionHolder = $(this);
         var postId = solutionHolder.data('postid');
+        var postDiv = solutionHolder.closest('.post');
 
         var markAsSolutionViewModel = new Object();
         markAsSolutionViewModel.Post = postId;
@@ -307,13 +308,20 @@ function AddPostClickEvents() {
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
+            dataType: 'html',
             success: function (data) {
 
                 // Sort the button out
-                solutionHolder.removeClass("issolution")
+                solutionHolder
+                .removeClass("issolution")
                 .addClass("issolution-solved")
                 .attr('title', '')
-                .unbind("click");
+                .unbind("click")
+                .html(data);
+
+                // Add solution true to the post
+                postDiv.removeClass("solution-false").addClass("solution-true");
+
                 $('.issolution').hide();
 
                 BadgeSolution(postId);

@@ -1,8 +1,7 @@
 TODO
 --------------------------
-When marking as solution, make the count button go green too via JS.
-Move Banned Words and Banned Emails to the forum node. Use multiple text box
 Add a Spam overview for admins (Lowest point members and posts)
+Check Categoral level settings (Lock forum, moderate etc...)
 Authorise Members, Topics and posts in front end (Only Admins)
 Do away with the Umbraco backoffice tree (For v1)
 Permissions - Check all permissions work. Also check Moderate and Admin permissions are correct
@@ -18,6 +17,7 @@ Packaging Notes
 EditorTemplates in root Views/Shared = Include. Can't figure out custom editortemplate locations yet
 Create Tables (Want a robust checker. Check tables exists, Check properties exists, create if not.)
 Create initial data for forum (As in set theme etc... - See Shannons Articulate package)
+Multiple Textbox needs adding??
 
 Social Logins
 ------------------------

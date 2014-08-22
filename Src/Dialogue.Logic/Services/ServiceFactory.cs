@@ -324,5 +324,21 @@ namespace Dialogue.Logic.Services
             }
         }
 
+        /// <summary>
+        /// Gets and instance of the BannedLinkService
+        /// </summary>
+        public static BannedLinkService BannedLinkService
+        {
+            get
+            {
+                var key = string.Concat("dialogue-", "BannedLinkService");
+                if (!HttpContext.Current.Items.Contains(key))
+                {
+                    HttpContext.Current.Items.Add(key, new BannedLinkService());
+                }
+                return HttpContext.Current.Items[key] as BannedLinkService;
+            }
+        }
+
     }
 }

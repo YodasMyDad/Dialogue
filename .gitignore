@@ -64,8 +64,7 @@ $RECYCLE.BIN/
 !**/App_Data/[Pp]ackages/
 !**/[Uu]mbraco/developer/[Pp]ackages
 
-Src/Dialogue.Logic/bin/Dialogue.Logic.dll
-Src/Dialogue.Logic/bin/Dialogue.Logic.dll
-Src/Dialogue.Logic/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
-Src/Dialogue.Logic/obj/Debug/Dialogue.Logic.dll
-Src/Dialogue.Logic/obj/Debug/Dialogue.Logic.dll
+Src/Dialogue.Logic/bin/
+Src/Dialogue.Logic/obj/
+Src/Dialogue.Website/App_Data/cache/
+Src/Dialogue.Website/App_Plugins/Dialogue/Content/MemberUploads/1144/6aeebd68-b30e-44cf-af90-a38d0079eb93_445561-81682221.jpg

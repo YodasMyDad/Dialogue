@@ -67,7 +67,6 @@ namespace Dialogue.Logic.Models
         public string SpamAnswer { get; set; }
 
         // Social
-        public bool EnableSocialLogins { get; set; }
         public string FacebookAppId { get; set; }
         public string FacebookAppSecret { get; set; }
         public string GoogleClientId { get; set; }
@@ -76,6 +75,15 @@ namespace Dialogue.Logic.Models
         // Meta
         public string PageTitle { get; set; }
         public string MetaDescription { get; set; }
+
+        // Banned Words
+        public List<string> BannedWords { get; set; }
+
+        // Banned Emails
+        public List<string> BannedEmails { get; set; }
+
+        // Banned Links
+        public List<string> BannedLinks { get; set; }
 
         // Umbraco Properties
         public DateTime LastModified { get; set; }

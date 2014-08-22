@@ -2,6 +2,13 @@
 @{
     
 }
-
-<p><a href="@Urls.GenerateUrl(Urls.UrlType.FacebookLogin)" class="btn btn-default btn-fullwidth">Facebook Login</a></p>
-<p><a href="@Urls.GenerateUrl(Urls.UrlType.GoogleLogin)" class="btn btn-default btn-fullwidth">Google Login</a></p>
+<div class="socialbuttonsholder">
+    @if (!string.IsNullOrEmpty(Html.Settings().FacebookAppId) && !string.IsNullOrEmpty(Html.Settings().FacebookAppSecret))
+    {
+        <p><a href="@Urls.GenerateUrl(Urls.UrlType.FacebookLogin)" class="btn btn-default btn-fullwidth">Facebook Login</a></p>
+    }
+    @if (!string.IsNullOrEmpty(Html.Settings().GoogleClientId) && !string.IsNullOrEmpty(Html.Settings().GoogleClientSecret))
+    {
+        <p><a href="@Urls.GenerateUrl(Urls.UrlType.GoogleLogin)" class="btn btn-default btn-fullwidth">Google Login</a></p>
+    }
+</div>

@@ -119,6 +119,17 @@ namespace Dialogue.Logic.Controllers
                 var user = ServiceFactory.MemberService.Get(userModel.MemberEditViewModel.Id);
                 var userEditUrl = string.Format("{0}?id={1}", Urls.GenerateUrl(Urls.UrlType.EditMember), user.Id);
 
+                // Before we do anything DB wise, check it contains no bad links
+                if (ServiceFactory.BannedLinkService.ContainsBannedLink(userModel.MemberEditViewModel.Signature) || ServiceFactory.BannedLinkService.ContainsBannedLink(userModel.MemberEditViewModel.Website))
+                {
+                    ShowMessage(new GenericMessageViewModel
+                    {
+                        Message = Lang("Errors.BannedLink"),
+                        MessageType = GenericMessages.Danger
+                    });
+                    return Redirect(userEditUrl);
+                }
+
                 // Sort image out first
                 if (userModel.MemberEditViewModel.Files != null)
                 {
@@ -150,7 +161,10 @@ namespace Dialogue.Logic.Controllers
                 }
 
                 user.Signature = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.ScrubHtml(userModel.MemberEditViewModel.Signature));
-                user.Twitter = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Twitter));
+                if (userModel.MemberEditViewModel.Twitter.IndexOf("http", StringComparison.OrdinalIgnoreCase) <= 0)
+                {
+                    user.Twitter = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Twitter));
+                }
                 user.Website = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Website));
                 user.Comments = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Comments));
 
@@ -163,14 +177,24 @@ namespace Dialogue.Logic.Controllers
                     var sanitisedEmail = AppHelpers.SafePlainText(userModel.MemberEditViewModel.Email);
                     var userWithSameEmail = ServiceFactory.MemberService.GetByEmail(sanitisedEmail);
 
+                    //Firstly check new email isn't banned!
+                    if (ServiceFactory.BannedEmailService.EmailIsBanned(sanitisedEmail))
+                    {                        
+                        unitOfWork.Rollback();
+                        ModelState.AddModelError(string.Empty, Lang("Error.EmailIsBanned"));
+                        ShowModelErrors();
+                        return Redirect(userEditUrl);
+                    }
+
                     // If the username doesn't match this user then someone else has this email address already
                     if (userWithSameEmail != null && userWithSameEmail.UserName != user.UserName)
                     {
                         unitOfWork.Rollback();
                         ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateEmail"));
                         ShowModelErrors();
-                        return Redirect(user.Url);
+                        return Redirect(userEditUrl);
                     }
+
                     user.Email = sanitisedEmail;
                 }
 
@@ -262,6 +286,18 @@ namespace Dialogue.Logic.Controllers
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
                     var user = ServiceFactory.MemberService.Get(viewModel.MemberId);
+
+                    // Banned link?
+                    if (ServiceFactory.BannedLinkService.ContainsBannedLink(viewModel.Reason))
+                    {
+                        ShowMessage(new GenericMessageViewModel
+                        {
+                            Message = Lang("Errors.BannedLink"),
+                            MessageType = GenericMessages.Danger
+                        });
+                        return Redirect(user.Url);
+                    }
+
                     var report = new Report
                     {
                         Reason = viewModel.Reason,

@@ -343,6 +343,17 @@ namespace Dialogue.Logic.Controllers
 
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
+                    // Before we do anything DB wise, check it contains no bad links
+                    if (ServiceFactory.BannedLinkService.ContainsBannedLink(topicViewModel.TopicContent))
+                    {
+                        ShowMessage(new GenericMessageViewModel
+                        {
+                            Message = Lang("Errors.BannedLink"),
+                            MessageType = GenericMessages.Danger
+                        });
+                        return Redirect(Urls.GenerateUrl(Urls.UrlType.TopicCreate));
+                    }
+
                     // Not using automapper for this one only, as a topic is a post and topic in one
                     category = ServiceFactory.CategoryService.Get(topicViewModel.Category);
 
@@ -359,16 +370,11 @@ namespace Dialogue.Logic.Controllers
                     {
                         // We get the banned words here and pass them in, so its just one call
                         // instead of calling it several times and each call getting all the words back
-                        var bannedWordsList = ServiceFactory.BannedWordService.GetAll();
-                        List<string> bannedWords = null;
-                        if (bannedWordsList.Any())
-                        {
-                            bannedWords = bannedWordsList.Select(x => x.Word).ToList();
-                        }
+                        
 
                         topic = new Topic
                         {
-                            Name = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicName, bannedWords),
+                            Name = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicName, Dialogue.Settings().BannedWords),
                             Category = category,
                             CategoryId = category.Id,
                             Member = CurrentMember,
@@ -379,7 +385,7 @@ namespace Dialogue.Logic.Controllers
                         if (!string.IsNullOrEmpty(topicViewModel.TopicContent))
                         {
                             // Check for any banned words
-                            topicViewModel.TopicContent = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicContent, bannedWords);
+                            topicViewModel.TopicContent = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicContent, Dialogue.Settings().BannedWords);
 
                             // See if this is a poll and add it to the topic
                             if (topicViewModel.PollAnswers != null && topicViewModel.PollAnswers.Count > 0)

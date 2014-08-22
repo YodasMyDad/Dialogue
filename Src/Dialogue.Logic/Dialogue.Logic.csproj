@@ -278,6 +278,7 @@
     <Compile Include="Services\ActivityService.cs" />
     <Compile Include="Services\BadgeService.cs" />
     <Compile Include="Services\BannedEmailService.cs" />
+    <Compile Include="Services\BannedLinkService.cs" />
     <Compile Include="Services\BannedWordService.cs" />
     <Compile Include="Services\CategoryNotificationService.cs" />
     <Compile Include="Services\CategoryPermissionService.cs" />

@@ -56,9 +56,9 @@ namespace Dialogue.Logic.Application
                 case UrlType.Register:
                     return Dialogue.Settings().RegisterUrl;
                 case UrlType.TopicCreate:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEmailConfirmation);
-                case UrlType.EmailConfirmation:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCreateTopic);
+                case UrlType.EmailConfirmation:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEmailConfirmation);
                 case UrlType.Leaderboard:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlLeaderboard);
                 case UrlType.Activity:

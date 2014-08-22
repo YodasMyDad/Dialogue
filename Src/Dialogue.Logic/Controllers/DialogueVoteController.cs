@@ -123,7 +123,7 @@ namespace Dialogue.Logic.Controllers
 
         [HttpPost]
         [Authorize]
-        public void MarkAsSolution(MarkAsSolutionViewModel markAsSolutionViewModel)
+        public ActionResult MarkAsSolution(MarkAsSolutionViewModel markAsSolutionViewModel)
         {
             if (Request.IsAjaxRequest())
             {
@@ -158,6 +158,7 @@ namespace Dialogue.Logic.Controllers
                             if (solved)
                             {
                                 unitOfWork.Commit();
+                                return Content(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-ok\"></span>", Lang("Post.Solution")));
                             }
                         }
                         catch (Exception ex)
@@ -165,7 +166,7 @@ namespace Dialogue.Logic.Controllers
                             unitOfWork.Rollback();
                             LogError(ex);
                             throw new Exception(Lang("Errors.GenericMessage"));
-                        }                        
+                        }
                     }
                     else
                     {
@@ -174,6 +175,7 @@ namespace Dialogue.Logic.Controllers
 
                 }
             }
+            return null;
         }
 
 
