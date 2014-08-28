@@ -40,7 +40,9 @@ namespace Dialogue.Logic.Application
             UnBanMember,
             ReportMember,
             ChangePassword,
-            EmailConfirmation
+            EmailConfirmation,
+            SpamOverview,
+            Authorise
         }
 
         public static string UrlTypeName(UrlType e)
@@ -93,6 +95,10 @@ namespace Dialogue.Logic.Application
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlChangePassword);
                 case UrlType.Search:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlSearch);
+                case UrlType.SpamOverview:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlSpamOverview);
+                case UrlType.Authorise:
+                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlAuthorise);
                 case UrlType.GoogleLogin:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuthSurface/GoogleLogin");
                 case UrlType.FacebookLogin:

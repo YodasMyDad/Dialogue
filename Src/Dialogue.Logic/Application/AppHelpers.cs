@@ -140,7 +140,12 @@ namespace Dialogue.Logic.Application
 
         public static string Lang(string key)
         {
-            return library.GetDictionaryItem(key);
+            var result = library.GetDictionaryItem(key);
+            if (string.IsNullOrEmpty(result))
+            {
+                return key;
+            }
+            return result;
         }
 
 

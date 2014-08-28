@@ -11,6 +11,7 @@ using Dialogue.Logic.Models.Activity;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Routes;
 using Dialogue.Logic.Services;
+using umbraco.cms.businesslogic.datatype;
 using Umbraco.Core.Models;
 using Umbraco.Web.Models;
 
@@ -101,6 +102,12 @@ namespace Dialogue.Logic.Controllers
 
                 case AppConstants.PageUrlEmailConfirmation:
                     return EmailConfirmation(page);
+
+                case AppConstants.PageUrlSpamOverview:
+                    return SpamOverview(page);
+
+                case AppConstants.PageUrlAuthorise:
+                    return Authorise(page);
                     
                 default:
                     return null;
@@ -108,6 +115,40 @@ namespace Dialogue.Logic.Controllers
             }
 
         }
+
+        public ActionResult Authorise(DialoguePage page)
+        {
+            if (User.IsInRole(AppConstants.AdminRoleName))
+            {
+                var viewModel = new AuthoriseViewModel
+                {
+                    PageTitle = Lang("Authorise.PageTitle"),
+                    Members = ServiceFactory.MemberService.GetUnAuthorisedMembers(),
+                    Posts = ServiceFactory.PostService.GetAllPendingPosts(),
+                    Topics = ServiceFactory.TopicService.GetAllPendingTopics()
+                };
+
+                return View(PathHelper.GetThemeViewPath("Authorise"), viewModel);
+            }
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
+        }
+
+        public ActionResult SpamOverview(DialoguePage page)
+        {
+            if (User.IsInRole(AppConstants.AdminRoleName))
+            {
+                var viewModel = new SpamOverviewModel
+                {
+                    DodgyMembers = ServiceFactory.MemberPointsService.GetLatestNegativeUsers(Settings.PostsPerPage),
+                    DodgyPosts = ServiceFactory.PostService.GetLowestVotedPost(Settings.PostsPerPage),
+                    PageTitle = Lang("Spam.OverViewPageTitle")
+                };
+
+                return View(PathHelper.GetThemeViewPath("SpamOverview"), viewModel);   
+            }
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
+        }
+
 
         public ActionResult EmailConfirmation(DialoguePage page)
         {

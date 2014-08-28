@@ -82,6 +82,8 @@ namespace Dialogue.Logic.Constants
         public const string PageUrlCreateTopic = "create";
         public const string PageUrlBadges = "badges";
         public const string PageUrlEmailConfirmation = "emailconfirmation";
+        public const string PageUrlSpamOverview = "spamoverview";
+        public const string PageUrlAuthorise = "authorise";
 
         // Default Member Group
         public const string MemberGroupDefault = "Dialogue Standard";

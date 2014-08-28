@@ -22,4 +22,9 @@
 }
 
 <li><a href="@Urls.GenerateUrl(Urls.UrlType.Favourites)">@Html.Lang("Members.Favourites")</a></li>
+@if (User.IsInRole(AppConstants.AdminRoleName))
+{
+    <li><a href="@Urls.GenerateUrl(Urls.UrlType.SpamOverview)">@Html.Lang("Members.SpamOverview")</a></li>
+    <li><a href="@Urls.GenerateUrl(Urls.UrlType.Authorise)">@Html.Lang("Members.Authorise")</a></li>
+}
 <li><a href="@logOutUrl">@Html.Lang("Members.LogOff")</a></li>

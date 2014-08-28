@@ -1,0 +1,35 @@
+﻿@model Dialogue.Logic.Models.ViewModels.AuthoriseViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#members" role="tab" data-toggle="tab">@Html.Lang("Authorise.Members")</a></li>
+    <li><a href="#topics" role="tab" data-toggle="tab">@Html.Lang("Authorise.Topics")</a></li>
+    <li><a href="#posts" role="tab" data-toggle="tab">@Html.Lang("Authorise.Posts")</a></li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane active" id="members">
+        @foreach (var member in Model.Members)
+        {
+            <p>@member.UserName</p>
+        }
+    </div>
+    <div class="tab-pane" id="topics">
+        @foreach (var topic in Model.Topics)
+        {
+            <p>@topic.Name</p>
+        }        
+    </div>
+    <div class="tab-pane" id="posts">
+        @foreach (var post in Model.Posts)
+        {
+            <p>@post.PostContent</p>
+        }
+    </div>
+</div>

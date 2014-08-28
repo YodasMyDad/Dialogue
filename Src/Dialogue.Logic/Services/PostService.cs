@@ -65,12 +65,17 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<Post> GetLowestVotedPost(int amountToTake)
         {
-            return ContextPerRequest.Db.Post
+            var posts = ContextPerRequest.Db.Post
                 .Include(x => x.Votes)
+                .Include(x => x.Topic)
                 .Where(x => x.VoteCount < 0 && x.Pending != true)
                 .OrderBy(x => x.VoteCount)
                 .Take(amountToTake)
                 .ToList();
+
+            PopulateMembers(posts);
+
+            return posts;
         }
 
         /// <summary>
@@ -216,13 +221,27 @@ namespace Dialogue.Logic.Services
             return new PagedList<Post>(posts, pageIndex, pageSize, total);
         }
 
+        public List<Post> GetAllPendingPosts()
+        {
+            var results = ContextPerRequest.Db.Post
+                .Include(x => x.Topic)
+                .Include(x => x.Files)
+                .Where(x => x.Pending)
+                .OrderBy(x => x.DateCreated)
+                .ToList();
+
+            PopulateMembers(results);
+
+            return results;
+        }
+
         public PagedList<Post> GetPagedPendingPosts(int pageIndex, int pageSize)
         {
 
             var total = ContextPerRequest.Db.Post.Count(x => x.Pending == true);
             var results = ContextPerRequest.Db.Post.Include(x => x.Topic)
-                    .Include(x => x.Files)
-                .Where(x => x.Pending == true)
+                .Include(x => x.Files)
+                .Where(x => x.Pending)
                 .OrderBy(x => x.DateCreated)
                 .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 

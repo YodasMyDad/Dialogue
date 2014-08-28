@@ -236,6 +236,7 @@
     <Compile Include="Models\RssItem.cs" />
     <Compile Include="Models\SectionTreeNode.cs" />
     <Compile Include="Models\LogOnModel.cs" />
+    <Compile Include="Models\SpamOverviewModel.cs" />
     <Compile Include="Models\Topic.cs" />
     <Compile Include="Models\TopicNotification.cs" />
     <Compile Include="Models\UploadedFile.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Models\ViewModels\AjaxEditPermissionViewModel.cs" />
     <Compile Include="Models\ViewModels\AllRecentActivitiesViewModel.cs" />
     <Compile Include="Models\ViewModels\AttachFileToPostViewModel.cs" />
+    <Compile Include="Models\ViewModels\AuthoriseViewModel.cs" />
     <Compile Include="Models\ViewModels\BadgeViewModels.cs" />
     <Compile Include="Models\ViewModels\BreadCrumbViewModel.cs" />
     <Compile Include="Models\ViewModels\CategoryListViewModel.cs" />

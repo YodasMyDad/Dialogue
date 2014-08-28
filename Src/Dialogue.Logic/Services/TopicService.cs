@@ -320,6 +320,22 @@ namespace Dialogue.Logic.Services
             return new PagedList<Topic>(results, pageIndex, pageSize, total);
         }
 
+        public List<Topic> GetAllPendingTopics()
+        {
+
+            // Get the topics using an efficient
+            var results = ContextPerRequest.Db.Topic
+                                .Include(x => x.LastPost)
+                                .Where(x => x.Pending)
+                                .OrderBy(x => x.LastPost.DateCreated)
+                                .ToList();
+
+            PopulateAll(results);
+
+
+            return results;
+        }
+
         /// <summary>
         /// Gets all the pending topics in a paged list
         /// </summary>

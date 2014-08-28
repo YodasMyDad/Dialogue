@@ -12,6 +12,8 @@ using Umbraco.Web.Mvc;
 namespace Dialogue.Logic.Controllers
 {
 
+    // TODO - This is duplicated code! Refactor
+
     #region Render Controller
     public class BaseRenderController : RenderMvcController
     {

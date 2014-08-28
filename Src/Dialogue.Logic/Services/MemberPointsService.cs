@@ -57,17 +57,15 @@ namespace Dialogue.Logic.Services
             var end = start.AddDays(7);
 
             var results = ContextPerRequest.Db.MemberPoints
-                .Where(x => x.DateAdded >= start && x.DateAdded < end)
-                .ToList();
+                .Where(x => x.DateAdded >= start && x.DateAdded < end);
 
-            // Include Members
-            PopulateAllObjects(results);
-
-            return results.GroupBy(x => x.Member)
+            var memberIds = results.GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
                         .OrderByDescending(x => x.Value)
                         .Take((int)amountToTake)
                         .ToDictionary(x => x.Key, x => x.Value);
+
+            return PopulateAllObjects(memberIds);
         }
 
         public Dictionary<Member, int> GetThisYearsPoints(int? amountToTake)
@@ -77,48 +75,47 @@ namespace Dialogue.Logic.Services
 
 
             var results = ContextPerRequest.Db.MemberPoints
-                .Where(x => x.DateAdded.Year == thisYear)
-                .ToList();
+                .Where(x => x.DateAdded.Year == thisYear);
 
-            PopulateAllObjects(results);
-
-            return results.GroupBy(x => x.Member)
+            var memberIds = results.GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
                         .OrderByDescending(x => x.Value)
                         .Take((int)amountToTake)
                         .ToDictionary(x => x.Key, x => x.Value);
+
+            return PopulateAllObjects(memberIds);
         }
 
-        public Dictionary<Member, int> GetAllTimePoints(int? amountToTake)
+        public Dictionary<Member, int> GetLatestNegativeUsers(int? amountToTake)
         {
             amountToTake = amountToTake ?? int.MaxValue;
 
+            var sixtyDays = DateTime.Now.AddDays(-60);
             var results = ContextPerRequest.Db.MemberPoints
-                .ToList();
+                .Where(x => x.DateAdded > sixtyDays && x.Points < 0);
 
-            PopulateAllObjects(results);
-
-            return results.GroupBy(x => x.Member)
+            var memberIds = results.GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
-                        .OrderByDescending(x => x.Value)
+                        .OrderBy(x => x.Value)
                         .Take((int)amountToTake)
                         .ToDictionary(x => x.Key, x => x.Value);
+
+            return PopulateAllObjects(memberIds);
         }
 
         public Dictionary<Member, int> GetAllTimePointsNegative(int? amountToTake)
         {
             amountToTake = amountToTake ?? int.MaxValue;
 
-            var results = ContextPerRequest.Db.MemberPoints
-                        .ToList();
+            var results = ContextPerRequest.Db.MemberPoints.Where(x => x.Points < 0);
 
-            PopulateAllObjects(results);
-
-            return results.GroupBy(x => x.Member)
+            var memberIds = results.GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
                         .OrderBy(x => x.Value)
                         .Take((int)amountToTake)
                         .ToDictionary(x => x.Key, x => x.Value);
+
+            return PopulateAllObjects(memberIds);
         }
 
         private static void PopulateAllObjects(List<MemberPoints> points)
@@ -133,6 +130,23 @@ namespace Dialogue.Logic.Services
                     point.Member = member;
                 }
             }
+        }
+
+        private static Dictionary<Member, int> PopulateAllObjects(Dictionary<int, int> groupedDict)
+        {
+            if (groupedDict.Any())
+            {
+                var returnDict = new Dictionary<Member, int>();
+                var memberIds = groupedDict.Select(x => x.Key).Where(x => x != 0).ToList();
+                var members = MemberMapper.MapMember(memberIds);
+                foreach (var dict in groupedDict)
+                {
+                    var member = members.FirstOrDefault(x => x.Id == dict.Key);
+                    returnDict.Add(member, dict.Value);
+                }
+                return returnDict;
+            }
+            return new Dictionary<Member, int>();
         } 
     }
 }

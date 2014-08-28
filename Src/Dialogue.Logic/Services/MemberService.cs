@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
+using System.Web.Services.Description;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Data.UnitOfWork;
@@ -33,8 +34,17 @@ namespace Dialogue.Logic.Services
         {
             // Get members that last activity date is valid
             var date = DateTime.UtcNow.AddMinutes(-AppConstants.TimeSpanInMinutesToShowMembers);
-            var ids = _memberService.GetMembersByPropertyValue("lastActiveDate", date, ValuePropertyMatchType.GreaterThan)
+            var ids = _memberService.GetMembersByPropertyValue(AppConstants.PropMemberLastActiveDate, date, ValuePropertyMatchType.GreaterThan)
                 .Where(x => x.IsApproved && !x.IsLockedOut)
+                .Select(x => x.Id);
+            return MemberMapper.MapMember(ids.ToList());
+        }
+
+        public List<Member> GetUnAuthorisedMembers()
+        {
+            // Get members that last activity date is valid
+            var ids = _memberService.GetAllMembers()
+                .Where(x => !x.IsApproved && !x.IsLockedOut)
                 .Select(x => x.Id);
             return MemberMapper.MapMember(ids.ToList());
         }

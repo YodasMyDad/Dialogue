@@ -25,7 +25,10 @@
               <script src="@Url.Content("~/app_plugins/dialogue/content/scripts/respond.min.js")"></script>
     <![endif]-->
 
-    <script type="text/javascript">
+    @*
+    *** IMPORTANT - The app_base must be present if you use your own master page or styling ***
+    *@
+     <script type="text/javascript">
         var app_base = '@Url.Content("~/")';
     </script>
 
@@ -57,7 +60,6 @@
                     </button>
                 </div>
 
-                <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li><a href="@Html.Settings().ForumRootUrl">Home</a></li>
@@ -82,7 +84,7 @@
                             <li><a href="@Urls.GenerateUrl(Urls.UrlType.Login)">@Html.Lang("Layout.Nav.Logon")</a></li>
                         }
                     </ul>
-                    
+
                     <form action="@Urls.GenerateUrl(Urls.UrlType.Search)" method="get" role="search" class="navbar-form navbar-left">
                         <div class="form-group">
                             <input type="text" class="form-control" name="term" id="term" placeholder="@Html.Lang("Search.SearchPlaceholder")">
