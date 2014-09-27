@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Dialogue.Logic.Data.Context;
 using Dialogue.Logic.Mapping;
@@ -53,7 +54,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<TopicNotification> GetByTopic(Topic topic)
         {
-            return ContextPerRequest.Db.TopicNotification.Where(x => x.Topic.Id == topic.Id).ToList();
+            return ContextPerRequest.Db.TopicNotification.AsNoTracking().Where(x => x.Topic.Id == topic.Id).Include(x => x.Topic).ToList();
         }
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<TopicNotification> GetByUserAndTopic(Member user, Topic topic)
         {
-            return ContextPerRequest.Db.TopicNotification.Where(x => x.Topic.Id == topic.Id && x.MemberId == user.Id).ToList();
+            return ContextPerRequest.Db.TopicNotification.Where(x => x.Topic.Id == topic.Id && x.MemberId == user.Id).Include(x => x.Topic).ToList();
         }
 
         /// <summary>

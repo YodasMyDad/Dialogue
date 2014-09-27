@@ -153,12 +153,16 @@
 
             @if (User.IsInRole(AppConstants.AdminRoleName) || Model.User.CanEditOtherMembers)
             {
-                // Show the admin/mod notes on this user in case they are a spammer etc...
-                <div class="row adminpublicomments">
-                    <div class="col-md-12">
-                        @Html.Raw(Model.User.Comments)
+                if (!string.IsNullOrEmpty(Model.User.Comments))
+                {
+                    // Show the admin/mod notes on this user in case they are a spammer etc...
+                    <div class="row adminpublicomments">
+                        <div class="col-md-12">
+                            @Html.Raw(Model.User.Comments)
+                        </div>
                     </div>
-                </div>
+                }
+
             }
 
         </div>

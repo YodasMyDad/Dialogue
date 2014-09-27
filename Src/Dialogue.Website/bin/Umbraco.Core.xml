@@ -741,52 +741,6 @@
             Event args for cache refresher updates
             </summary>
         </member>
-        <member name="F:Umbraco.Core.Cache.DictionaryCacheProviderBase.CacheItemPrefix">
-            <summary>
-            We prefix all cache keys with this so that we know which ones this class has created when 
-            using the HttpRuntime cache so that when we clear it we don't clear other entries we didn't create.
-            </summary>
-        </member>
-        <member name="M:Umbraco.Core.Cache.DictionaryCacheProviderBase.ClearAllCache">
-            <summary>
-            Clears everything in umbraco's runtime cache
-            </summary>
-            <remarks>
-            Does not clear other stuff the user has put in httpruntime.cache!
-            </remarks>
-        </member>
-        <member name="M:Umbraco.Core.Cache.DictionaryCacheProviderBase.ClearCacheItem(System.String)">
-            <summary>
-            Clears the item in umbraco's runtime cache with the given key 
-            </summary>
-            <param name="key">Key</param>
-        </member>
-        <member name="M:Umbraco.Core.Cache.DictionaryCacheProviderBase.ClearCacheObjectTypes(System.String)">
-            <summary>
-            Clears all objects in the System.Web.Cache with the System.Type name as the
-            input parameter. (using [object].GetType())
-            </summary>
-            <param name="typeName">The name of the System.Type which should be cleared from cache ex "System.Xml.XmlDocument"</param>
-        </member>
-        <member name="M:Umbraco.Core.Cache.DictionaryCacheProviderBase.ClearCacheByKeySearch(System.String)">
-            <summary>
-            Clears all cache items that starts with the key passed.
-            </summary>
-            <param name="keyStartsWith">The start of the key</param>
-        </member>
-        <member name="M:Umbraco.Core.Cache.DictionaryCacheProviderBase.ClearCacheByKeyExpression(System.String)">
-            <summary>
-            Clears all cache items that have a key that matches the regular expression
-            </summary>
-            <param name="regexString"></param>
-        </member>
-        <member name="M:Umbraco.Core.Cache.DictionaryCacheProviderBase.GetCacheItem(System.String)">
-            <summary>
-            Returns a cache item by key, does not update the cache if it isn't there.
-            </summary>
-            <param name="cacheKey"></param>
-            <returns></returns>
-        </member>
         <member name="T:Umbraco.Core.Cache.HttpRequestCacheProvider">
             <summary>
             A cache provider that caches items in the HttpContext.Items
@@ -807,11 +761,6 @@
         <member name="T:Umbraco.Core.Cache.HttpRuntimeCacheProvider">
             <summary>
             A CacheProvider that wraps the logic of the HttpRuntime.Cache
-            </summary>
-        </member>
-        <member name="M:Umbraco.Core.Cache.HttpRuntimeCacheProvider.ClearCacheObjectTypes``1(System.Func{System.String,``0,System.Boolean})">
-            <summary>
-            Clears all objects in the System.Web.Cache with the System.Type specified that satisfy the predicate
             </summary>
         </member>
         <member name="M:Umbraco.Core.Cache.HttpRuntimeCacheProvider.GetCacheItem(System.String,System.Func{System.Object})">
@@ -1597,6 +1546,21 @@
             Querystring parameter name used for Umbraco's alternative template functionality.
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Constants.Conventions.RelationTypes">
+            <summary>
+            Defines the alias identifiers for Umbraco relation types.
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Constants.Conventions.RelationTypes.RelateDocumentOnCopyName">
+            <summary>
+            ContentType name for default relation type "Relate Document On Copy".
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Constants.Conventions.RelationTypes.RelateDocumentOnCopyAlias">
+            <summary>
+            ContentType alias for default relation type "Relate Document On Copy".
+            </summary>
+        </member>
         <member name="T:Umbraco.Core.Constants.PropertyEditors">
             <summary>
             Defines the identifiers for Umbraco Property Editors as constants for easy centralized access/management.
@@ -1959,7 +1923,7 @@
         </member>
         <member name="T:Umbraco.Core.Constants.Packaging">
             <summary>
-            Defines the constants used for Umbraco packages in the package.config xml
+                Defines the constants used for Umbraco packages in the package.config xml
             </summary>
         </member>
         <member name="T:Umbraco.Core.Constants.ObjectTypes">
@@ -2861,7 +2825,7 @@
             Returns the xml relating to the import event
             </summary>
         </member>
-        <member name="M:Umbraco.Core.Events.MigrationEventArgs.#ctor(System.Collections.Generic.IEnumerable{Umbraco.Core.Persistence.Migrations.IMigration},System.Version,System.Version,System.Boolean)">
+        <member name="M:Umbraco.Core.Events.MigrationEventArgs.#ctor(System.Collections.Generic.IList{Umbraco.Core.Persistence.Migrations.IMigration},System.Version,System.Version,System.Boolean)">
             <summary>
             Constructor accepting multiple migrations that are used in the migration runner
             </summary>
@@ -2870,7 +2834,7 @@
             <param name="canCancel"></param>
             <param name="configuredVersion"></param>
         </member>
-        <member name="M:Umbraco.Core.Events.MigrationEventArgs.#ctor(System.Collections.Generic.IEnumerable{Umbraco.Core.Persistence.Migrations.IMigration},Umbraco.Core.Persistence.Migrations.MigrationContext,System.Version,System.Version,System.Boolean)">
+        <member name="M:Umbraco.Core.Events.MigrationEventArgs.#ctor(System.Collections.Generic.IList{Umbraco.Core.Persistence.Migrations.IMigration},Umbraco.Core.Persistence.Migrations.MigrationContext,System.Version,System.Version,System.Boolean)">
             <summary>
             Constructor accepting multiple migrations that are used in the migration runner
             </summary>
@@ -2880,7 +2844,7 @@
             <param name="canCancel"></param>
             <param name="configuredVersion"></param>
         </member>
-        <member name="M:Umbraco.Core.Events.MigrationEventArgs.#ctor(System.Collections.Generic.IEnumerable{Umbraco.Core.Persistence.Migrations.IMigration},System.Version,System.Version)">
+        <member name="M:Umbraco.Core.Events.MigrationEventArgs.#ctor(System.Collections.Generic.IList{Umbraco.Core.Persistence.Migrations.IMigration},System.Version,System.Version)">
             <summary>
             Constructor accepting multiple migrations that are used in the migration runner
             </summary>
@@ -3644,6 +3608,30 @@
             <param name="jObject">contents of JSON object that will be deserialized</param>
             <returns></returns>
         </member>
+        <member name="T:Umbraco.Core.DisposableObject">
+            <summary>
+            Abstract implementation of logic commonly required to safely handle disposable unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.DisposableObject.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Umbraco.Core.DisposableObject.DisposeResources">
+            <summary>
+            Handles the disposal of resources. Derived from abstract class <see cref="T:Umbraco.Core.DisposableObject"/> which handles common required locking logic.
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.DisposableObject.IsDisposed">
+            <summary>
+            Gets a value indicating whether this instance is disposed.
+            </summary>
+            <value>
+            	<c>true</c> if this instance is disposed; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="T:Umbraco.Core.Manifest.PackageManifest">
             <summary>
             Represents a manifest file for packages
@@ -4366,6 +4354,17 @@
             </summary>
             <param name="media">Current media</param>
             <returns>An <see cref="T:Umbraco.Core.Models.IMedia"/> object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.SanitizeEntityPropertiesForXmlStorage(Umbraco.Core.Models.IContentBase)">
+            <summary>
+            Removes characters that are not valide XML characters from all entity properties 
+            of type string. See: http://stackoverflow.com/a/961504/5018
+            </summary>
+            <returns></returns>
+            <remarks>
+            If this is not done then the xml cache can get corrupt and it will throw YSODs upon reading it.
+            </remarks>
+            <param name="entity"></param>
         </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.HasChildren(Umbraco.Core.Models.IContentBase,Umbraco.Core.Services.ServiceContext)">
             <summary>
@@ -5151,6 +5150,11 @@
             
             </remarks>
         </member>
+        <member name="F:Umbraco.Core.Models.DeepCloneHelper.PropCache">
+            <summary>
+            Used to avoid constant reflection (perf)
+            </summary>
+        </member>
         <member name="M:Umbraco.Core.Models.DeepCloneHelper.DeepCloneRefProperties(Umbraco.Core.Models.IDeepCloneable,Umbraco.Core.Models.IDeepCloneable)">
             <summary>
             Used to deep clone any reference properties on the object (should be done after a MemberwiseClone for which the outcome is 'output')
@@ -5299,6 +5303,13 @@
             </summary>
             <remarks>Corresponds to the NodeObjectType in the umbracoNode table</remarks>
         </member>
+        <!-- Badly formed XML comment ignored for member "T:Umbraco.Core.Models.Membership.EntityPermissionSet" -->
+        <member name="P:Umbraco.Core.Models.Membership.EntityPermissionSet.EntityId">
+            <summary>
+            The entity id with permissions assigned
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Umbraco.Core.Models.Membership.EntityPermissionSet.UserPermissionsSet" -->
         <member name="T:Umbraco.Core.Models.Membership.MembershipScenario">
             <summary>
             How membership is implemented in the current install.
@@ -5591,9 +5602,120 @@
             Gets the factory.
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Models.PartialView">
+            <summary>
+            Represents a Partial View file
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Models.File">
+            <summary>
+            Represents an abstract file which provides basic functionality for a File with an Alias and Name
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Models.IFile">
+            <summary>
+            Defines a File
+            </summary>
+            <remarks>Used for Scripts, Stylesheets and Templates</remarks>
+        </member>
+        <member name="M:Umbraco.Core.Models.IFile.IsValid">
+            <summary>
+            Boolean indicating whether the file could be validated
+            </summary>
+            <returns>True if file is valid, otherwise false</returns>
+        </member>
+        <member name="P:Umbraco.Core.Models.IFile.Name">
+            <summary>
+            Gets the Name of the File including extension
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.IFile.Alias">
+            <summary>
+            Gets the Alias of the File, which is the name without the extension
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.IFile.Path">
+            <summary>
+            Gets or sets the Path to the File from the root of the site
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.IFile.Content">
+            <summary>
+            Gets or sets the Content of a File
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Models.File.IsValid">
+            <summary>
+            Boolean indicating whether the file could be validated
+            </summary>
+            <returns>True if file is valid, otherwise false</returns>
+        </member>
+        <member name="P:Umbraco.Core.Models.File.Name">
+            <summary>
+            Gets or sets the Name of the File including extension
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.File.Alias">
+            <summary>
+            Gets or sets the Alias of the File, which is the name without the extension
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.File.Path">
+            <summary>
+            Gets or sets the Path to the File from the root of the site
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.File.Content">
+            <summary>
+            Gets or sets the Content of a File
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Models.PartialView.IsValid">
+            <summary>
+            Boolean indicating whether the file could be validated
+            </summary>
+            <returns>True if file is valid, otherwise false</returns>
+        </member>
         <member name="T:Umbraco.Core.Models.TaggableObjectTypes">
             <summary>
             Enum representing the taggable object types
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Models.TaggedEntity">
+            <summary>
+            Represents a tagged entity.
+            </summary>
+            <remarks>Note that it is the properties of an entity (like Content, Media, Members, etc.) that is tagged, 
+            which is why this class is composed of a list of tagged properties and an Id reference to the actual entity.</remarks>
+        </member>
+        <member name="P:Umbraco.Core.Models.TaggedEntity.EntityId">
+            <summary>
+            Id of the entity, which is tagged
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.TaggedEntity.TaggedProperties">
+            <summary>
+            An enumerable list of tagged properties
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Models.TaggedProperty">
+            <summary>
+            Represents a tagged property on an entity.
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.TaggedProperty.PropertyTypeId">
+            <summary>
+            Id of the PropertyType, which this tagged property is based on
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.TaggedProperty.PropertyTypeAlias">
+            <summary>
+            Alias of the PropertyType, which this tagged property is based on
+            </summary>
+        </member>
+        <member name="P:Umbraco.Core.Models.TaggedProperty.Tags">
+            <summary>
+            An enumerable list of Tags for the property
             </summary>
         </member>
         <member name="T:Umbraco.Core.Models.TemplateNode">
@@ -5619,10 +5741,92 @@
             Will be null if there is no parent
             </remarks>
         </member>
-        <member name="T:Umbraco.Core.Persistence.DatabaseModelDefinitions.DbIndexDefinition">
+        <member name="T:Umbraco.Core.MonitorLock">
             <summary>
-            Represents a database index definition retreived by querying the database
+            Provides an equivalent to the c# lock statement, to be used in a using block.
             </summary>
+            <remarks>Ie replace <c>lock (o) {...}</c> by <c>using (new MonitorLock(o)) { ... }</c></remarks>
+        </member>
+        <member name="M:Umbraco.Core.MonitorLock.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Umbraco.Core.MonitorLock"/> class with an object to lock.
+            </summary>
+            <param name="locker">The object to lock.</param>
+            <remarks>Should always be used within a using block.</remarks>
+        </member>
+        <member name="T:Umbraco.Core.Packaging.IPackageExtraction">
+            <summary>
+            Used to access an umbraco package file
+            Remeber that filenames must be unique
+            use "FindDubletFileNames" for sanitycheck
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.IPackageExtraction.ReadTextFileFromArchive(System.String,System.String,System.String@)">
+            <summary>
+            Returns the content of the file with the given filename
+            </summary>
+            <param name="packageFilePath">Full path to the umbraco package file</param>
+            <param name="fileToRead">filename of the file for wich to get the text content</param>
+            <param name="directoryInPackage">this is the relative directory for the location of the file in the package
+            I dont know why umbraco packages contains directories in the first place??</param>
+            <returns>text content of the file</returns>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.IPackageExtraction.CopyFileFromArchive(System.String,System.String,System.String)">
+            <summary>
+            Copies a file from package to given destination
+            </summary>
+            <param name="packageFilePath">Full path to the ubraco package file</param>
+            <param name="fileInPackageName">filename of the file to copy</param>
+            <param name="destinationfilePath">destination path (including destination filename)</param>
+            <returns>True a file was overwritten</returns>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.IPackageExtraction.CopyFilesFromArchive(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            Copies a file from package to given destination
+            </summary>
+            <param name="packageFilePath">Full path to the ubraco package file</param>
+            <param name="sourceDestination">Key: Source file in package. Value: Destination path inclusive file name</param>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.IPackageExtraction.FindMissingFiles(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Check if given list of files can be found in the package
+            </summary>
+            <param name="packageFilePath">Full path to the umbraco package file</param>
+            <param name="expectedFiles">a list of files you would like to find in the package</param>
+            <returns>a subset if any of the files in "expectedFiles" that could not be found in the package</returns>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.IPackageExtraction.FindDubletFileNames(System.String)">
+            <summary>
+            Sanitycheck - should return en empty collection if package is valid
+            </summary>
+            <param name="packageFilePath">Full path to the umbraco package file</param>
+            <returns>list of files that are found more than ones (accross directories) in the package</returns>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.IPackageExtraction.ReadFilesFromArchive(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Reads the given files from archive and returns them as a collection of byte arrays
+            </summary>
+            <param name="packageFilePath"></param>
+            <param name="filesToGet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.PackageInstallation.PackageSupportedCheck(System.Xml.Linq.XElement)">
+            <summary>
+            Temperary check to test that we support stylesheets
+            </summary>
+            <param name="rootElement"></param>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.PackageBinaryInspector.ScanAssembliesForTypeReference``1(System.Collections.Generic.IEnumerable{System.Byte[]},System.String[]@)">
+            <summary>
+            Entry point to call from your code
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="assemblys"></param>
+            <param name="errorReport"></param>
+            <returns></returns>
+            <remarks>
+            Will perform the assembly scan in a separate app domain
+            </remarks>
         </member>
         <member name="M:Umbraco.Core.Packaging.PackageBinaryInspector.ScanAssembliesForTypeReference``1(System.String,System.String[]@)">
             <summary>
@@ -5634,6 +5838,18 @@
             <returns></returns>
             <remarks>
             Will perform the assembly scan in a separate app domain
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Core.Packaging.PackageBinaryInspector.PerformScan``1(System.Collections.Generic.IEnumerable{System.Byte[]},System.String[]@)">
+            <summary>
+            Performs the assembly scanning
+            </summary>
+            <typeparam name="T"></typeparam>        
+            <param name="assemblies"></param>
+            <param name="errorReport"></param>
+            <returns></returns>
+            <remarks>
+            This method is executed in a separate app domain
             </remarks>
         </member>
         <member name="M:Umbraco.Core.Packaging.PackageBinaryInspector.PerformScan``1(System.String,System.String[]@)">
@@ -5661,6 +5877,11 @@
             Create an app domain
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.DatabaseModelDefinitions.DbIndexDefinition">
+            <summary>
+            Represents a database index definition retreived by querying the database
+            </summary>
         </member>
         <member name="T:Umbraco.Core.Persistence.EntityNotFoundException">
             <summary>
@@ -5738,30 +5959,6 @@
             </summary>
             <typeparam name="TEntity">Type of <see cref="T:Umbraco.Core.Models.EntityBase.IAggregateRoot"/> entity for which the repository is used</typeparam>
             <typeparam name="TId">Type of the Id used for this entity</typeparam>
-        </member>
-        <member name="T:Umbraco.Core.DisposableObject">
-            <summary>
-            Abstract implementation of logic commonly required to safely handle disposable unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:Umbraco.Core.DisposableObject.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-            <filterpriority>2</filterpriority>
-        </member>
-        <member name="M:Umbraco.Core.DisposableObject.DisposeResources">
-            <summary>
-            Handles the disposal of resources. Derived from abstract class <see cref="T:Umbraco.Core.DisposableObject"/> which handles common required locking logic.
-            </summary>
-        </member>
-        <member name="P:Umbraco.Core.DisposableObject.IsDisposed">
-            <summary>
-            Gets a value indicating whether this instance is disposed.
-            </summary>
-            <value>
-            	<c>true</c> if this instance is disposed; otherwise, <c>false</c>.
-            </value>
         </member>
         <member name="T:Umbraco.Core.Persistence.Repositories.IRepositoryQueryable`2">
             <summary>
@@ -6273,6 +6470,26 @@
             if the ConvertEditorToDb doesn't return an IEnumerable{string} then an exception will be thrown.
             </remarks>
         </member>
+        <member name="T:Umbraco.Core.PropertyEditors.IPropertyValueConverterMeta">
+            <summary>
+            Provides published content properties converter meta data.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.PropertyEditors.IPropertyValueConverterMeta.GetPropertyValueType(Umbraco.Core.Models.PublishedContent.PublishedPropertyType)">
+            <summary>
+            Gets the type of values returned by the converter.
+            </summary>
+            <param name="propertyType">The property type.</param>
+            <returns>The CLR type of values returned by the converter.</returns>
+        </member>
+        <member name="M:Umbraco.Core.PropertyEditors.IPropertyValueConverterMeta.GetPropertyCacheLevel(Umbraco.Core.Models.PublishedContent.PublishedPropertyType,Umbraco.Core.PropertyEditors.PropertyCacheValue)">
+            <summary>
+            Gets the property cache level of a specified value.
+            </summary>
+            <param name="propertyType">The property type.</param>
+            <param name="cacheValue">The property value.</param>
+            <returns>The property cache level of the specified value.</returns>
+        </member>
         <member name="T:Umbraco.Core.PropertyEditors.ValueConverters.JsonValueConverter">
             <summary>
             The default converter for all property editors that expose a JSON value type
@@ -6699,69 +6916,6 @@
             A dictionary containing any additional objects that are related to this property when saving
             </summary>
         </member>
-        <member name="T:Umbraco.Core.Models.File">
-            <summary>
-            Represents an abstract file which provides basic functionality for a File with an Alias and Name
-            </summary>
-        </member>
-        <member name="T:Umbraco.Core.Models.IFile">
-            <summary>
-            Defines a File
-            </summary>
-            <remarks>Used for Scripts, Stylesheets and Templates</remarks>
-        </member>
-        <member name="M:Umbraco.Core.Models.IFile.IsValid">
-            <summary>
-            Boolean indicating whether the file could be validated
-            </summary>
-            <returns>True if file is valid, otherwise false</returns>
-        </member>
-        <member name="P:Umbraco.Core.Models.IFile.Name">
-            <summary>
-            Gets the Name of the File including extension
-            </summary>
-        </member>
-        <member name="P:Umbraco.Core.Models.IFile.Alias">
-            <summary>
-            Gets the Alias of the File, which is the name without the extension
-            </summary>
-        </member>
-        <member name="P:Umbraco.Core.Models.IFile.Path">
-            <summary>
-            Gets or sets the Path to the File from the root of the site
-            </summary>
-        </member>
-        <member name="P:Umbraco.Core.Models.IFile.Content">
-            <summary>
-            Gets or sets the Content of a File
-            </summary>
-        </member>
-        <member name="M:Umbraco.Core.Models.File.IsValid">
-            <summary>
-            Boolean indicating whether the file could be validated
-            </summary>
-            <returns>True if file is valid, otherwise false</returns>
-        </member>
-        <member name="P:Umbraco.Core.Models.File.Name">
-            <summary>
-            Gets or sets the Name of the File including extension
-            </summary>
-        </member>
-        <member name="P:Umbraco.Core.Models.File.Alias">
-            <summary>
-            Gets or sets the Alias of the File, which is the name without the extension
-            </summary>
-        </member>
-        <member name="P:Umbraco.Core.Models.File.Path">
-            <summary>
-            Gets or sets the Path to the File from the root of the site
-            </summary>
-        </member>
-        <member name="P:Umbraco.Core.Models.File.Content">
-            <summary>
-            Gets or sets the Content of a File
-            </summary>
-        </member>
         <member name="P:Umbraco.Core.Models.IDataTypeDefinition.PropertyEditorAlias">
             <summary>
             The Property editor alias assigned to the data type
@@ -6908,6 +7062,11 @@
         <member name="P:Umbraco.Core.Models.IMacroPropertyType.BaseType">
             <summary>
             Gets the Base Type for storing the PropertyType (Int32, String, Boolean)
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Models.ITag">
+            <summary>
+            Represents a Tag, which is composed of a Text, Group and NodeCount property.
             </summary>
         </member>
         <member name="T:Umbraco.Core.Models.Macro">
@@ -7320,6 +7479,11 @@
         <member name="P:Umbraco.Core.Models.Membership.EntityPermission.AssignedPermissions">
             <summary>
             The assigned permissions for the user/entity combo
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Models.Membership.IMembershipUser">
+            <summary>
+            Defines the base contract for <see cref="T:Umbraco.Core.Models.IMember"/> and <see cref="T:Umbraco.Core.Models.Membership.IUser"/>
             </summary>
         </member>
         <member name="P:Umbraco.Core.Models.Membership.IMembershipUser.RawPasswordValue">
@@ -8062,11 +8226,7 @@
         <member name="T:Umbraco.Core.Models.Membership.UserType">
             <summary>
             Represents the Type for a Backoffice User
-            </summary>
-            <remarks>
-            Should be internal until a proper user/membership implementation
-            is part of the roadmap.
-            </remarks>
+            </summary>    
         </member>
         <member name="P:Umbraco.Core.Models.Membership.UserType.Permissions">
             <summary>
@@ -9430,7 +9590,7 @@
             <summary>
             Returns all tags for an entity type (content/media/member)
             </summary>
-            <param name="objectType"></param>
+            <param name="objectType">Entity type</param>
             <param name="group">Optional group</param>
             <returns></returns>
         </member>
@@ -9474,6 +9634,19 @@
             <param name="contentId"></param>
             <param name="propertyTypeId"></param>
             <param name="tags">The tags to remove from the property</param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.ClearTagsFromProperty(System.Int32,System.Int32)">
+            <summary>
+            Removes all tag associations from the property
+            </summary>
+            <param name="contentId"></param>
+            <param name="propertyTypeId"></param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.ClearTagsFromEntity(System.Int32)">
+            <summary>
+            Removes all tag associations from the entity
+            </summary>
+            <param name="contentId"></param>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.TagsRepository.AssignTagsToProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag},System.Boolean)">
             <summary>
@@ -10201,6 +10374,12 @@
             <param name="foundMigrations"></param>
             <returns></returns>
         </member>
+        <member name="M:Umbraco.Core.Persistence.Migrations.MigrationRunner.FindMigrations">
+            <summary>
+            Find all migrations that are available through the <see cref="T:Umbraco.Core.Persistence.Migrations.MigrationResolver"/>
+            </summary>
+            <returns>An array of <see cref="T:Umbraco.Core.Persistence.Migrations.IMigration"/></returns>
+        </member>
         <member name="E:Umbraco.Core.Persistence.Migrations.MigrationRunner.Migrating">
             <summary>
             Occurs before Migration
@@ -10441,6 +10620,20 @@
             <param name="id">Id of the <see cref="!:TEntity"/> to delete a version from</param>
             <param name="versionId">Guid id of the version to delete</param>
         </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.Count(System.String)">
+            <summary>
+            Get the total count of entities
+            </summary>
+            <param name="contentTypeAlias"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.ClearEntityTags(Umbraco.Core.Models.IContentBase,Umbraco.Core.Persistence.Repositories.ITagsRepository)">
+            <summary>
+            This removes associated tags from the entity - used generally when an entity is recycled
+            </summary>
+            <param name="entity"></param>
+            <param name="tagRepo"></param>
+        </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.UpdatePropertyTags(Umbraco.Core.Models.IContentBase,Umbraco.Core.Persistence.Repositories.ITagsRepository)">
             <summary>
             Updates the tag repository with any tag enabled properties and their values
@@ -10466,6 +10659,13 @@
             </summary>
             <typeparam name="TEntity">Type of <see cref="T:Umbraco.Core.Models.EntityBase.IAggregateRoot"/> entity for which the repository is used</typeparam>
             <typeparam name="TId">Type of the Id used for this entity</typeparam>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRepositoryVersionable`2.Count(System.String)">
+            <summary>
+            Get the total count of entities
+            </summary>
+            <param name="contentTypeAlias"></param>
+            <returns></returns>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.IRepositoryVersionable`2.GetAllVersions(System.Int32)">
             <summary>
@@ -10494,6 +10694,7 @@
             <param name="id">Id of the <see cref="!:TEntity"/> object to delete versions from</param>
             <param name="versionDate">Latest version date</param>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:Umbraco.Core.Persistence.Repositories.IContentRepository.ReplaceContentPermissions(Umbraco.Core.Models.Membership.EntityPermissionSet)" -->
         <member name="M:Umbraco.Core.Persistence.Repositories.IContentRepository.GetByLanguage(System.Int32,System.String)">
             <summary>
             Gets a specific language version of an <see cref="T:Umbraco.Core.Models.IContent"/>
@@ -10544,6 +10745,19 @@
             <param name="content"></param>
             <param name="xml"></param>
         </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IContentRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IContent},System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets paged content results
+            </summary>
+            <param name="query">Query to excute</param>
+            <param name="pageNumber">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.ContentRepository.AssignEntityPermission(Umbraco.Core.Models.IContent,System.Char,System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
             Assigns a single permission to the current content item for the specified user ids
@@ -10571,6 +10785,19 @@
             </summary>
             <param name="content"></param>
             <param name="xml"></param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.ContentRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IContent},System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets paged content results
+            </summary>
+            <param name="query">Query to excute</param>
+            <param name="pageNumber">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.ContentRepository.CreateContentFromDto(Umbraco.Core.Models.Rdbms.DocumentDto,System.Guid)">
             <summary>
@@ -10984,13 +11211,11 @@
             <param name="permission"></param>
             <param name="userIds"></param>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.PermissionRepository`1.ReplaceEntityPermissions(`0,System.Collections.Generic.IEnumerable{System.Tuple{System.Int32,System.String}})">
+        <member name="M:Umbraco.Core.Persistence.Repositories.PermissionRepository`1.ReplaceEntityPermissions(Umbraco.Core.Models.Membership.EntityPermissionSet)">
             <summary>
             Assigns permissions to an entity for multiple users/permission entries
             </summary>
-            <param name="entity"></param>
-            <param name="userPermissions">
-            A key/value pair list containing a userId and a permission to assign
+            <param name="permissionSet">
             </param>
             <remarks>
             This will first clear the permissions for this entity then re-create them
@@ -14704,6 +14929,11 @@
             sure we can use it for anything other than DynamicNode.
             </remarks>
         </member>
+        <member name="T:Umbraco.Core.Publishing.ScheduledPublisher">
+            <summary>
+            Used to perform scheduled publishing/unpublishing
+            </summary>
+        </member>
         <member name="T:Umbraco.Core.Models.Section">
             <summary>
             Represents a section defined in the app.config file
@@ -15129,6 +15359,20 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Umbraco.Core.Security.MembershipProviderExtensions.GetCurrentUserOnline(System.Web.Security.MembershipProvider)">
+            <summary>
+            Returns the currently logged in MembershipUser and flags them as being online - use sparingly (i.e. login)
+            </summary>
+            <param name="membershipProvider"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Security.MembershipProviderExtensions.GetCurrentUser(System.Web.Security.MembershipProvider)">
+            <summary>
+            Returns the currently logged in MembershipUser
+            </summary>
+            <param name="membershipProvider"></param>
+            <returns></returns>
+        </member>
         <member name="M:Umbraco.Core.Security.MembershipProviderExtensions.GetCurrentUserName(System.Web.Security.MembershipProvider)">
             <summary>
             Just returns the current user's login name (just a wrapper).
@@ -15321,6 +15565,7 @@
             Marker interface for services, which is used to store difference services in a list or dictionary
             </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:Umbraco.Core.Services.IContentService.ReplaceContentPermissions(Umbraco.Core.Models.Membership.EntityPermissionSet)" -->
         <member name="M:Umbraco.Core.Services.IContentService.AssignContentPermission(Umbraco.Core.Models.IContent,System.Char,System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
             Assigns a single permission to the current content item for the specified user ids
@@ -15401,6 +15646,19 @@
             Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
             </summary>
             <param name="id">Id of the Parent to retrieve Children from</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IContentService.GetPagedChildren(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Children from</param>
+            <param name="pageNumber">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirections">Direction to order by</param>
+            <param name="filter">Search text filter</param>
             <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Services.IContentService.GetVersions(System.Int32)">
@@ -15723,6 +15981,7 @@
             <param name="userId">Optional id of the user creating the content</param>
             <returns><see cref="T:Umbraco.Core.Models.IContent"/></returns>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:Umbraco.Core.Services.ContentService.ReplaceContentPermissions(Umbraco.Core.Models.Membership.EntityPermissionSet)" -->
         <member name="M:Umbraco.Core.Services.ContentService.AssignContentPermission(Umbraco.Core.Models.IContent,System.Char,System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
             Assigns a single permission to the current content item for the specified user ids
@@ -15868,6 +16127,19 @@
             Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
             </summary>
             <param name="id">Id of the Parent to retrieve Children from</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ContentService.GetPagedChildren(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Children from</param>
+            <param name="pageNumber">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirections">Direction to order by</param>
+            <param name="filter">Search text filter</param>
             <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Services.ContentService.GetChildrenByName(System.Int32,System.String)">
@@ -17438,6 +17710,22 @@
             <param name="member">Member to export</param>
             <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Member object</returns>
         </member>
+        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.Serialize(Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IDataTypeDefinition)">
+            <summary>
+            Exports an <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="dataTypeService"></param>
+            <param name="dataTypeDefinition">IDataTypeDefinition type to export</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDataTypeDefinition object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.Serialize(Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IContentType)">
+            <summary>
+            Exports an <see cref="T:Umbraco.Core.Models.IContentType"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="dataTypeService"></param>
+            <param name="contentType">Content type to export</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IContentType object</returns>
+        </member>
         <member name="M:Umbraco.Core.Services.EntityXmlSerializer.AddChildXml(Umbraco.Core.Services.IMediaService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IMedia[],System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IMedia},System.Xml.Linq.XElement)">
             <summary>
             Used by Media Export to recursively add children
@@ -17810,6 +18098,36 @@
         <member name="E:Umbraco.Core.Services.FileService.SavedStylesheet">
             <summary>
             Occurs after Save
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.FileService.SavingPartialView">
+            <summary>
+            Occurs before Save
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.FileService.SavedPartialView">
+            <summary>
+            Occurs after Save
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.FileService.CreatingPartialView">
+            <summary>
+            Occurs before Create
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.FileService.CreatedPartialView">
+            <summary>
+            Occurs after Create
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.FileService.DeletingPartialView">
+            <summary>
+            Occurs before Delete
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.FileService.DeletedPartialView">
+            <summary>
+            Occurs after Delete
             </summary>
         </member>
         <member name="M:Umbraco.Core.Services.IApplicationTreeService.MakeNew(System.Boolean,System.Byte,System.String,System.String,System.String,System.String,System.String,System.String)">
@@ -18273,175 +18591,313 @@
         <member name="T:Umbraco.Core.Services.IMembershipMemberService`1">
             <summary>
             Defines part of the UserService/MemberService, which is specific to methods used by the membership provider.
+            The generic type is restricted to <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/>. The implementation of this interface  uses
+            either <see cref="T:Umbraco.Core.Models.IMember"/> for the MemberService or <see cref="T:Umbraco.Core.Models.Membership.IUser"/> for the UserService.
             </summary>
             <remarks>
             Idea is to have this is an isolated interface so that it can be easily 'replaced' in the membership provider impl.
             </remarks>
         </member>
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.GetCount(Umbraco.Core.Models.Membership.MemberCountType)">
+            <summary>
+            Gets the total number of Members or Users based on the count type
+            </summary>
+            <remarks>
+            The way the Online count is done is the same way that it is done in the MS SqlMembershipProvider - We query for any members
+            that have their last active date within the Membership.UserIsOnlineTimeWindow (which is in minutes). It isn't exact science
+            but that is how MS have made theirs so we'll follow that principal.
+            </remarks>
+            <param name="countType"><see cref="T:Umbraco.Core.Models.Membership.MemberCountType"/> to count by</param>
+            <returns><see cref="!:System.int"/> with number of Members or Users for passed in type</returns>
+        </member>
         <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.GetDefaultMemberType">
             <summary>
-            Returns the default member type alias
+            Gets the default MemberType alias
             </summary>
-            <returns></returns>
+            <remarks>By default we'll return the 'writer', but we need to check it exists. If it doesn't we'll 
+            return the first type that is not an admin, otherwise if there's only one we will return that one.</remarks>
+            <returns>Alias of the default MemberType</returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.Exists(System.String)">
             <summary>
-            Checks if a member with the username exists
+            Checks if a Member with the username exists
             </summary>
-            <param name="username"></param>
-            <returns></returns>
+            <param name="username">Username to check</param>
+            <returns><c>True</c> if the Member exists otherwise <c>False</c></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.CreateWithIdentity(System.String,System.String,System.String,System.String)">
             <summary>
-            Creates and persists a new member
+            Creates and persists a new <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/>
             </summary>
-            <param name="username"></param>
-            <param name="email"></param>
-            <param name="rawPasswordValue">
-            This value should be the encoded/encrypted/hashed value for the password that will be stored in the database
-            </param>
-            <param name="memberTypeAlias"></param>
-            <returns></returns>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="username">Username of the <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> to create</param>
+            <param name="email">Email of the <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> to create</param>
+            <param name="passwordValue">This value should be the encoded/encrypted/hashed value for the password that will be stored in the database</param>
+            <param name="memberTypeAlias">Alias of the Type</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.GetByProviderKey(System.Object)">
             <summary>
-            Gets the member by the provider key
+            Gets an <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> by its provider key
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="id">Id to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.GetByEmail(System.String)">
             <summary>
-            Get a member by email
+            Get an <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> by email
             </summary>
-            <param name="email"></param>
-            <returns></returns>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="email">Email to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/></returns>
         </member>
-        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.GetCount(Umbraco.Core.Models.Membership.MemberCountType)">
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.GetByUsername(System.String)">
             <summary>
-            Gets the total number of members based on the count type
+            Get an <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> by username
             </summary>
-            <returns></returns>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="username">Username to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.Delete(`0)">
+            <summary>
+            Deletes an <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/>
+            </summary>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="membershipUser"><see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/> to Delete</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.Save(`0,System.Boolean)">
+            <summary>
+            Saves an <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/>
+            </summary>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="entity"><see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/> to Save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.Save(System.Collections.Generic.IEnumerable{`0},System.Boolean)">
+            <summary>
+            Saves a list of <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> objects
+            </summary>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="entities"><see cref="T:System.Collections.Generic.IEnumerable`1"/> to save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.FindByEmail(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
+            <summary>
+            Finds a list of <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> objects by a partial email string
+            </summary>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="emailStringToMatch">Partial email string to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.FindByUsername(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
+            <summary>
+            Finds a list of <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> objects by a partial username
+            </summary>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="login">Partial username to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMembershipMemberService`1.GetAll(System.Int32,System.Int32,System.Int32@)">
             <summary>
-            Gets a list of paged member data
+            Gets a list of paged <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> objects
             </summary>
-            <param name="pageIndex"></param>
-            <param name="pageSize"></param>
-            <param name="totalRecords"></param>
-            <returns></returns>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMembershipMemberService.CreateMemberWithIdentity(System.String,System.String,Umbraco.Core.Models.IMemberType)">
+            <summary>
+            Creates and persists a new Member
+            </summary>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="memberType"><see cref="T:Umbraco.Core.Models.IMemberType"/> which the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMemberService.CreateMember(System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates an <see cref="T:Umbraco.Core.Models.IMember"/> object without persisting it
+            </summary>
+            <remarks>This method is convenient for when you need to add properties to a new Member
+            before persisting it in order to limit the amount of times its saved.
+            Also note that the returned <see cref="T:Umbraco.Core.Models.IMember"/> will not have an Id until its saved.</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberTypeAlias">Alias of the MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMemberService.CreateMember(System.String,System.String,System.String,Umbraco.Core.Models.IMemberType)">
+            <summary>
+            Creates an <see cref="T:Umbraco.Core.Models.IMember"/> object without persisting it
+            </summary>
+            <remarks>This method is convenient for when you need to add properties to a new Member
+            before persisting it in order to limit the amount of times its saved.
+            Also note that the returned <see cref="T:Umbraco.Core.Models.IMember"/> will not have an Id until its saved.</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberType">MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMemberService.CreateMemberWithIdentity(System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates and persists a Member
+            </summary>
+            <remarks>Using this method will persist the Member object before its returned 
+            meaning that it will have an Id available (unlike the CreateMember method)</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberTypeAlias">Alias of the MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMemberService.CreateMemberWithIdentity(System.String,System.String,System.String,Umbraco.Core.Models.IMemberType)">
+            <summary>
+            Creates and persists a Member
+            </summary>
+            <remarks>Using this method will persist the Member object before its returned 
+            meaning that it will have an Id available (unlike the CreateMember method)</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberType">MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.SavePassword(Umbraco.Core.Models.IMember,System.String)">
             <summary>
             This is simply a helper method which essentially just wraps the MembershipProvider's ChangePassword method
             </summary>
-            <param name="member">The member to save the password for</param>
-            <param name="password"></param>
-            <remarks>
-            This method exists so that Umbraco developers can use one entry point to create/update members if they choose to.
-            </remarks>
+            <remarks>This method exists so that Umbraco developers can use one entry point to create/update 
+            Members if they choose to. </remarks>
+            <param name="member">The Member to save the password for</param>
+            <param name="password">The password to encrypt and save</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMemberService.Count(System.String)">
+            <summary>
+            Gets the count of Members by an optional MemberType alias
+            </summary>
+            <remarks>If no alias is supplied then the count for all Member will be returned</remarks>
+            <param name="memberTypeAlias">Optional alias for the MemberType when counting number of Members</param>
+            <returns><see cref="!:System.int"/> with number of Members</returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.Exists(System.Int32)">
             <summary>
-            Checks if a member with the id exists
+            Checks if a Member with the id exists
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <param name="id">Id of the Member</param>
+            <returns><c>True</c> if the Member exists otherwise <c>False</c></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetByKey(System.Guid)">
             <summary>
-            Get a member by the unique key
+            Gets a Member by the unique key
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <remarks>The guid key corresponds to the unique id in the database
+            and the user id in the membership provider.</remarks>
+            <param name="id"><see cref="T:System.Guid"/> Id</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetById(System.Int32)">
             <summary>
-            Gets a member by it's id
+            Gets a Member by its integer id
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <param name="id"><see cref="!:System.int"/> Id</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetMembersByMemberType(System.String)">
             <summary>
-            Get all members for the member type alias
+            Gets all Members for the specified MemberType alias
             </summary>
-            <param name="memberTypeAlias"></param>
-            <returns></returns>
+            <param name="memberTypeAlias">Alias of the MemberType</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetMembersByMemberType(System.Int32)">
             <summary>
-            Get all members for the member type id
+            Gets all Members for the MemberType id
             </summary>
-            <param name="memberTypeId"></param>
-            <returns></returns>
+            <param name="memberTypeId">Id of the MemberType</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetMembersByGroup(System.String)">
             <summary>
-            Get all members in the member group name specified
+            Gets all Members within the specified MemberGroup name
             </summary>
-            <param name="memberGroupName"></param>
-            <returns></returns>
+            <param name="memberGroupName">Name of the MemberGroup</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetAllMembers(System.Int32[])">
             <summary>
-            Get all members with the ids specified
+            Gets all Members with the ids specified
             </summary>
-            <param name="ids"></param>
-            <returns></returns>
+            <remarks>If no Ids are specified all Members will be retrieved</remarks>
+            <param name="ids">Optional list of Member Ids</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.DeleteMembersOfType(System.Int32)">
             <summary>
-            Delete members of the specified member type id
+            Delete Members of the specified MemberType id
             </summary>
-            <param name="memberTypeId"></param>
+            <param name="memberTypeId">Id of the MemberType</param>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.FindMembersByDisplayName(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
             <summary>
-            Find members based on their display name
+            Finds Members based on their display name
             </summary>
-            <param name="displayNameToMatch"></param>
-            <param name="pageIndex"></param>
-            <param name="pageSize"></param>
-            <param name="totalRecords"></param>
-            <param name="matchType"></param>
-            <returns></returns>
+            <param name="displayNameToMatch">Display name to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetMembersByPropertyValue(System.String,System.String,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
             <summary>
-            Get members based on a property search
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <param name="matchType"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="!:System.string"/> Value to match</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.Exact"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetMembersByPropertyValue(System.String,System.Int32,Umbraco.Core.Persistence.Querying.ValuePropertyMatchType)">
             <summary>
-            Get members based on a property search
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <param name="matchType"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="!:System.int"/> Value to match</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.Exact"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetMembersByPropertyValue(System.String,System.Boolean)">
             <summary>
-            Get members based on a property search
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="!:System.bool"/> Value to match</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.GetMembersByPropertyValue(System.String,System.DateTime,Umbraco.Core.Persistence.Querying.ValuePropertyMatchType)">
             <summary>
-            Get members based on a property search
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <param name="matchType"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="T:System.DateTime"/> Value to match</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.Exact"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="T:Umbraco.Core.Services.IMembershipUserService">
             <summary>
@@ -18450,6 +18906,18 @@
             <remarks>
             Idea is to have this is an isolated interface so that it can be easily 'replaced' in the membership provider impl.
             </remarks>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMembershipUserService.CreateUserWithIdentity(System.String,System.String,Umbraco.Core.Models.Membership.IUserType)">
+            <summary>
+            Creates and persists a new User
+            </summary>
+            <remarks>The user will be saved in the database and returned with an Id.
+            This method is convenient when you need to perform operations, which needs the
+            Id of the user once its been created.</remarks>
+            <param name="username">Username of the User to create</param>
+            <param name="email">Email of the User to create</param>
+            <param name="userType"><see cref="T:Umbraco.Core.Models.Membership.IUserType"/> which the User should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberTypeService.GetAll(System.Int32[])">
             <summary>
@@ -18501,187 +18969,6 @@
             <param name="memberTypes">Collection of <see cref="T:Umbraco.Core.Models.IMemberType"/> to delete</param>
             <remarks>Deleting a <see cref="T:Umbraco.Core.Models.IMemberType"/> will delete all the <see cref="T:Umbraco.Core.Models.IContent"/> objects based on this <see cref="T:Umbraco.Core.Models.IMemberType"/></remarks>
             <param name="userId">Optional Id of the User deleting the ContentTypes</param>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportContent(System.Xml.Linq.XElement,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IContent"/>
-            </summary>
-            <param name="element">Xml to import</param>
-            <param name="parentId">Optional parent Id for the content being imported</param>
-            <param name="userId">Optional Id of the user performing the import</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns>An enumrable list of generated content</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportContentTypes(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
-            <summary>
-            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IContentType"/>
-            </summary>
-            <param name="element">Xml to import</param>
-            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns>An enumrable list of generated ContentTypes</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportContentTypes(System.Xml.Linq.XElement,System.Boolean,System.Int32,System.Boolean)">
-            <summary>
-            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IContentType"/>
-            </summary>
-            <param name="element">Xml to import</param>
-            <param name="importStructure">Boolean indicating whether or not to import the </param>
-            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns>An enumrable list of generated ContentTypes</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportDataTypeDefinitions(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
-            <summary>
-            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
-            </summary>
-            <param name="element">Xml to import</param>
-            <param name="userId">Optional id of the User performing the operation. Default is zero (admin).</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns>An enumrable list of generated DataTypeDefinitions</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportDictionaryItems(System.Xml.Linq.XElement,System.Boolean)">
-            <summary>
-            Imports and saves the 'DictionaryItems' part of the package xml as a list of <see cref="T:Umbraco.Core.Models.IDictionaryItem"/>
-            </summary>
-            <param name="dictionaryItemElementList">Xml to import</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns>An enumerable list of dictionary items</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportLanguages(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
-            <summary>
-            Imports and saves the 'Languages' part of a package xml as a list of <see cref="T:Umbraco.Core.Models.ILanguage"/>
-            </summary>
-            <param name="languageElementList">Xml to import</param>
-            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns>An enumerable list of generated languages</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportMacros(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
-            <summary>
-            Imports and saves the 'Macros' part of a package xml as a list of <see cref="T:Umbraco.Core.Models.IMacro"/>
-            </summary>
-            <param name="element">Xml to import</param>
-            <param name="userId">Optional id of the User performing the operation</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.ImportTemplates(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
-            <summary>
-            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.ITemplate"/>
-            </summary>
-            <param name="element">Xml to import</param>
-            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns>An enumrable list of generated Templates</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IContentType,System.Boolean)">
-            <summary>
-            Exports an <see cref="T:Umbraco.Core.Models.IContentType"/> to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="contentType">ContentType to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the ContentType item</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IContent,System.Boolean,System.Boolean)">
-            <summary>
-            Exports an <see cref="T:Umbraco.Core.Models.IContent"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="content">Content to export</param>
-            <param name="deep">Optional parameter indicating whether to include descendents</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Content object</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IMedia,System.Boolean,System.Boolean)">
-            <summary>
-            Exports an <see cref="T:Umbraco.Core.Models.IMedia"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="media">Media to export</param>
-            <param name="deep">Optional parameter indicating whether to include descendents</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Media object</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ILanguage},System.Boolean)">
-            <summary>
-            Exports a list of <see cref="T:Umbraco.Core.Models.ILanguage"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="languages">List of Languages to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Language object</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.ILanguage,System.Boolean)">
-            <summary>
-            Exports a single <see cref="T:Umbraco.Core.Models.ILanguage"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="language">Language to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Language object</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IDictionaryItem},System.Boolean,System.Boolean)">
-            <summary>
-            Exports a list of <see cref="T:Umbraco.Core.Models.IDictionaryItem"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="dictionaryItem">List of dictionary items to export</param>
-            <param name="includeChildren">Optional boolean indicating whether or not to include children</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDictionaryItem objects</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IDictionaryItem,System.Boolean,System.Boolean)">
-            <summary>
-            Exports a single <see cref="T:Umbraco.Core.Models.IDictionaryItem"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="dictionaryItem">Dictionary Item to export</param>
-            <param name="includeChildren">Optional boolean indicating whether or not to include children</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDictionaryItem object</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IDataTypeDefinition},System.Boolean)">
-            <summary>
-            Exports a list of Data Types
-            </summary>
-            <param name="dataTypeDefinitions">List of data types to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDataTypeDefinition objects</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IDataTypeDefinition,System.Boolean)">
-            <summary>
-            Exports a single Data Type
-            </summary>
-            <param name="dataTypeDefinition">Data type to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDataTypeDefinition object</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITemplate},System.Boolean)">
-            <summary>
-            Exports a list of <see cref="T:Umbraco.Core.Models.ITemplate"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="templates">List of Templates to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the ITemplate objects</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.ITemplate,System.Boolean)">
-            <summary>
-            Exports a single <see cref="T:Umbraco.Core.Models.ITemplate"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="template">Template to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the ITemplate object</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IMacro},System.Boolean)">
-            <summary>
-            Exports a list of <see cref="T:Umbraco.Core.Models.IMacro"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="macros">Macros to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IMacro objects</returns>
-        </member>
-        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IMacro,System.Boolean)">
-            <summary>
-            Exports a single <see cref="T:Umbraco.Core.Models.IMacro"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
-            </summary>
-            <param name="macro">Macro to export</param>
-            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
-            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IMacro object</returns>
         </member>
         <member name="M:Umbraco.Core.Services.INotificationService.SendNotifications(Umbraco.Core.Models.Membership.IUser,Umbraco.Core.Models.EntityBase.IUmbracoEntity,System.String,System.String,System.Web.HttpContextBase,System.Func{Umbraco.Core.Models.Membership.IUser,System.String[],System.String},System.Func{Umbraco.Core.Models.Membership.IUser,System.String[],System.String})">
             <summary>
@@ -18975,6 +19262,15 @@
             <param name="relationTypeAlias">Alias of the type of relation to create</param>
             <returns>Returns <c>True</c> if any relations exist between the entities, otherwise <c>False</c></returns>
         </member>
+        <member name="M:Umbraco.Core.Services.IRelationService.AreRelated(System.Int32,System.Int32,System.String)">
+            <summary>
+            Checks whether two items are related
+            </summary>
+            <param name="parentId">Id of the Parent relation</param>
+            <param name="childId">Id of the Child relation</param>
+            <param name="relationTypeAlias">Alias of the type of relation to create</param>
+            <returns>Returns <c>True</c> if any relations exist between the entities, otherwise <c>False</c></returns>
+        </member>
         <member name="M:Umbraco.Core.Services.IRelationService.Save(Umbraco.Core.Models.IRelation)">
             <summary>
             Saves a <see cref="T:Umbraco.Core.Models.Relation"/>
@@ -19052,49 +19348,293 @@
             Deletes the section
             </summary>        
         </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportContent(System.Xml.Linq.XElement,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IContent"/>
+            </summary>
+            <param name="element">Xml to import</param>
+            <param name="parentId">Optional parent Id for the content being imported</param>
+            <param name="userId">Optional Id of the user performing the import</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns>An enumrable list of generated content</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportContentTypes(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
+            <summary>
+            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IContentType"/>
+            </summary>
+            <param name="element">Xml to import</param>
+            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns>An enumrable list of generated ContentTypes</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportContentTypes(System.Xml.Linq.XElement,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IContentType"/>
+            </summary>
+            <param name="element">Xml to import</param>
+            <param name="importStructure">Boolean indicating whether or not to import the </param>
+            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns>An enumrable list of generated ContentTypes</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportDataTypeDefinitions(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
+            <summary>
+            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
+            </summary>
+            <param name="element">Xml to import</param>
+            <param name="userId">Optional id of the User performing the operation. Default is zero (admin).</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns>An enumrable list of generated DataTypeDefinitions</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportDictionaryItems(System.Xml.Linq.XElement,System.Boolean)">
+            <summary>
+            Imports and saves the 'DictionaryItems' part of the package xml as a list of <see cref="T:Umbraco.Core.Models.IDictionaryItem"/>
+            </summary>
+            <param name="dictionaryItemElementList">Xml to import</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns>An enumerable list of dictionary items</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportLanguages(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
+            <summary>
+            Imports and saves the 'Languages' part of a package xml as a list of <see cref="T:Umbraco.Core.Models.ILanguage"/>
+            </summary>
+            <param name="languageElementList">Xml to import</param>
+            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns>An enumerable list of generated languages</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportMacros(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
+            <summary>
+            Imports and saves the 'Macros' part of a package xml as a list of <see cref="T:Umbraco.Core.Models.IMacro"/>
+            </summary>
+            <param name="element">Xml to import</param>
+            <param name="userId">Optional id of the User performing the operation</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.ImportTemplates(System.Xml.Linq.XElement,System.Int32,System.Boolean)">
+            <summary>
+            Imports and saves package xml as <see cref="T:Umbraco.Core.Models.ITemplate"/>
+            </summary>
+            <param name="element">Xml to import</param>
+            <param name="userId">Optional id of the User performing the operation. Default is zero (admin)</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns>An enumrable list of generated Templates</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IContentType,System.Boolean)">
+            <summary>
+            Exports an <see cref="T:Umbraco.Core.Models.IContentType"/> to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="contentType">ContentType to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the ContentType item</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IContent,System.Boolean,System.Boolean)">
+            <summary>
+            Exports an <see cref="T:Umbraco.Core.Models.IContent"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="content">Content to export</param>
+            <param name="deep">Optional parameter indicating whether to include descendents</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Content object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IMedia,System.Boolean,System.Boolean)">
+            <summary>
+            Exports an <see cref="T:Umbraco.Core.Models.IMedia"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="media">Media to export</param>
+            <param name="deep">Optional parameter indicating whether to include descendents</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Media object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ILanguage},System.Boolean)">
+            <summary>
+            Exports a list of <see cref="T:Umbraco.Core.Models.ILanguage"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="languages">List of Languages to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Language object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.ILanguage,System.Boolean)">
+            <summary>
+            Exports a single <see cref="T:Umbraco.Core.Models.ILanguage"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="language">Language to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Language object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IDictionaryItem},System.Boolean,System.Boolean)">
+            <summary>
+            Exports a list of <see cref="T:Umbraco.Core.Models.IDictionaryItem"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="dictionaryItem">List of dictionary items to export</param>
+            <param name="includeChildren">Optional boolean indicating whether or not to include children</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDictionaryItem objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IDictionaryItem,System.Boolean,System.Boolean)">
+            <summary>
+            Exports a single <see cref="T:Umbraco.Core.Models.IDictionaryItem"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="dictionaryItem">Dictionary Item to export</param>
+            <param name="includeChildren">Optional boolean indicating whether or not to include children</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDictionaryItem object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IDataTypeDefinition},System.Boolean)">
+            <summary>
+            Exports a list of Data Types
+            </summary>
+            <param name="dataTypeDefinitions">List of data types to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDataTypeDefinition objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IDataTypeDefinition,System.Boolean)">
+            <summary>
+            Exports a single Data Type
+            </summary>
+            <param name="dataTypeDefinition">Data type to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IDataTypeDefinition object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITemplate},System.Boolean)">
+            <summary>
+            Exports a list of <see cref="T:Umbraco.Core.Models.ITemplate"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="templates">List of Templates to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the ITemplate objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.ITemplate,System.Boolean)">
+            <summary>
+            Exports a single <see cref="T:Umbraco.Core.Models.ITemplate"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="template">Template to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the ITemplate object</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IMacro},System.Boolean)">
+            <summary>
+            Exports a list of <see cref="T:Umbraco.Core.Models.IMacro"/> items to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="macros">Macros to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IMacro objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IPackagingService.Export(Umbraco.Core.Models.IMacro,System.Boolean)">
+            <summary>
+            Exports a single <see cref="T:Umbraco.Core.Models.IMacro"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            </summary>
+            <param name="macro">Macro to export</param>
+            <param name="raiseEvents">Optional parameter indicating whether or not to raise events</param>
+            <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IMacro object</returns>
+        </member>
         <!-- Badly formed XML comment ignored for member "T:Umbraco.Core.Services.ITagService" -->
+        <member name="M:Umbraco.Core.Services.ITagService.GetTaggedContentByTagGroup(System.String)">
+            <summary>
+            Gets tagged Content by a specific 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Content, not the actual Content item.</remarks>
+            <param name="tagGroup">Name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ITagService.GetTaggedContentByTag(System.String,System.String)">
+            <summary>
+            Gets tagged Content by a specific 'Tag' and optional 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Content, not the actual Content item.</remarks>
+            <param name="tag">Tag</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ITagService.GetTaggedMediaByTagGroup(System.String)">
+            <summary>
+            Gets tagged Media by a specific 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Media, not the actual Media item.</remarks>
+            <param name="tagGroup">Name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ITagService.GetTaggedMediaByTag(System.String,System.String)">
+            <summary>
+            Gets tagged Media by a specific 'Tag' and optional 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Media, not the actual Media item.</remarks>
+            <param name="tag">Tag</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ITagService.GetTaggedMembersByTagGroup(System.String)">
+            <summary>
+            Gets tagged Members by a specific 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Member, not the actual Member item.</remarks>
+            <param name="tagGroup">Name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ITagService.GetTaggedMembersByTag(System.String,System.String)">
+            <summary>
+            Gets tagged Members by a specific 'Tag' and optional 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Member, not the actual Member item.</remarks>
+            <param name="tag">Tag</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
         <member name="M:Umbraco.Core.Services.ITagService.GetAllTags(System.String)">
             <summary>
-            Get every tag stored in the database (with optional group)
+            Gets every tag stored in the database
             </summary>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.ITagService.GetAllContentTags(System.String)">
             <summary>
-            Get all tags for content items (with optional group)
+            Gets all tags for content items
             </summary>
-            <param name="group"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.ITagService.GetAllMediaTags(System.String)">
             <summary>
-            Get all tags for media items (with optional group)
+            Gets all tags for media items
             </summary>
-            <param name="group"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.ITagService.GetAllMemberTags(System.String)">
             <summary>
-            Get all tags for member items (with optional group)
+            Gets all tags for member items
             </summary>
-            <param name="group"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.ITagService.GetTagsForProperty(System.Int32,System.String,System.String)">
             <summary>
-            Returns all tags attached to a property by entity id
+            Gets all tags attached to a property by entity id
             </summary>
-            <param name="contentId"></param>
-            <param name="propertyTypeAlias"></param>
-            <param name="tagGroup"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="contentId">The content item id to get tags for</param>
+            <param name="propertyTypeAlias">Property type alias</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.ITagService.GetTagsForEntity(System.Int32,System.String)">
             <summary>
-            Returns all tags attached to an entity (content, media or member) by entity id
+            Gets all tags attached to an entity (content, media or member) by entity id
             </summary>
-            <param name="contentId"></param>
-            <param name="tagGroup"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="contentId">The content item id to get tags for</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="T:Umbraco.Core.Services.IUserService">
             <summary>
@@ -19105,18 +19645,18 @@
             <summary>
             This is simply a helper method which essentially just wraps the MembershipProvider's ChangePassword method
             </summary>
-            <param name="user">The user to save the password for</param>
-            <param name="password"></param>
             <remarks>
             This method exists so that Umbraco developers can use one entry point to create/update users if they choose to.
             </remarks>
+            <param name="user">The user to save the password for</param>
+            <param name="password">The password to save</param>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.Delete(Umbraco.Core.Models.Membership.IUser,System.Boolean)">
             <summary>
-            To permanently delete the user pass in true, otherwise they will just be disabled
+            Deletes or disables a User
             </summary>
-            <param name="user"></param>
-            <param name="deletePermanently"></param>
+            <param name="user"><see cref="T:Umbraco.Core.Models.Membership.IUser"/> to delete</param>
+            <param name="deletePermanently"><c>True</c> to permanently delete the user, <c>False</c> to disable the user</param>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.GetProfileById(System.Int32)">
             <summary>
@@ -19127,75 +19667,84 @@
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.GetProfileByUserName(System.String)">
             <summary>
-            Get profile by username
+            Gets a profile by username
             </summary>
-            <param name="username"></param>
-            <returns></returns>
+            <param name="username">Username</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IProfile"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.GetUserById(System.Int32)">
             <summary>
-            Get user by Id
+            Gets a user by Id
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <param name="id">Id of the user to retrieve</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.DeleteSectionFromAllUsers(System.String)">
             <summary>
-            This is useful when an entire section is removed from config
+            Removes a specific section from all users
             </summary>
-            <param name="sectionAlias"></param>
+            <remarks>This is useful when an entire section is removed from config</remarks>
+            <param name="sectionAlias">Alias of the section to remove</param>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.GetPermissions(Umbraco.Core.Models.Membership.IUser,System.Int32[])">
             <summary>
-            Get permissions set for user and specified node ids
+            Get permissions set for a user and optional node ids
             </summary>
-            <param name="user"></param>
-            <param name="nodeIds">
-            Specifiying nothing will return all user permissions for all nodes
-            </param>
-            <returns></returns>
+            <remarks>If no permissions are found for a particular entity then the user's default permissions will be applied</remarks>
+            <param name="user">User to retrieve permissions for</param>
+            <param name="nodeIds">Specifiying nothing will return all user permissions for all nodes</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.Membership.EntityPermission"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.ReplaceUserPermissions(System.Int32,System.Collections.Generic.IEnumerable{System.Char},System.Int32[])">
             <summary>
             Replaces the same permission set for a single user to any number of entities
             </summary>
-            <param name="userId"></param>
-            <param name="permissions"></param>
-            <param name="entityIds"></param>
+            <remarks>If no 'entityIds' are specified all permissions will be removed for the specified user.</remarks>
+            <param name="userId">Id of the user</param>
+            <param name="permissions">Permissions as enumerable list of <see cref="T:System.Char"/></param>
+            <param name="entityIds">Specify the nodes to replace permissions for. If nothing is specified all permissions are removed.</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.IUserService.GetAllUserTypes(System.Int32[])">
+            <summary>
+            Gets all UserTypes or thosed specified as parameters
+            </summary>
+            <param name="ids">Optional Ids of UserTypes to retrieve</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.GetUserTypeByAlias(System.String)">
             <summary>
-            Gets an IUserType by its Alias
+            Gets a UserType by its Alias
             </summary>
             <param name="alias">Alias of the UserType to retrieve</param>
             <returns><see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.GetUserTypeById(System.Int32)">
             <summary>
-            Gets an IUserType by its Id
+            Gets a UserType by its Id
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <param name="id">Id of the UserType to retrieve</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.GetUserTypeByName(System.String)">
             <summary>
-            Gets an IUserType by its Name
+            Gets a UserType by its Name
             </summary>
             <param name="name">Name of the UserType to retrieve</param>
             <returns><see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.SaveUserType(Umbraco.Core.Models.Membership.IUserType,System.Boolean)">
             <summary>
-            Saves an IUserType
+            Saves a UserType
             </summary>
-            <param name="userType"></param>
-            <param name="raiseEvents"></param>        
+            <param name="userType">UserType to save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
         </member>
         <member name="M:Umbraco.Core.Services.IUserService.DeleteUserType(Umbraco.Core.Models.Membership.IUserType)">
             <summary>
-            Deletes an IUserType
+            Deletes a UserType
             </summary>
-            <param name="userType"></param>        
+            <param name="userType">UserType to delete</param>
         </member>
         <member name="T:Umbraco.Core.Services.LocalizationService">
             <summary>
@@ -19800,233 +20349,310 @@
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetDefaultMemberType">
             <summary>
-            Get the default member type from the database - first check if the type "Member" is there, if not choose the first one found
+            Gets the default MemberType alias
             </summary>
-            <returns></returns>
+            <remarks>By default we'll return the 'writer', but we need to check it exists. If it doesn't we'll 
+            return the first type that is not an admin, otherwise if there's only one we will return that one.</remarks>
+            <returns>Alias of the default MemberType</returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.Exists(System.String)">
             <summary>
-            Checks if a member with the username exists
+            Checks if a Member with the username exists
             </summary>
-            <param name="username"></param>
-            <returns></returns>
+            <param name="username">Username to check</param>
+            <returns><c>True</c> if the Member exists otherwise <c>False</c></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.SavePassword(Umbraco.Core.Models.IMember,System.String)">
             <summary>
             This is simply a helper method which essentially just wraps the MembershipProvider's ChangePassword method
             </summary>
-            <param name="member">The member to save the password for</param>
-            <param name="password"></param>
-            <remarks>
-            This method exists so that Umbraco developers can use one entry point to create/update members if they choose to.
-            </remarks>
+            <remarks>This method exists so that Umbraco developers can use one entry point to create/update 
+            Members if they choose to. </remarks>
+            <param name="member">The Member to save the password for</param>
+            <param name="password">The password to encrypt and save</param>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.Exists(System.Int32)">
             <summary>
-            Checks if a member with the id exists
+            Checks if a Member with the id exists
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <param name="id">Id of the Member</param>
+            <returns><c>True</c> if the Member exists otherwise <c>False</c></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetById(System.Int32)">
             <summary>
-            Gets a Member by its integer Id
+            Gets a Member by its integer id
             </summary>
-            <param name="id"></param>
-            <returns></returns>
+            <param name="id"><see cref="!:System.int"/> Id</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetByKey(System.Guid)">
             <summary>
-            Gets a Member by its Guid key
+            Gets a Member by the unique key
             </summary>
-            <remarks>
-            The guid key corresponds to the unique id in the database
-            and the user id in the membership provider.
-            </remarks>
-            <param name="id"></param>
-            <returns></returns>
+            <remarks>The guid key corresponds to the unique id in the database
+            and the user id in the membership provider.</remarks>
+            <param name="id"><see cref="T:System.Guid"/> Id</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetMembersByMemberType(System.String)">
             <summary>
-            Gets a list of Members by their MemberType
+            Gets all Members for the specified MemberType alias
             </summary>
-            <param name="memberTypeAlias"></param>
-            <returns></returns>
+            <param name="memberTypeAlias">Alias of the MemberType</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetMembersByMemberType(System.Int32)">
             <summary>
-            Gets a list of Members by their MemberType
+            Gets all Members for the MemberType id
             </summary>
-            <param name="memberTypeId"></param>
-            <returns></returns>
+            <param name="memberTypeId">Id of the MemberType</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetMembersByGroup(System.String)">
             <summary>
-            Gets a list of Members by the MemberGroup they are part of
+            Gets all Members within the specified MemberGroup name
             </summary>
-            <param name="memberGroupName"></param>
-            <returns></returns>
+            <param name="memberGroupName">Name of the MemberGroup</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetAllMembers(System.Int32[])">
             <summary>
-            Gets a list of all Members
+            Gets all Members with the ids specified
             </summary>
-            <param name="ids"></param>
-            <returns></returns>
+            <remarks>If no Ids are specified all Members will be retrieved</remarks>
+            <param name="ids">Optional list of Member Ids</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.MemberService.DeleteMembersOfType(System.Int32)">
+            <summary>
+            Delete Members of the specified MemberType id
+            </summary>
+            <param name="memberTypeId">Id of the MemberType</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.MemberService.FindMembersByDisplayName(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
+            <summary>
+            Finds Members based on their display name
+            </summary>
+            <param name="displayNameToMatch">Display name to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.FindByEmail(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
             <summary>
-            Does a search for members that contain the specified string in their email address
+            Finds a list of <see cref="T:Umbraco.Core.Models.IMember"/> objects by a partial email string
             </summary>
-            <param name="emailStringToMatch"></param>
-            <param name="totalRecords"></param>
-            <param name="matchType"></param>
-            <param name="pageIndex"></param>
-            <param name="pageSize"></param>
-            <returns></returns>
+            <param name="emailStringToMatch">Partial email string to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.MemberService.FindByUsername(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
+            <summary>
+            Finds a list of <see cref="T:Umbraco.Core.Models.IMember"/> objects by a partial username
+            </summary>
+            <param name="login">Partial username to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetMembersByPropertyValue(System.String,System.String,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
             <summary>
-            Gets a list of Members with a certain string property value
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <param name="matchType"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="!:System.string"/> Value to match</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.Exact"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetMembersByPropertyValue(System.String,System.Int32,Umbraco.Core.Persistence.Querying.ValuePropertyMatchType)">
             <summary>
-            Gets a list of Members with a certain integer property value
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <param name="matchType"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="!:System.int"/> Value to match</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.Exact"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetMembersByPropertyValue(System.String,System.Boolean)">
             <summary>
-            Gets a list of Members with a certain boolean property value
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="!:System.bool"/> Value to match</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetMembersByPropertyValue(System.String,System.DateTime,Umbraco.Core.Persistence.Querying.ValuePropertyMatchType)">
             <summary>
-            Gets a list of Members with a certain date time property value
+            Gets a list of Members based on a property search
             </summary>
-            <param name="propertyTypeAlias"></param>
-            <param name="value"></param>
-            <param name="matchType"></param>
-            <returns></returns>
+            <param name="propertyTypeAlias">Alias of the PropertyType to search for</param>
+            <param name="value"><see cref="T:System.DateTime"/> Value to match</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.Exact"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetCount(Umbraco.Core.Models.Membership.MemberCountType)">
             <summary>
-            Returns the count of members based on the countType
+            Gets the total number of Members based on the count type
             </summary>
-            <param name="countType"></param>
-            <returns></returns>
             <remarks>
             The way the Online count is done is the same way that it is done in the MS SqlMembershipProvider - We query for any members
             that have their last active date within the Membership.UserIsOnlineTimeWindow (which is in minutes). It isn't exact science
             but that is how MS have made theirs so we'll follow that principal.
             </remarks>
+            <param name="countType"><see cref="T:Umbraco.Core.Models.Membership.MemberCountType"/> to count by</param>
+            <returns><see cref="!:System.int"/> with number of Members for passed in type</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.MemberService.GetAll(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Gets a list of paged <see cref="T:Umbraco.Core.Models.IMember"/> objects
+            </summary>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.MemberService.Count(System.String)">
+            <summary>
+            Gets the count of Members by an optional MemberType alias
+            </summary>
+            <remarks>If no alias is supplied then the count for all Member will be returned</remarks>
+            <param name="memberTypeAlias">Optional alias for the MemberType when counting number of Members</param>
+            <returns><see cref="!:System.int"/> with number of Members</returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.CreateMember(System.String,System.String,System.String,System.String)">
             <summary>
-            Creates a member object
+            Creates an <see cref="T:Umbraco.Core.Models.IMember"/> object without persisting it
             </summary>
-            <param name="username"></param>
-            <param name="email"></param>
-            <param name="name"></param>
-            <param name="memberTypeAlias"></param>
-            <returns></returns>
+            <remarks>This method is convenient for when you need to add properties to a new Member
+            before persisting it in order to limit the amount of times its saved.
+            Also note that the returned <see cref="T:Umbraco.Core.Models.IMember"/> will not have an Id until its saved.</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberTypeAlias">Alias of the MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.CreateMember(System.String,System.String,System.String,Umbraco.Core.Models.IMemberType)">
             <summary>
-            Creates a new member object
+            Creates an <see cref="T:Umbraco.Core.Models.IMember"/> object without persisting it
             </summary>
-            <param name="username"></param>
-            <param name="email"></param>
-            <param name="name"></param>
-            <param name="memberType"></param>
-            <returns></returns>
+            <remarks>This method is convenient for when you need to add properties to a new Member
+            before persisting it in order to limit the amount of times its saved.
+            Also note that the returned <see cref="T:Umbraco.Core.Models.IMember"/> will not have an Id until its saved.</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberType">MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.CreateMemberWithIdentity(System.String,System.String,System.String,System.String)">
             <summary>
-            Creates a member with an Id
+            Creates and persists a Member
             </summary>
-            <param name="username"></param>
-            <param name="email"></param>
-            <param name="name"></param>
-            <param name="memberTypeAlias"></param>
-            <returns></returns>
+            <remarks>Using this method will persist the Member object before its returned 
+            meaning that it will have an Id available (unlike the CreateMember method)</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberTypeAlias">Alias of the MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.CreateMemberWithIdentity(System.String,System.String,Umbraco.Core.Models.IMemberType)">
             <summary>
-            Creates a member with an Id, the username will be used as their name
+            Creates and persists a Member
             </summary>
-            <param name="username"></param>
-            <param name="email"></param>
-            <param name="memberType"></param>
-            <returns></returns>
+            <remarks>Using this method will persist the Member object before its returned 
+            meaning that it will have an Id available (unlike the CreateMember method)</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="memberType">MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.CreateMemberWithIdentity(System.String,System.String,System.String,Umbraco.Core.Models.IMemberType)">
             <summary>
-            Creates a member with an Id
+            Creates and persists a Member
             </summary>
-            <param name="username"></param>
-            <param name="email"></param>
-            <param name="name"></param>
-            <param name="memberType"></param>
-            <returns></returns>
+            <remarks>Using this method will persist the Member object before its returned 
+            meaning that it will have an Id available (unlike the CreateMember method)</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="memberType">MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.Umbraco#Core#Services#IMembershipMemberService{Umbraco#Core#Models#IMember}#CreateWithIdentity(System.String,System.String,System.String,System.String)">
             <summary>
-            Creates and persists a new Member
+            Creates and persists a new <see cref="T:Umbraco.Core.Models.IMember"/>
             </summary>
-            <param name="email"></param>
-            <param name="username"></param>
-            <param name="rawPasswordValue"></param>
-            <param name="memberTypeAlias"></param>
-            <returns></returns>
+            <remarks>An <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> or <see cref="T:Umbraco.Core.Models.Membership.IUser"/></remarks>
+            <param name="username">Username of the <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> to create</param>
+            <param name="email">Email of the <see cref="T:Umbraco.Core.Models.Membership.IMembershipUser"/> to create</param>
+            <param name="passwordValue">This value should be the encoded/encrypted/hashed value for the password that will be stored in the database</param>
+            <param name="memberTypeAlias">Alias of the Type</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.MemberService.CreateMemberWithIdentity(System.String,System.String,System.String,System.String,Umbraco.Core.Models.IMemberType)">
+            <summary>
+            Creates and persists a Member
+            </summary>
+            <remarks>Using this method will persist the Member object before its returned 
+            meaning that it will have an Id available (unlike the CreateMember method)</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="name">Name of the Member to create</param>
+            <param name="passwordValue">This value should be the encoded/encrypted/hashed value for the password that will be stored in the database</param>
+            <param name="memberType">MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetByProviderKey(System.Object)">
             <summary>
-            Gets a Member by its Id
+            Gets an <see cref="T:Umbraco.Core.Models.IMember"/> by its provider key
             </summary>
-            <remarks>
-            The Id should be an integer or Guid.
-            </remarks>
-            <param name="id"></param>
-            <returns></returns>
+            <param name="id">Id to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetByEmail(System.String)">
             <summary>
-            Gets a Member by its Email
+            Get an <see cref="T:Umbraco.Core.Models.IMember"/> by email
             </summary>
-            <param name="email"></param>
-            <returns></returns>
+            <param name="email">Email to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetByUsername(System.String)">
             <summary>
-            Gets a Member by its Username
+            Get an <see cref="T:Umbraco.Core.Models.IMember"/> by username
             </summary>
-            <param name="userName"></param>
-            <returns></returns>
+            <param name="username">Username to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.Delete(Umbraco.Core.Models.IMember)">
             <summary>
-            Deletes a Member
+            Deletes an <see cref="T:Umbraco.Core.Models.IMember"/>
             </summary>
-            <param name="member"></param>
+            <param name="member"><see cref="T:Umbraco.Core.Models.IMember"/> to Delete</param>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.Save(Umbraco.Core.Models.IMember,System.Boolean)">
             <summary>
-            Saves an updated Member
+            Saves an <see cref="T:Umbraco.Core.Models.IMember"/>
             </summary>
-            <param name="entity"></param>
-            <param name="raiseEvents"></param>
+            <param name="entity"><see cref="T:Umbraco.Core.Models.IMember"/> to Save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.MemberService.Save(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IMember},System.Boolean)">
+            <summary>
+            Saves a list of <see cref="T:Umbraco.Core.Models.IMember"/> objects
+            </summary>
+            <param name="entities"><see cref="T:System.Collections.Generic.IEnumerable`1"/> to save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.RebuildXmlStructures(System.Int32[])">
             <summary>
@@ -20943,6 +21569,11 @@
             Occurs before Importing Template
             </summary>
         </member>
+        <member name="E:Umbraco.Core.Services.PackagingService.ImportingStylesheets">
+            <summary>
+            Occurs before Importing Stylesheets
+            </summary>
+        </member>
         <member name="E:Umbraco.Core.Services.PackagingService.ImportedTemplate">
             <summary>
             Occurs after Template is Imported and Saved
@@ -20956,6 +21587,16 @@
         <member name="E:Umbraco.Core.Services.PackagingService.ExportedTemplate">
             <summary>
             Occurs after Template is Exported to Xml
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.PackagingService.ImportingPackage">
+            <summary>
+            Occurs before Importing umbraco package
+            </summary>
+        </member>
+        <member name="E:Umbraco.Core.Services.PackagingService.ImportedPackage">
+            <summary>
+            Occurs after a apckage is imported
             </summary>
         </member>
         <member name="T:Umbraco.Core.Services.ServiceContext">
@@ -21096,49 +21737,126 @@
             Gets the MemberGroupService
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Services.TagExtractor">
+            <summary>
+            A simple utility class to extract the tag values from a property/property editor and set them on the content
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Services.TagExtractor.SetPropertyTags(Umbraco.Core.Models.Property,Umbraco.Core.Models.Editors.ContentPropertyData,System.Object,Umbraco.Core.PropertyEditors.SupportTagsAttribute)">
+            <summary>
+            Sets the tag values on the content property based on the property editor's tags attribute
+            </summary>
+            <param name="property"></param>
+            <param name="propertyData"></param>
+            <param name="convertedPropertyValue"></param>
+            <param name="attribute"></param>
+        </member>
         <!-- Badly formed XML comment ignored for member "T:Umbraco.Core.Services.TagService" -->
+        <member name="M:Umbraco.Core.Services.TagService.GetTaggedContentByTagGroup(System.String)">
+            <summary>
+            Gets tagged Content by a specific 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Content, not the actual Content item.</remarks>
+            <param name="tagGroup">Name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.TagService.GetTaggedContentByTag(System.String,System.String)">
+            <summary>
+            Gets tagged Content by a specific 'Tag' and optional 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Content, not the actual Content item.</remarks>
+            <param name="tag">Tag</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.TagService.GetTaggedMediaByTagGroup(System.String)">
+            <summary>
+            Gets tagged Media by a specific 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Media, not the actual Media item.</remarks>
+            <param name="tagGroup">Name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.TagService.GetTaggedMediaByTag(System.String,System.String)">
+            <summary>
+            Gets tagged Media by a specific 'Tag' and optional 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Media, not the actual Media item.</remarks>
+            <param name="tag">Tag</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.TagService.GetTaggedMembersByTagGroup(System.String)">
+            <summary>
+            Gets tagged Members by a specific 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Member, not the actual Member item.</remarks>
+            <param name="tagGroup">Name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.TagService.GetTaggedMembersByTag(System.String,System.String)">
+            <summary>
+            Gets tagged Members by a specific 'Tag' and optional 'Tag Group'.
+            </summary>
+            <remarks>The <see cref="T:Umbraco.Core.Models.TaggedEntity"/> contains the Id and Tags of the Member, not the actual Member item.</remarks>
+            <param name="tag">Tag</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.TaggedEntity"/></returns>
+        </member>
         <member name="M:Umbraco.Core.Services.TagService.GetAllTags(System.String)">
             <summary>
-            Get every tag stored in the database (with optional group)
+            Gets every tag stored in the database
             </summary>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.TagService.GetAllContentTags(System.String)">
             <summary>
-            Get all tags for content items (with optional group)
+            Gets all tags for content items
             </summary>
-            <param name="group"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.TagService.GetAllMediaTags(System.String)">
             <summary>
-            Get all tags for media items (with optional group)
+            Gets all tags for media items
             </summary>
-            <param name="group"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.TagService.GetAllMemberTags(System.String)">
             <summary>
-            Get all tags for member items (with optional group)
+            Gets all tags for member items
             </summary>
-            <param name="group"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.TagService.GetTagsForProperty(System.Int32,System.String,System.String)">
             <summary>
-            Returns all tags attached to a property by entity id
+            Gets all tags attached to a property by entity id
             </summary>
-            <param name="contentId"></param>
-            <param name="propertyTypeAlias"></param>
-            <param name="tagGroup"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="contentId">The content item id to get tags for</param>
+            <param name="propertyTypeAlias">Property type alias</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.TagService.GetTagsForEntity(System.Int32,System.String)">
             <summary>
-            Returns all tags attached to an entity (content, media or member) by entity id
+            Gets all tags attached to an entity (content, media or member) by entity id
             </summary>
-            <param name="contentId"></param>
-            <param name="tagGroup"></param>
-            <returns></returns>
+            <remarks>Use the optional tagGroup parameter to limit the 
+            result to a specific 'Tag Group'.</remarks>
+            <param name="contentId">The content item id to get tags for</param>
+            <param name="tagGroup">Optional name of the 'Tag Group'</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.ITag"/></returns>
         </member>
         <member name="T:Umbraco.Core.Services.UserService">
             <summary>
@@ -21147,33 +21865,160 @@
         </member>
         <member name="M:Umbraco.Core.Services.UserService.GetDefaultMemberType">
             <summary>
-            By default we'll return the 'writer', but we need to check it exists. If it doesn't we'll return the first type that is not an admin, otherwise if there's only one
-            we will return that one.
+            Gets the default MemberType alias
             </summary>
-            <returns></returns>
+            <remarks>By default we'll return the 'writer', but we need to check it exists. If it doesn't we'll 
+            return the first type that is not an admin, otherwise if there's only one we will return that one.</remarks>
+            <returns>Alias of the default MemberType</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.Exists(System.String)">
+            <summary>
+            Checks if a User with the username exists
+            </summary>
+            <param name="username">Username to check</param>
+            <returns><c>True</c> if the User exists otherwise <c>False</c></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.CreateUserWithIdentity(System.String,System.String,Umbraco.Core.Models.Membership.IUserType)">
+            <summary>
+            Creates a new User
+            </summary>
+            <remarks>The user will be saved in the database and returned with an Id</remarks>
+            <param name="username">Username of the user to create</param>
+            <param name="email">Email of the user to create</param>
+            <param name="userType"><see cref="T:Umbraco.Core.Models.Membership.IUserType"/> which the User should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.Umbraco#Core#Services#IMembershipMemberService{Umbraco#Core#Models#Membership#IUser}#CreateWithIdentity(System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates and persists a new <see cref="T:Umbraco.Core.Models.Membership.IUser"/>
+            </summary>
+            <param name="username">Username of the <see cref="T:Umbraco.Core.Models.Membership.IUser"/> to create</param>
+            <param name="email">Email of the <see cref="T:Umbraco.Core.Models.Membership.IUser"/> to create</param>
+            <param name="passwordValue">This value should be the encoded/encrypted/hashed value for the password that will be stored in the database</param>
+            <param name="memberTypeAlias">Alias of the Type</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.CreateUserWithIdentity(System.String,System.String,System.String,Umbraco.Core.Models.Membership.IUserType)">
+            <summary>
+            Creates and persists a Member
+            </summary>
+            <remarks>Using this method will persist the Member object before its returned 
+            meaning that it will have an Id available (unlike the CreateMember method)</remarks>
+            <param name="username">Username of the Member to create</param>
+            <param name="email">Email of the Member to create</param>
+            <param name="passwordValue">This value should be the encoded/encrypted/hashed value for the password that will be stored in the database</param>
+            <param name="userType">MemberType the Member should be based on</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetById(System.Int32)">
+            <summary>
+            Gets a User by its integer id
+            </summary>
+            <param name="id"><see cref="!:System.int"/> Id</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetByProviderKey(System.Object)">
+            <summary>
+            Gets an <see cref="T:Umbraco.Core.Models.Membership.IUser"/> by its provider key
+            </summary>
+            <param name="id">Id to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetByEmail(System.String)">
+            <summary>
+            Get an <see cref="T:Umbraco.Core.Models.Membership.IUser"/> by email
+            </summary>
+            <param name="email">Email to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetByUsername(System.String)">
+            <summary>
+            Get an <see cref="T:Umbraco.Core.Models.Membership.IUser"/> by username
+            </summary>
+            <param name="username">Username to use for retrieval</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.UserService.Delete(Umbraco.Core.Models.Membership.IUser)">
             <summary>
-            This disables and renames the user, it does not delete them, use the overload to delete them
+            Deletes an <see cref="T:Umbraco.Core.Models.Membership.IUser"/>
             </summary>
-            <param name="membershipUser"></param>
+            <param name="membershipUser"><see cref="T:Umbraco.Core.Models.Membership.IUser"/> to Delete</param>
         </member>
         <member name="M:Umbraco.Core.Services.UserService.SavePassword(Umbraco.Core.Models.Membership.IUser,System.String)">
             <summary>
             This is simply a helper method which essentially just wraps the MembershipProvider's ChangePassword method
             </summary>
-            <param name="user">The user to save the password for</param>
-            <param name="password"></param>
             <remarks>
             This method exists so that Umbraco developers can use one entry point to create/update users if they choose to.
             </remarks>
+            <param name="user">The user to save the password for</param>
+            <param name="password">The password to save</param>
         </member>
         <member name="M:Umbraco.Core.Services.UserService.Delete(Umbraco.Core.Models.Membership.IUser,System.Boolean)">
             <summary>
-            To permanently delete the user pass in true, otherwise they will just be disabled
+            Deletes or disables a User
             </summary>
-            <param name="user"></param>
-            <param name="deletePermanently"></param>
+            <param name="user"><see cref="T:Umbraco.Core.Models.Membership.IUser"/> to delete</param>
+            <param name="deletePermanently"><c>True</c> to permanently delete the user, <c>False</c> to disable the user</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.Save(Umbraco.Core.Models.Membership.IUser,System.Boolean)">
+            <summary>
+            Saves an <see cref="T:Umbraco.Core.Models.Membership.IUser"/>
+            </summary>
+            <param name="entity"><see cref="T:Umbraco.Core.Models.Membership.IUser"/> to Save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.Save(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Membership.IUser},System.Boolean)">
+            <summary>
+            Saves a list of <see cref="T:Umbraco.Core.Models.Membership.IUser"/> objects
+            </summary>
+            <param name="entities"><see cref="T:System.Collections.Generic.IEnumerable`1"/> to save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.FindByEmail(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
+            <summary>
+            Finds a list of <see cref="T:Umbraco.Core.Models.Membership.IUser"/> objects by a partial email string
+            </summary>
+            <param name="emailStringToMatch">Partial email string to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.FindByUsername(System.String,System.Int32,System.Int32,System.Int32@,Umbraco.Core.Persistence.Querying.StringPropertyMatchType)">
+            <summary>
+            Finds a list of <see cref="T:Umbraco.Core.Models.Membership.IUser"/> objects by a partial username
+            </summary>
+            <param name="login">Partial username to match</param>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.StartsWith"/></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetCount(Umbraco.Core.Models.Membership.MemberCountType)">
+            <summary>
+            Gets the total number of Users based on the count type
+            </summary>
+            <remarks>
+            The way the Online count is done is the same way that it is done in the MS SqlMembershipProvider - We query for any members
+            that have their last active date within the Membership.UserIsOnlineTimeWindow (which is in minutes). It isn't exact science
+            but that is how MS have made theirs so we'll follow that principal.
+            </remarks>
+            <param name="countType"><see cref="T:Umbraco.Core.Models.Membership.MemberCountType"/> to count by</param>
+            <returns><see cref="!:System.int"/> with number of Users for passed in type</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetAll(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Gets a list of paged <see cref="T:Umbraco.Core.Models.Membership.IUser"/> objects
+            </summary>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.UserService.GetProfileById(System.Int32)">
             <summary>
@@ -21182,44 +22027,86 @@
             <param name="id">Id of the User to retrieve</param>
             <returns><see cref="T:Umbraco.Core.Models.Membership.IProfile"/></returns>
         </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetProfileByUserName(System.String)">
+            <summary>
+            Gets a profile by username
+            </summary>
+            <param name="username">Username</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IProfile"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetUserById(System.Int32)">
+            <summary>
+            Gets a user by Id
+            </summary>
+            <param name="id">Id of the user to retrieve</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUser"/></returns>
+        </member>
         <member name="M:Umbraco.Core.Services.UserService.ReplaceUserPermissions(System.Int32,System.Collections.Generic.IEnumerable{System.Char},System.Int32[])">
             <summary>
             Replaces the same permission set for a single user to any number of entities
             </summary>
-            <param name="userId"></param>
-            <param name="permissions"></param>
-            <param name="entityIds"></param>
+            <remarks>If no 'entityIds' are specified all permissions will be removed for the specified user.</remarks>
+            <param name="userId">Id of the user</param>
+            <param name="permissions">Permissions as enumerable list of <see cref="T:System.Char"/></param>
+            <param name="entityIds">Specify the nodes to replace permissions for. If nothing is specified all permissions are removed.</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetAllUserTypes(System.Int32[])">
+            <summary>
+            Gets all UserTypes or thosed specified as parameters
+            </summary>
+            <param name="ids">Optional Ids of UserTypes to retrieve</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.UserService.GetUserTypeByAlias(System.String)">
             <summary>
-            Gets an IUserType by its Alias
+            Gets a UserType by its Alias
             </summary>
             <param name="alias">Alias of the UserType to retrieve</param>
             <returns><see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
         </member>
+        <member name="M:Umbraco.Core.Services.UserService.GetUserTypeById(System.Int32)">
+            <summary>
+            Gets a UserType by its Id
+            </summary>
+            <param name="id">Id of the UserType to retrieve</param>
+            <returns><see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
+        </member>
         <member name="M:Umbraco.Core.Services.UserService.GetUserTypeByName(System.String)">
             <summary>
-            Gets an IUserType by its Name
+            Gets a UserType by its Name
             </summary>
             <param name="name">Name of the UserType to retrieve</param>
             <returns><see cref="T:Umbraco.Core.Models.Membership.IUserType"/></returns>
         </member>
+        <member name="M:Umbraco.Core.Services.UserService.SaveUserType(Umbraco.Core.Models.Membership.IUserType,System.Boolean)">
+            <summary>
+            Saves a UserType
+            </summary>
+            <param name="userType">UserType to save</param>
+            <param name="raiseEvents">Optional parameter to raise events. 
+            Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.UserService.DeleteUserType(Umbraco.Core.Models.Membership.IUserType)">
+            <summary>
+            Deletes a UserType
+            </summary>
+            <param name="userType">UserType to delete</param>
+        </member>
         <member name="M:Umbraco.Core.Services.UserService.DeleteSectionFromAllUsers(System.String)">
             <summary>
-            This is useful for when a section is removed from config
+            Removes a specific section from all users
             </summary>
-            <param name="sectionAlias"></param>
+            <remarks>This is useful when an entire section is removed from config</remarks>
+            <param name="sectionAlias">Alias of the section to remove</param>
         </member>
         <member name="M:Umbraco.Core.Services.UserService.GetPermissions(Umbraco.Core.Models.Membership.IUser,System.Int32[])">
             <summary>
-            Returns permissions for a given user for any number of nodes
+            Get permissions set for a user and optional node ids
             </summary>
-            <param name="user"></param>
-            <param name="nodeIds"></param>
-            <returns></returns>
-            <remarks>
-            If no permissions are found for a particular entity then the user's default permissions will be applied
-            </remarks>
+            <remarks>If no permissions are found for a particular entity then the user's default permissions will be applied</remarks>
+            <param name="user">User to retrieve permissions for</param>
+            <param name="nodeIds">Specifiying nothing will return all user permissions for all nodes</param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.Membership.EntityPermission"/></returns>
         </member>
         <member name="E:Umbraco.Core.Services.UserService.SavingUser">
             <summary>
@@ -21584,6 +22471,50 @@
             Shortest Middle Snake Return Data
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Sync.CurrentServerEnvironmentStatus">
+            <summary>
+            The current status of the server in the Umbraco environment
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Sync.CurrentServerEnvironmentStatus.Master">
+            <summary>
+            If the current server is detected as the 'master' server when configured in a load balanced scenario
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Sync.CurrentServerEnvironmentStatus.Slave">
+            <summary>
+            If the current server is detected as a 'slave' server when configured in a load balanced scenario
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Sync.CurrentServerEnvironmentStatus.Unknown">
+            <summary>
+            If the current server cannot be detected as a 'slave' or 'master' when configured in a load balanced scenario
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Sync.CurrentServerEnvironmentStatus.Single">
+            <summary>
+            If load balancing is not enabled and this is the only server in the umbraco environment
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Sync.ServerEnvironmentHelper">
+            <summary>
+            A helper used to determine the current server environment status
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Sync.ServerEnvironmentHelper.GetCurrentServerUmbracoBaseUrl">
+            <summary>
+            Returns the current umbraco base url for the current server depending on it's environment 
+            status. This will attempt to determine the internal umbraco base url that can be used by the current
+            server to send a request to itself if it is in a load balanced environment.
+            </summary>
+            <returns>The full base url including schema (i.e. http://myserver:80/umbraco )</returns>
+        </member>
+        <member name="M:Umbraco.Core.Sync.ServerEnvironmentHelper.GetStatus">
+            <summary>
+            Returns the current environment status for the current server
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Umbraco.Core.TopologicalSorter">
             <summary>
             Topological Sort algorithm for sorting items based on dependencies.
@@ -21787,6 +22718,15 @@
             </summary>
         </member>
         <member name="M:Umbraco.Core.Sync.ServerSyncWebServiceClient.#ctor">
+            <remarks/>
+        </member>
+        <member name="M:Umbraco.Core.Sync.ServerSyncWebServiceClient.BulkRefresh(Umbraco.Core.Sync.RefreshInstruction[],System.String,System.String,System.String)">
+            <remarks/>
+        </member>
+        <member name="M:Umbraco.Core.Sync.ServerSyncWebServiceClient.BeginBulkRefresh(Umbraco.Core.Sync.RefreshInstruction[],System.String,System.String,System.String,System.AsyncCallback,System.Object)">
+            <remarks/>
+        </member>
+        <member name="M:Umbraco.Core.Sync.ServerSyncWebServiceClient.EndBulkRefresh(System.IAsyncResult)">
             <remarks/>
         </member>
         <member name="M:Umbraco.Core.Sync.ServerSyncWebServiceClient.RefreshAll(System.Guid,System.String,System.String)">
@@ -24109,6 +25049,18 @@
             <param name="s">Current instance of the string.</param>
             <returns>The string in a C# format.</returns>
         </member>
+        <member name="M:Umbraco.Core.StringExtensions.ToValidXmlString(System.String)">
+            <summary>
+            An extension method that returns a new string in which all occurrences of an 
+            unicode characters that are invalid in XML files are replaced with an empty string. 
+            </summary>
+            <param name="text">Current instance of the string</param>
+            <returns>Updated string</returns>
+            
+            <summary>
+            removes any unusual unicode characters that can't be encoded into XML
+            </summary>
+        </member>
         <member name="P:Umbraco.Core.StringExtensions.ShortStringHelper">
             <summary>
             Gets the short string helper.
@@ -24166,7 +25118,7 @@
         </member>
         <member name="M:Umbraco.Core.UriExtensions.IsClientSideRequest(System.Uri)">
             <summary>
-            This is a performance tweak to check if this is a .css, .js or .ico, .jpg, .jpeg, .png, .gif file request since
+            This is a performance tweak to check if this not an ASP.Net server file
             .Net will pass these requests through to the module when in integrated mode.
             We want to ignore all of these requests immediately.
             </summary>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using Dialogue.Logic.Application;
 using Dialogue.Logic.Data.Context;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
@@ -23,8 +25,15 @@ namespace Dialogue.Logic.Services
 
         public MemberPoints Add(MemberPoints points)
         {
-            points.DateAdded = DateTime.UtcNow;
-            ContextPerRequest.Db.MemberPoints.Add(points);
+            if (points.MemberId <= 0)
+            {
+                AppHelpers.LogError("Error adding point memberId null");
+            }
+            else
+            {
+                points.DateAdded = DateTime.UtcNow;
+                ContextPerRequest.Db.MemberPoints.Add(points);
+            }
             return points;
         }
 
@@ -36,6 +45,19 @@ namespace Dialogue.Logic.Services
         public List<MemberPoints> GetAllMemberPoints(int memberId)
         {
             return ContextPerRequest.Db.MemberPoints.Where(x => x.MemberId == memberId).ToList();
+        }
+
+        public void DeletePostPoints(Post post)
+        {
+            // Gets all points the member who made the post has gained from this post
+            var membersPointsForThisPost =
+                ContextPerRequest.Db.MemberPoints.Where(x => x.RelatedPostId == post.Id && x.MemberId == post.MemberId);
+
+            // Now loop through and remove them
+            foreach (var points in membersPointsForThisPost)
+            {
+                Delete(points);
+            }
         }
 
         public void Delete(MemberPoints item)
@@ -56,10 +78,12 @@ namespace Dialogue.Logic.Services
             var start = date.Date.AddDays(-(int)date.DayOfWeek);
             var end = start.AddDays(7);
 
-            var results = ContextPerRequest.Db.MemberPoints
+            var results = ContextPerRequest.Db.MemberPoints.AsNoTracking()
                 .Where(x => x.DateAdded >= start && x.DateAdded < end);
 
-            var memberIds = results.GroupBy(x => x.MemberId)
+            var memberIds = results
+                        .Include(x => x.Points)
+                        .GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
                         .OrderByDescending(x => x.Value)
                         .Take((int)amountToTake)
@@ -74,10 +98,12 @@ namespace Dialogue.Logic.Services
             var thisYear = DateTime.UtcNow.Year;
 
 
-            var results = ContextPerRequest.Db.MemberPoints
+            var results = ContextPerRequest.Db.MemberPoints.AsNoTracking()
                 .Where(x => x.DateAdded.Year == thisYear);
 
-            var memberIds = results.GroupBy(x => x.MemberId)
+            var memberIds = results
+                        .Include(x => x.Points).AsNoTracking()
+                        .GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
                         .OrderByDescending(x => x.Value)
                         .Take((int)amountToTake)
@@ -90,12 +116,15 @@ namespace Dialogue.Logic.Services
         {
             amountToTake = amountToTake ?? int.MaxValue;
 
-            var sixtyDays = DateTime.Now.AddDays(-60);
-            var results = ContextPerRequest.Db.MemberPoints
-                .Where(x => x.DateAdded > sixtyDays && x.Points < 0);
+            var thirtyDays = DateTime.Now.AddDays(-30);
+            var results = ContextPerRequest.Db.MemberPoints.AsNoTracking()
+                .Where(x => x.DateAdded > thirtyDays);
 
-            var memberIds = results.GroupBy(x => x.MemberId)
+            var memberIds = results
+                        .Include(x => x.Points)
+                        .GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
+                        .Where(x => x.Value < 0)
                         .OrderBy(x => x.Value)
                         .Take((int)amountToTake)
                         .ToDictionary(x => x.Key, x => x.Value);
@@ -107,7 +136,7 @@ namespace Dialogue.Logic.Services
         {
             amountToTake = amountToTake ?? int.MaxValue;
 
-            var results = ContextPerRequest.Db.MemberPoints.Where(x => x.Points < 0);
+            var results = ContextPerRequest.Db.MemberPoints.AsNoTracking().Where(x => x.Points < 0).Include(x => x.Points);
 
             var memberIds = results.GroupBy(x => x.MemberId)
                         .ToDictionary(x => x.Key, x => x.Select(p => p.Points).Sum())
@@ -116,20 +145,6 @@ namespace Dialogue.Logic.Services
                         .ToDictionary(x => x.Key, x => x.Value);
 
             return PopulateAllObjects(memberIds);
-        }
-
-        private static void PopulateAllObjects(List<MemberPoints> points)
-        {
-            if (points.Any())
-            {
-                var memberIds = points.Select(x => x.MemberId).Where(x => x != 0).ToList();
-                var members = MemberMapper.MapMember(memberIds);
-                foreach (var point in points)
-                {
-                    var member = members.FirstOrDefault(x => x.Id == point.MemberId);
-                    point.Member = member;
-                }
-            }
         }
 
         private static Dictionary<Member, int> PopulateAllObjects(Dictionary<int, int> groupedDict)

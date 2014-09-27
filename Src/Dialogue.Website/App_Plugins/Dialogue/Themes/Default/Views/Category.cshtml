@@ -49,21 +49,21 @@
 }*@
 <div class="row categoryheader">
 
-    <div class="col-md-8 categoryheading">
-        <h2>@Html.Raw(@Model.Category.Name)</h2>
+    <div class="col-md-8 col-sm-7 categoryheading">
+        <h1>@Html.Raw(@Model.Category.Name)</h1>
     </div>
-    <div class="col-md-4 categoryrss">
+    <div class="col-md-4 col-sm-5 categoryrss">
         @if (Html.Settings().AllowRssFeeds)
         {
             <a title="@Html.Lang("Home.Rss")" href="@Urls.GenerateUrl(Urls.UrlType.CategoryRss)?id=@Model.Category.Id" class="rsssubscribe">@Html.Lang("Home.Rss")</a>
         }
         @if (Model.User != null && Html.Settings().AllowEmailSubscriptions)
         {
-            <a @Html.Raw(subScribe) title="@Html.Lang("Notification.SubscribeByEmail")" href="#" class="emailsubscription" rel="@Model.Category.Id">
-                <span class="emailsubscriptionimage" rel="category">@Html.Lang("Notification.Subscribe")</span>
+            <a @Html.Raw(subScribe) title="@Html.Lang("Category.SubscribeByEmail")" href="#" class="emailsubscription" rel="@Model.Category.Id">
+                <span class="emailsubscriptionimage" rel="category">@Html.Lang("Category.Subscribe")</span>
             </a>
-            <a @Html.Raw(unSubscribe) title="@Html.Lang("Notification.UnSubscribeByEmail")" href="#" class="emailunsubscription" rel="@Model.Category.Id">
-                <span class="emailunsubscriptionimage" rel="category">@Html.Lang("Notification.UnSubscribe")</span>
+            <a @Html.Raw(unSubscribe) title="@Html.Lang("Category.UnSubscribeByEmail")" href="#" class="emailunsubscription" rel="@Model.Category.Id">
+                <span class="emailunsubscriptionimage" rel="category">@Html.Lang("Category.UnSubscribe")</span>
             </a>
         }
     </div>
@@ -71,21 +71,22 @@
 </div>
 
 <p>@Html.Raw(AppHelpers.ConvertPostContent(Model.Category.Description))</p>
-
-@if (Model.Topics.TotalCount > 0)
-{
-    foreach (var topic in Model.Topics)
+<div class="categorytopics">
+    @if (Model.Topics.TotalCount > 0)
     {
-        var viewModel = new ViewTopicViewModel { Permissions = Model.Permissions, Topic = topic, ShowCategoryName = false };
-        Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("TopicRow"), viewModel);
-    }
+        foreach (var topic in Model.Topics)
+        {
+            var viewModel = new ViewTopicViewModel { Permissions = Model.Permissions, Topic = topic, ShowCategoryName = false };
+            Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("TopicRow"), viewModel);
+        }
 
-    if (Model.Topics.TotalPages > 1)
-    {
-        @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().TopicsPerPage, totalCount, null)
+        if (Model.Topics.TotalPages > 1)
+        {
+            @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().TopicsPerPage, totalCount, null)
+        }
     }
-}
-else
-{
-    <p>@Html.Lang("Category.NoDiscussions")</p>
-}
+    else
+    {
+        <p>@Html.Lang("Category.NoDiscussions")</p>
+    }
+</div>

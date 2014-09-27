@@ -16,10 +16,10 @@
 }
 
 <div class="row activityheader">
-    <div class="col-md-9 activityheading">
+    <div class="col-xs-9 activityheading">
         <h2>@Model.PageTitle</h2>
     </div>
-    <div class="col-md-3 activityrss">
+    <div class="col-xs-3 activityrss">
         @if (Html.Settings().AllowPoints)
         {
             <a href="@Urls.GenerateUrl(Urls.UrlType.ActivityRss)" class="rsssubscribe" title="@Html.Lang("Home.Rss")">@Html.Lang("Home.Rss")</a>
@@ -32,17 +32,17 @@
 
     @foreach (var activity in Model.Activities)
     {
-        <div class="activityentry row-fluid">
+        <div class="activityentry row">
 
             @if (activity is BadgeActivity)
             {
                 var badgeActivity = activity as BadgeActivity;
 
-                <div class="activitybadge col-md-1">
+                <div class="activitybadge col-md-1 col-xs-2">
                     <img src="@Url.Content(AppHelpers.ReturnBadgeUrl(badgeActivity.Badge.Image))" alt="@badgeActivity.Badge.DisplayName" />
                 </div>
 
-                <div class="activityinfo col-md-11">
+                <div class="activityinfo col-md-11 col-xs-10">
                     <p class="activityinfotext">
                         <a href="@Html.Raw(badgeActivity.User.Url)">@Html.Raw(badgeActivity.User.UserName)</a>
                         @Html.Lang("Activity.UserAwardedBadge") @Html.Raw(badgeActivity.Badge.DisplayName) @Html.Lang("Activity.Badge")
@@ -63,11 +63,11 @@
             {
                 var memberJoinedActivity = activity as MemberJoinedActivity;
 
-                <div class="activitybadge col-md-1">
+                <div class="activitybadge col-md-1 col-xs-2">
                     <img src="@memberJoinedActivity.User.MemberImage(AppConstants.GravatarPostSize)" alt="@memberJoinedActivity.User.UserName" />
                 </div>
 
-                <div class="activityinfo col-md-11">
+                <div class="activityinfo col-md-11 col-xs-10">
                     <p class="activityinfotext">
                         <a href="@Html.Raw(memberJoinedActivity.User.Url)">@Html.Raw(memberJoinedActivity.User.UserName)</a>
                         @Html.Lang("Activity.UserJoined")
@@ -81,11 +81,11 @@
             {
                 var profileUpdatedActivity = activity as ProfileUpdatedActivity;
 
-                <div class="activitybadge col-md-1">
+                <div class="activitybadge col-md-1 col-xs-2">
                     <img src="@profileUpdatedActivity.User.MemberImage(AppConstants.GravatarPostSize)" alt="@profileUpdatedActivity.User.UserName" />
                 </div>
 
-                <div class="activityinfo col-md-11">
+                <div class="activityinfo col-md-11 col-xs-10">
                     <p class="activityinfotext">
                         <a href="@Html.Raw(profileUpdatedActivity.User.Url)">@Html.Raw(profileUpdatedActivity.User.UserName)</a>
                         @Html.Lang("Activity.ProfileUpdated")

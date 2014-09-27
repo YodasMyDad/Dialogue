@@ -11,6 +11,33 @@
             <param name="appContext"> </param>
             <param name="http"></param>
         </member>
+        <member name="M:Umbraco.Web.BatchedServerMessenger.MessageSeversForIdsOrJson(System.Collections.Generic.IEnumerable{Umbraco.Core.Sync.IServerAddress},umbraco.interfaces.ICacheRefresher,Umbraco.Core.Sync.MessageType,System.Collections.Generic.IEnumerable{System.Object},System.String)">
+            <summary>
+            We need to check if distributed calls are enabled, if they are we also want to make sure 
+            that the current server's cache is updated internally in real time instead of at the end of
+            the call. This is because things like the URL cache, etc... might need to be updated during
+            the request that is making these calls.
+            </summary>
+            <param name="servers"></param>
+            <param name="refresher"></param>
+            <param name="dispatchType"></param>
+            <param name="ids"></param>
+            <param name="jsonPayload"></param>
+            <remarks>
+            See: http://issues.umbraco.org/issue/U4-2633#comment=67-15604
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Web.BatchedServerMessenger.PerformDistributedCall(System.Collections.Generic.IEnumerable{Umbraco.Core.Sync.IServerAddress},umbraco.interfaces.ICacheRefresher,Umbraco.Core.Sync.MessageType,System.Collections.Generic.IEnumerable{System.Object},System.Type,System.String)">
+            <summary>
+            This adds the call to batched list
+            </summary>
+            <param name="servers"></param>
+            <param name="refresher"></param>
+            <param name="dispatchType"></param>
+            <param name="ids"></param>
+            <param name="idArrayType"></param>
+            <param name="jsonPayload"></param>
+        </member>
         <member name="T:Umbraco.Web.CacheHelperExtensions">
             <summary>
             Extension methods for the cache helper
@@ -1950,6 +1977,31 @@
             and taking values from the collection of Property.</returns>
             <remarks>Ensures that all conversions took place correctly.</remarks>
         </member>
+        <member name="T:Umbraco.Web.Mvc.AdminTokenAuthorizeAttribute">
+            <summary>
+            Used for authorizing scheduled tasks
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.Mvc.AdminTokenAuthorizeAttribute.#ctor(Umbraco.Core.ApplicationContext)">
+            <summary>
+            THIS SHOULD BE ONLY USED FOR UNIT TESTS
+            </summary>
+            <param name="appContext"></param>
+        </member>
+        <member name="M:Umbraco.Web.Mvc.AdminTokenAuthorizeAttribute.GetAuthHeaderTokenVal(Umbraco.Core.ApplicationContext)">
+            <summary>
+            Used to return the value that needs to go in the Authorization header
+            </summary>
+            <param name="appContext"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.Mvc.AdminTokenAuthorizeAttribute.AuthorizeCore(System.Web.HttpContextBase)">
+            <summary>
+            Ensures that the user must be in the Administrator or the Install role
+            </summary>
+            <param name="httpContext"></param>
+            <returns></returns>
+        </member>
         <member name="T:Umbraco.Web.Mvc.RedirectToUmbracoUrlResult">
             <summary>
             Redirects to the current URL rendering an Umbraco page
@@ -1965,6 +2017,12 @@
             Creates a new RedirectToUmbracoResult
             </summary>		
             <param name="umbracoContext"></param>
+        </member>
+        <member name="T:Umbraco.Web.PropertyEditors.ValueConverters.MacroContainerValueConverter">
+            <summary>
+            Ensures macro syntax is parsed for the macro container which will work when getting the field
+            values in any way (i.e. dynamically, using Field(), or IPublishedContent)
+            </summary>
         </member>
         <member name="T:Umbraco.Web.PropertyEditors.TagsDataController">
             <summary>
@@ -2285,21 +2343,6 @@
             <summary>
             Returns all member types
             </summary>
-        </member>
-        <member name="T:Umbraco.Web.Editors.TagExtractor">
-            <summary>
-            A simple utility class to extract the tag values from a property/property editor and set them on the content
-            </summary>
-        </member>
-        <member name="M:Umbraco.Web.Editors.TagExtractor.SetPropertyTags(Umbraco.Core.Models.IContentBase,Umbraco.Core.Models.Property,Umbraco.Core.Models.Editors.ContentPropertyData,System.Object,Umbraco.Core.PropertyEditors.SupportTagsAttribute)">
-            <summary>
-            Sets the tag values on the content property based on the property editor's tags attribute
-            </summary>
-            <param name="content"></param>
-            <param name="property"></param>
-            <param name="propertyData"></param>
-            <param name="convertedPropertyValue"></param>
-            <param name="attribute"></param>
         </member>
         <member name="T:Umbraco.Web.Editors.UpdateCheckController.UpdateCheckResponseFilter">
             <summary>
@@ -4266,6 +4309,70 @@
             Auto-generated field.
             To modify move field declaration from designer file to code-behind file.
             </remarks>
+        </member>
+        <member name="T:umbraco.PartialViewTasksBase">
+            <summary>
+            The base UI 'tasks' for the create dialog and delete processes
+            </summary>
+        </member>
+        <member name="T:Umbraco.Web.UI.LegacyDialogTask">
+            <summary>
+            An abstract class that is used to implement all secure ITasks
+            </summary>
+            <remarks>
+            In the near future we will overhaul how create dialogs work and how deletions work as well. In the meantime 
+            if you ever need to create an ITask you should just inherit from this class and do not manually implement 
+            ITask or ITaskReturnUrl. If you do, you MUST also implement IAppTask which associates an ITask to an app
+            so we can validate the current user's security with the implementation. If you do not do this then your 
+            implementation will not be secure. It means that if someone is logged in and doesn't have access to a 
+            specific app, they'd still be able to execute code to create/delete for any ITask regardless of what app 
+            they have access to.
+            </remarks>
+        </member>
+        <member name="T:Umbraco.Web.UI.IAssignedApp">
+            <summary>
+            This is used for anything that is assigned to an app
+            </summary>
+            <remarks>
+            Currently things that need to be assigned to an app in order for user security to work are:
+            dialogs, ITasks, editors
+            </remarks>
+        </member>
+        <member name="P:Umbraco.Web.UI.IAssignedApp.AssignedApp">
+            <summary>
+            Returns the app alias that this element belongs to
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.UI.LegacyDialogTask.Save">
+            <summary>
+            Base class first performs authentication for the current app before proceeding
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.UI.LegacyDialogTask.Delete">
+            <summary>
+            Base class first performs authentication for the current app before proceeding
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.UI.LegacyDialogTask.ValidateUserForApplication">
+            <summary>
+            Checks if the currently assigned user has access to the assigned app
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Umbraco.Web.UI.LegacyDialogTask.User">
+            <summary>
+            Gets/sets the user object for this Task
+            </summary>
+            <remarks>
+            accessible by inheritors but can only be set internally
+            </remarks>
+        </member>
+        <member name="P:Umbraco.Web.UI.LegacyDialogTask.umbraco#interfaces#ITask#UserId">
+            <summary>
+            Implemented explicitly as we don't want to expose this
+            </summary>
         </member>
         <member name="T:umbraco.presentation.create.xslt">
             <summary>
@@ -11936,6 +12043,30 @@
             <param name="method"></param>
             <param name="additionalRouteVals"></param>
         </member>
+        <member name="T:Umbraco.Web.Scheduling.Scheduler">
+            <summary>
+            Used to do the scheduling for tasks, publishing, etc...
+            </summary>
+            <remarks>
+            
+            TODO: Much of this code is legacy and needs to be updated, there are a few new/better ways to do scheduling
+            in a web project nowadays. 
+            
+            //TODO: We need a much more robust way of handing scheduled tasks and also need to take into account app shutdowns during 
+            a scheduled tasks operation
+            http://haacked.com/archive/2011/10/16/the-dangers-of-implementing-recurring-background-tasks-in-asp-net.aspx/
+            
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Web.Scheduling.Scheduler.PerformScheduling(System.Object)">
+            <summary>
+            This performs all of the scheduling on the one timer
+            </summary>
+            <param name="sender"></param>
+            <remarks>
+            No processing will be done if this server is a slave
+            </remarks>
+        </member>
         <member name="M:Umbraco.Web.ModelStateExtensions.Merge(System.Web.Mvc.ModelStateDictionary,System.Web.Mvc.ModelStateDictionary,System.String)">
             <summary>
             Merges ModelState that has names matching the prefix
@@ -12226,6 +12357,19 @@
             <summary>
             Used in the .Field method to render an Umbraco field to specify what encoding to use
             </summary>
+        </member>
+        <member name="M:Umbraco.Web.RouteCollectionExtensions.MapUmbracoRoute(System.Web.Routing.RouteCollection,System.String,System.String,System.Object,Umbraco.Web.Mvc.UmbracoVirtualNodeRouteHandler,System.Object,System.String[])">
+            <summary>
+            Maps an Umbraco route with an UmbracoVirtualNodeRouteHandler
+            </summary>
+            <param name="routes"></param>
+            <param name="name"></param>
+            <param name="url"></param>
+            <param name="defaults"></param>
+            <param name="virtualNodeHandler"></param>
+            <param name="constraints"></param>
+            <param name="namespaces"></param>
+            <returns></returns>
         </member>
         <member name="M:Umbraco.Web.RouteCollectionExtensions.MapHttpRoute(System.Web.Routing.RouteCollection,System.String,System.String,System.Object,System.String[])">
             <summary>
@@ -13158,20 +13302,6 @@
             to insert a macro that has no parameters.
             </summary>
         </member>
-        <member name="T:Umbraco.Web.UI.IAssignedApp">
-            <summary>
-            This is used for anything that is assigned to an app
-            </summary>
-            <remarks>
-            Currently things that need to be assigned to an app in order for user security to work are:
-            dialogs, ITasks, editors
-            </remarks>
-        </member>
-        <member name="P:Umbraco.Web.UI.IAssignedApp.AssignedApp">
-            <summary>
-            Returns the app alias that this element belongs to
-            </summary>
-        </member>
         <member name="T:Umbraco.Web.UI.LegacyDialogHandler">
             <summary>
             This is used to replace the old umbraco.presentation.create.dialogHandler_temp class which is used
@@ -13226,51 +13356,6 @@
             
             TODO: Create an API to assign a nodeType to an app so developers can manually secure it
             </remarks>
-        </member>
-        <member name="T:Umbraco.Web.UI.LegacyDialogTask">
-            <summary>
-            An abstract class that is used to implement all secure ITasks
-            </summary>
-            <remarks>
-            In the near future we will overhaul how create dialogs work and how deletions work as well. In the meantime 
-            if you ever need to create an ITask you should just inherit from this class and do not manually implement 
-            ITask or ITaskReturnUrl. If you do, you MUST also implement IAppTask which associates an ITask to an app
-            so we can validate the current user's security with the implementation. If you do not do this then your 
-            implementation will not be secure. It means that if someone is logged in and doesn't have access to a 
-            specific app, they'd still be able to execute code to create/delete for any ITask regardless of what app 
-            they have access to.
-            </remarks>
-        </member>
-        <member name="M:Umbraco.Web.UI.LegacyDialogTask.Save">
-            <summary>
-            Base class first performs authentication for the current app before proceeding
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Web.UI.LegacyDialogTask.Delete">
-            <summary>
-            Base class first performs authentication for the current app before proceeding
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Web.UI.LegacyDialogTask.ValidateUserForApplication">
-            <summary>
-            Checks if the currently assigned user has access to the assigned app
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:Umbraco.Web.UI.LegacyDialogTask.User">
-            <summary>
-            Gets/sets the user object for this Task
-            </summary>
-            <remarks>
-            accessible by inheritors but can only be set internally
-            </remarks>
-        </member>
-        <member name="P:Umbraco.Web.UI.LegacyDialogTask.umbraco#interfaces#ITask#UserId">
-            <summary>
-            Implemented explicitly as we don't want to expose this
-            </summary>
         </member>
         <member name="T:Umbraco.Web.UI.Pages.ClientTools">
             <summary>
@@ -14150,13 +14235,6 @@
             <summary>
             The UI 'tasks' for the create dialog and delete processes
             </summary>
-        </member>
-        <member name="M:umbraco.PartialViewTasks.TryGetTemplatePath(System.String)">
-            <summary>
-            Looks first in the Partial View template folder and then in the macro partials template folder if not found
-            </summary>
-            <param name="fileName"></param>
-            <returns></returns>
         </member>
         <member name="T:umbraco.cms.presentation.developer.editMacro">
             <summary>
@@ -16079,6 +16157,11 @@
             <param name="path">The full path of the document object to check</param>
             <returns>True if the current user has access or if the current document isn't protected</returns>
         </member>
+        <member name="M:Umbraco.Web.UmbracoHelper.GetCurrentMember">
+            <summary>
+            Gets (or adds) the current member from the current request cache
+            </summary>
+        </member>
         <member name="M:Umbraco.Web.UmbracoHelper.MemberIsLoggedOn">
             <summary>
             Whether or not the current member is logged in (based on the membership provider)
@@ -17390,10 +17473,9 @@
             </summary>
             <returns>Returns true of the XML was not populated, returns false if it was already populated</returns>
         </member>
-        <member name="M:umbraco.content.RefreshContentFromDatabaseAsync">
+        <member name="M:umbraco.content.RefreshContentFromDatabase">
             <summary>
-            Load content from database in a background thread
-            Replaces active content when done.
+            Load content from database and replaces active content when done.
             </summary>
         </member>
         <member name="M:umbraco.content.PublishNodeDo(umbraco.cms.businesslogic.web.Document,System.Xml.XmlDocument,System.Boolean)">
@@ -17427,18 +17509,6 @@
             Updates the document cache for multiple documents
             </summary>
             <param name="Documents">The documents.</param>
-        </member>
-        <member name="M:umbraco.content.UpdateDocumentCacheAsync(System.Int32)">
-            <summary>
-            Updates the document cache async.
-            </summary>
-            <param name="documentId">The document id.</param>
-        </member>
-        <member name="M:umbraco.content.ClearDocumentCacheAsync(System.Int32)">
-            <summary>
-            Clears the document cache async.
-            </summary>
-            <param name="documentId">The document id.</param>
         </member>
         <member name="M:umbraco.content.ClearDocumentCache(umbraco.cms.businesslogic.web.Document)">
             <summary>
@@ -17564,7 +17634,7 @@
             <summary>
             Marks a flag in the HttpContext so that, upon page execution completion, the Xml cache will
             get persisted to disk. Ensure this method is only called from a thread executing a page request
-            since umbraco.presentation.requestModule is the only monitor of this flag and is responsible
+            since UmbracoModule is the only monitor of this flag and is responsible
             for enacting the persistence at the PostRequestHandlerExecute stage of the page lifecycle.
             </summary>
         </member>
@@ -17705,11 +17775,6 @@
             </summary>
             <param name="elements"></param>
             <returns></returns>
-        </member>
-        <member name="T:umbraco.presentation.keepAliveService">
-            <summary>
-            Makes a call to /umbraco/ping.aspx which is used to keep the web app alive
-            </summary>
         </member>
         <member name="T:umbraco.library">
             <summary>
@@ -18733,11 +18798,6 @@
             Puts the properties of the node into the elements table
             </summary>
             <param name="node"></param>
-        </member>
-        <member name="T:umbraco.presentation.publishingService">
-            <summary>
-            Summary description for publishingService.
-            </summary>
         </member>
         <member name="T:umbraco.scripting.python">
             <summary>
@@ -20220,7 +20280,7 @@
             <param name="sender">expects the addButton control</param>
             <param name="e">expects EventArgs for addButton</param>
         </member>
-        <member name="M:umbraco.cms.presentation.developer.RelationTypes.NewRelationType.AppendUmbracoObjectTypes(System.Web.UI.WebControls.DropDownList)">
+        <member name="M:umbraco.cms.presentation.developer.RelationTypes.NewRelationType.AppendUmbracoObjectTypes(System.Web.UI.WebControls.ListControl)">
             <summary>
             Adds the Umbraco Object types to a drop down list
             </summary>
@@ -28240,6 +28300,11 @@
             <param name="tagGroup"></param>
             <returns></returns>
         </member>
+        <member name="T:Umbraco.Web.WebServices.ScheduledPublishController">
+            <summary>
+            A REST controller used for running the scheduled publishing, this is called from the background worker timer
+            </summary>
+        </member>
         <member name="T:Umbraco.Web.WebServices.SaveFileController">
             <summary>
             A REST controller used to save files such as templates, partial views, macro files, etc...
@@ -28251,7 +28316,7 @@
         </member>
         <member name="M:Umbraco.Web.WebServices.SaveFileController.SavePartialView(System.String,System.String,System.String)">
             <summary>
-            Saves a partial view for a partial view macr
+            Saves a partial view for a partial view macro
             </summary>
             <param name="filename"></param>
             <param name="oldName"></param>

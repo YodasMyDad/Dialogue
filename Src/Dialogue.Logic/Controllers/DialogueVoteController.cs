@@ -41,7 +41,7 @@ namespace Dialogue.Logic.Controllers
                         var postWriter = ServiceFactory.MemberService.Get(post.MemberId);
 
                         // Mark the post up or down
-                        var returnValue = 0;
+                        var returnValue = string.Empty;
                         if (voteUpViewModel.IsVoteUp)
                         {
                             returnValue = MarkPostUpOrDown(post, postWriter, voter, PostType.Positive);
@@ -54,7 +54,7 @@ namespace Dialogue.Logic.Controllers
                         try
                         {
                             unitOfWork.Commit();
-                            return Content(returnValue.ToString());
+                            return Content(returnValue);
                         }
                         catch (Exception ex)
                         {
@@ -72,7 +72,7 @@ namespace Dialogue.Logic.Controllers
             throw new Exception(Lang("Errors.GenericMessage"));
         }
 
-        private int MarkPostUpOrDown(Post post, Member postWriter, Member voter, PostType postType)
+        private string MarkPostUpOrDown(Post post, Member postWriter, Member voter, PostType postType)
         {
             // Check this user is not the post owner
             if (voter.Id != postWriter.Id)
@@ -86,7 +86,13 @@ namespace Dialogue.Logic.Controllers
                                         (-Settings.PointsDeductedForNegativeVote) : (Settings.PointsAddedForPositiveVote);
 
                     // Update the users points who wrote the post
-                    ServiceFactory.MemberPointsService.Add(new MemberPoints { Points = usersPoints, Member = postWriter, MemberId = postWriter.Id });
+                    ServiceFactory.MemberPointsService.Add(new MemberPoints
+                    {
+                        Points = usersPoints, 
+                        Member = postWriter, 
+                        MemberId = postWriter.Id,
+                        RelatedPostId = post.Id
+                    });
 
                     // Update the post with the new vote of the voter
                     var vote = new Vote
@@ -101,18 +107,23 @@ namespace Dialogue.Logic.Controllers
                     ServiceFactory.VoteService.Add(vote);
 
                     // Update the post with the new points amount
-                    var newPointTotal = (postType == PostType.Negative) ? (post.VoteCount - 1) : (post.VoteCount + 1);
-                    post.VoteCount = newPointTotal;
-
                     var allVotes = post.Votes.ToList();
+                    var allVoteCount = allVotes.Sum(x => x.Amount);
+                    //var newPointTotal = (postType == PostType.Negative) ? (post.VoteCount - 1) : (post.VoteCount + 1);
+                    post.VoteCount = allVoteCount;
+                    var postTypeVoteCount = 0;
                     if (postType == PostType.Positive)
                     {
-                        return allVotes.Count(x => x.Amount > 0);
+                        postTypeVoteCount = allVotes.Count(x => x.Amount > 0);
                     }
-                    return allVotes.Count(x => x.Amount < 0);
+                    else
+                    {
+                        postTypeVoteCount =  allVotes.Count(x => x.Amount < 0);   
+                    }
+                    return string.Concat(postTypeVoteCount, ",", allVoteCount);
                 }
             }
-            return 0;
+            return "0";
         }
 
         private enum PostType

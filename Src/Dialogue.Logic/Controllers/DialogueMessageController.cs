@@ -8,6 +8,7 @@ using Dialogue.Logic.Services;
 
 namespace Dialogue.Logic.Controllers
 {
+    #region Base Controllers
     public class DialogueMessageSurfaceController : BaseSurfaceController
     {
         [Authorize]
@@ -144,5 +145,6 @@ namespace Dialogue.Logic.Controllers
 
             return null;
         }
-    }
+    } 
+    #endregion
 }

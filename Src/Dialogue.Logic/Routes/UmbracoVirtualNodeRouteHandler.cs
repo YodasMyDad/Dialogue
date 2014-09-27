@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Umbraco.Core.Models;
@@ -21,7 +18,7 @@ namespace Dialogue.Logic.Routes
         {
             var umbracoContext = UmbracoContext.Current;
 
-            //TODO: This is a huge hack - we need to publicize some stuff in the core
+            //TODO: (From Shannon) This is a huge hack - we need to publicize some stuff in the core
             //TODO: publicize: ctor (or static method to create it), Prepared()
             var ensurePcr = new EnsurePublishedContentRequestAttribute(umbracoContext, "__virtualnodefinder__");
 

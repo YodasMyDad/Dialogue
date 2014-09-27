@@ -75,7 +75,6 @@ namespace Dialogue.Logic.Mapping
 
         public static List<Member> MapMember(List<IPublishedContent> members, bool populateAll = false)
         {
-            //TODO Cache and make getting multiple members more efficient
             if (members.Any())
             {
                 var ids = members.Select(x => x.Id).ToList();

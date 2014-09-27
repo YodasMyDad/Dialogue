@@ -259,12 +259,15 @@ namespace Dialogue.Logic.Services
         {
             // Read the database for all activities and convert each to a more specialised activity type
 
-            var totalCount = ContextPerRequest.Db.Activity.Count();
+            var totalCount = ContextPerRequest.Db.Activity.AsNoTracking().Count();
             var results = ContextPerRequest.Db.Activity
+                    .AsNoTracking()
                   .OrderByDescending(x => x.Timestamp)
                   .Skip((pageIndex - 1) * pageSize)
                   .Take(pageSize)
-                  .ToList();
+                  .ToList()
+                  .OrderByDescending(x => x.Timestamp)
+                  .ThenByDescending(x => x.Timestamp.TimeOfDay);
             
             var activities = new PagedList<Activity>(results, pageIndex, pageSize, totalCount);
             var specificActivities = ConvertToSpecificActivities(activities, pageIndex, pageSize);
@@ -277,14 +280,16 @@ namespace Dialogue.Logic.Services
         {
             // Read the database for all activities and convert each to a more specialised activity type
 
-            var totalCount = ContextPerRequest.Db.Activity.Count(x => x.Type.ToUpper().Contains(search.ToUpper()));
+            var totalCount = ContextPerRequest.Db.Activity.AsNoTracking().Count(x => x.Type.ToUpper().Contains(search.ToUpper()));
             // Get the topics using an efficient
-            var results = ContextPerRequest.Db.Activity
+            var results = ContextPerRequest.Db.Activity.AsNoTracking()
                   .Where(x => x.Type.ToUpper().Contains(search.ToUpper()))
                   .OrderByDescending(x => x.Timestamp)
                   .Skip((pageIndex - 1) * pageSize)
                   .Take(pageSize)
-                  .ToList();
+                  .ToList()
+                  .OrderByDescending(x => x.Timestamp)
+                  .ThenByDescending(x => x.Timestamp.TimeOfDay);
 
 
             var activities = new PagedList<Activity>(results, pageIndex, pageSize, totalCount);
@@ -294,7 +299,7 @@ namespace Dialogue.Logic.Services
 
         public IEnumerable<ActivityBase> GetAll(int howMany)
         {
-            var activities = ContextPerRequest.Db.Activity.Take(howMany);
+            var activities = ContextPerRequest.Db.Activity.AsNoTracking().Take(howMany);
             var specificActivities = ConvertToSpecificActivities(activities);
             return specificActivities;
         }

@@ -14,5 +14,6 @@ namespace Dialogue.Logic.Models
         public DateTime DateAdded { get; set; }
         public int MemberId { get; set; }
         public Member Member { get; set; }
+        public Guid? RelatedPostId { get; set; }
     }
 }

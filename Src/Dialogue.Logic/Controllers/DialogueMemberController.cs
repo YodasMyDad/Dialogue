@@ -44,6 +44,11 @@ namespace Dialogue.Logic.Controllers
                 throw new InvalidOperationException("The RenderModel.Content instance must be of type " + typeof(DialogueVirtualPage));
             }
 
+            if (string.IsNullOrEmpty(membername))
+            {
+                return ErrorToHomePage(Lang("Errors.GenericMessage"));
+            }
+
             using (UnitOfWorkManager.NewUnitOfWork())
             {
                 var member = ServiceFactory.MemberService.GetUserBySlug(membername, true);
@@ -74,6 +79,24 @@ namespace Dialogue.Logic.Controllers
         public DialogueMemberSurfaceController()
         {
             _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+        }
+
+        [HttpPost]
+        [Authorize]
+        public void ApproveMember(ApproveMemberViewModel model)
+        {
+            if (Request.IsAjaxRequest() && User.IsInRole(AppConstants.AdminRoleName))
+            {
+                try
+                {
+                    var member = ServiceFactory.MemberService.Get(model.Id);
+                    ServiceFactory.MemberService.ApproveMember(member);
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);                    
+                }
+            }
         }
 
         [HttpPost]
@@ -161,7 +184,7 @@ namespace Dialogue.Logic.Controllers
                 }
 
                 user.Signature = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.ScrubHtml(userModel.MemberEditViewModel.Signature));
-                if (userModel.MemberEditViewModel.Twitter.IndexOf("http", StringComparison.OrdinalIgnoreCase) <= 0)
+                if (userModel.MemberEditViewModel.Twitter != null && userModel.MemberEditViewModel.Twitter.IndexOf("http", StringComparison.OrdinalIgnoreCase) <= 0)
                 {
                     user.Twitter = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Twitter));
                 }
@@ -332,7 +355,7 @@ namespace Dialogue.Logic.Controllers
                         var member = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
 
                         // Delete all their posts and votes and delete etc..
-                        ServiceFactory.MemberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork);
+                        var worked = ServiceFactory.MemberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork);
 
                         // SAVE UOW
                         var message = new GenericMessageViewModel
@@ -343,10 +366,8 @@ namespace Dialogue.Logic.Controllers
 
                         try
                         {
-                            unitOfWork.Commit();
-
                             // Clear the website and signature fields and ban them
-                            ServiceFactory.MemberService.ClearWebsiteAndSignature(member, true);
+                            ServiceFactory.MemberService.KillSpammer(member);
                         }
                         catch (Exception ex)
                         {
@@ -472,7 +493,7 @@ namespace Dialogue.Logic.Controllers
                     var posts = ServiceFactory.PostService.GetByMember(id, 100);
 
                     // Get the distinct topics
-                    var topics = posts.Select(x => x.Topic).Distinct().Take(6).OrderByDescending(x => x.LastPost.DateCreated).ToList();
+                    var topics = posts.Select(x => x.Topic).Where(x => x.Pending != true).Distinct().Take(6).OrderByDescending(x => x.LastPost.DateCreated).ToList();
                     ServiceFactory.TopicService.PopulateCategories(topics);
 
                     // Get all the categories for this topic collection

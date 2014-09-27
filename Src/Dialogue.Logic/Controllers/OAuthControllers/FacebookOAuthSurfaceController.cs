@@ -119,7 +119,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                     Session["Dialogue_" + state] = new[] { Callback, ContentTypeAlias, PropertyAlias };
 
                     // Construct the authorization URL
-                    var url = client.GetAuthorizationUrl(state, "user_about_me", "user_photos", "email ");
+                    var url = client.GetAuthorizationUrl(state, "public_profile", "email"); //"user_friends"
 
                     // Redirect the user
                     return Redirect(url);

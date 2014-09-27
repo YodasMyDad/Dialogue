@@ -5,7 +5,6 @@ namespace Dialogue.Logic.Models
 {
     public class SpamOverviewModel : MasterModel
     {
-        //TODO - Double check this works as expected, instead of passing in current page manually
         public SpamOverviewModel()
             : base(UmbracoContext.Current.PublishedContentRequest.PublishedContent)
         {

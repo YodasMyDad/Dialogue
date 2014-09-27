@@ -6,6 +6,7 @@ using Dialogue.Logic.Services;
 
 namespace Dialogue.Logic.Controllers
 {
+    #region Surface Controllers
     public partial class DialogueFavouriteSurfaceController : BaseSurfaceController
     {
         [HttpPost]
@@ -55,5 +56,6 @@ namespace Dialogue.Logic.Controllers
         }
 
 
-    }
+    } 
+    #endregion
 }

@@ -94,7 +94,7 @@ namespace Dialogue.Logic.Services
             var totalCount = ContextPerRequest.Db.PrivateMessage.Count(x => x.MemberFromId == user.Id);
 
             // Get the topics using an efficient
-            var results = ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage.AsNoTracking()
                                 .Where(x => x.MemberFromId == user.Id)
                                 .Where(x => x.IsSentMessage == true)
                                 .OrderByDescending(x => x.DateSent)
@@ -120,7 +120,7 @@ namespace Dialogue.Logic.Services
             var totalCount = ContextPerRequest.Db.PrivateMessage.Count(x => x.MemberToId == user.Id);
 
             // Get the topics using an efficient
-            var results = ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage.AsNoTracking()
                                 .Where(x => x.MemberToId == user.Id)
                                 .Where(x => x.IsSentMessage != true)
                                 .OrderByDescending(x => x.DateSent)
@@ -140,7 +140,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public PrivateMessage GetLastSentPrivateMessage(int id)
         {
-            var message = ContextPerRequest.Db.PrivateMessage.FirstOrDefault(x => x.MemberFromId == id);
+            var message = ContextPerRequest.Db.PrivateMessage.AsNoTracking().FirstOrDefault(x => x.MemberFromId == id);
             if (message != null)
             {
                 PopulateMembers(new List<PrivateMessage> { message });
@@ -150,7 +150,7 @@ namespace Dialogue.Logic.Services
 
         public PrivateMessage GetMatchingSentPrivateMessage(string title, DateTime date, int senderId, int receiverId)
         {
-            var message = ContextPerRequest.Db.PrivateMessage
+            var message = ContextPerRequest.Db.PrivateMessage.AsNoTracking()
                 .FirstOrDefault(x => x.Subject == title && x.DateSent == date && x.MemberFromId == senderId && x.MemberToId == receiverId && x.IsSentMessage == true);
             if (message != null)
             {
@@ -166,7 +166,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<PrivateMessage> GetAllSentByUser(int id)
         {
-            var results = ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage.AsNoTracking()
                                 .Where(x => x.MemberFromId == id)
                                 .OrderByDescending(x => x.DateSent)
                                 .ToList();
@@ -190,7 +190,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public int NewPrivateMessageCount(int userId)
         {
-            return ContextPerRequest.Db.PrivateMessage.Count(x => x.MemberToId == userId && !x.IsRead && x.IsSentMessage != true);
+            return ContextPerRequest.Db.PrivateMessage.AsNoTracking().Count(x => x.MemberToId == userId && !x.IsRead && x.IsSentMessage != true);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<PrivateMessage> GetAllReceivedByUser(int id)
         {
-            var results = ContextPerRequest.Db.PrivateMessage
+            var results = ContextPerRequest.Db.PrivateMessage.AsNoTracking()
                                 .Where(x => x.MemberToId == id)
                                 .OrderByDescending(x => x.DateSent)
                                 .ToList();

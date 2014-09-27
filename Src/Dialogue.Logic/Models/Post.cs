@@ -8,7 +8,8 @@ namespace Dialogue.Logic.Models
     {
         Standard,
         Newest,
-        Votes
+        Votes,
+        All
     }
 
     public partial class Post : Entity

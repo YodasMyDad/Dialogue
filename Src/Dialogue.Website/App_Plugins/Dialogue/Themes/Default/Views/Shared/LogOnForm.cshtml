@@ -7,8 +7,13 @@
 
 @*@Html.ValidationSummary(false)*@
 
+@Html.ThemedPartial("SocialButtons")
+
+
 @using (Html.BeginUmbracoForm<DialogueLoginRegisterSurfaceController>("LogOn", FormMethod.Post, new { @class = "form", role = "form" }))
-{            
+{
+    @Html.ValidationSummary(false)
+
     @Html.AntiForgeryToken()
 
     <div class="form-group">
@@ -41,5 +46,3 @@
 }
 
 <p class="forgotpasswordtext"><a href="?forgot=yes">@Html.Lang("Members.ForgotPassword.Link")</a></p>
-
-@Html.ThemedPartial("SocialButtons")

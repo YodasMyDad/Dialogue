@@ -31,7 +31,7 @@ namespace Dialogue.Logic.Mapping
         public static ViewPostViewModel MapPostViewModel(PermissionSet permissions, 
                                                             Post post, Member currentMember, 
                                                                 DialogueSettings settings, Topic topic,
-                                                                    List<Vote> allPostVotes, List<Favourite> favourites)
+                                                                    List<Vote> allPostVotes, List<Favourite> favourites, bool showTopicLinks = false)
         {
             var postViewModel = new ViewPostViewModel
             {
@@ -46,7 +46,8 @@ namespace Dialogue.Logic.Mapping
                 PostCount = post.Member.PostCount,
                 IsAdminOrMod = HttpContext.Current.User.IsInRole(AppConstants.AdminRoleName) || permissions[AppConstants.PermissionModerate].IsTicked,
                 HasFavourited = favourites.Any(x => x.PostId == post.Id),
-                IsTopicStarter = post.IsTopicStarter
+                IsTopicStarter = post.IsTopicStarter,
+                ShowTopicLinks = showTopicLinks
             };
             postViewModel.UpVotes = postViewModel.Votes.Count(x => x.Amount > 0);
             postViewModel.DownVotes = postViewModel.Votes.Count(x => x.Amount < 0);

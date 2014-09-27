@@ -43,10 +43,22 @@ namespace Dialogue.Logic.Services
 
         public Post GetTopicStarterPost(Guid topicId)
         {
-            var topicStarter = ContextPerRequest.Db.Post
-                .FirstOrDefault(x => x.Topic.Id == topicId && x.IsTopicStarter);
-            PopulateMembers(new List<Post>{ topicStarter });
+            var topicStarter = ContextPerRequest.Db.Post.AsNoTracking()
+                .Where(x => x.Topic.Id == topicId && x.IsTopicStarter).Include(x => x.Topic).FirstOrDefault();
+            PopulateMembers(new List<Post> { topicStarter });
             return topicStarter;
+        }
+
+        public void SyncMembersPostCount(List<Member> members)
+        {
+            var memberIds = members.Select(x => x.Id);
+            var memberPoints = ContextPerRequest.Db.Post.AsNoTracking().Where(x => memberIds.Contains(x.MemberId));
+            foreach (var m in members)
+            {
+                var member = m;
+                var mPoints = memberPoints.Count(x => x.MemberId == member.Id);
+                ServiceFactory.MemberService.RefreshMemberPosts(member, mPoints);
+            }
         }
 
         /// <summary>
@@ -65,12 +77,12 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<Post> GetLowestVotedPost(int amountToTake)
         {
-            var posts = ContextPerRequest.Db.Post
-                .Include(x => x.Votes)
-                .Include(x => x.Topic)
+            var posts = ContextPerRequest.Db.Post.AsNoTracking()
                 .Where(x => x.VoteCount < 0 && x.Pending != true)
                 .OrderBy(x => x.VoteCount)
                 .Take(amountToTake)
+                .Include(x => x.Votes)
+                .Include(x => x.Topic)
                 .ToList();
 
             PopulateMembers(posts);
@@ -85,11 +97,11 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<Post> GetHighestVotedPost(int amountToTake)
         {
-            return ContextPerRequest.Db.Post
-                .Include(x => x.Votes)
+            return ContextPerRequest.Db.Post.AsNoTracking()
                 .Where(x => x.VoteCount > 0 && x.Pending != true)
                 .OrderByDescending(x => x.VoteCount)
                 .Take(amountToTake)
+                .Include(x => x.Votes)
                 .ToList();
         }
 
@@ -101,8 +113,8 @@ namespace Dialogue.Logic.Services
         public IEnumerable<Post> GetAllByMember(int memberId)
         {
             return ContextPerRequest.Db.Post
-                .Include(x => x.Votes)
                 .Where(x => x.MemberId == memberId)
+                .Include(x => x.Votes)
                 .OrderByDescending(x => x.DateCreated);
         }
 
@@ -114,8 +126,8 @@ namespace Dialogue.Logic.Services
         public IEnumerable<Post> GetByMember(int memberId)
         {
             return ContextPerRequest.Db.Post
-                .Include(x => x.Votes)
                 .Where(x => x.MemberId == memberId && x.Pending != true)
+                .Include(x => x.Votes)
                 .OrderByDescending(x => x.DateCreated);
         }
 
@@ -142,24 +154,28 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public PagedList<Post> SearchPosts(int pageIndex, int pageSize, int amountToTake, string searchTerm)
         {
-            var search = AppHelpers.SafePlainText(searchTerm);
+            var search = AppHelpers.ReturnSearchString(searchTerm);
 
             // We might only want to display the top 100
             // but there might not be 100 topics
-            var total = ContextPerRequest.Db.Post.Count(x => x.PostContent.Contains(search) | x.Topic.Name.Contains(search));
+            var total = ContextPerRequest.Db.Post.AsNoTracking()
+                        .Include(x => x.Topic)
+                        .Count(x => (x.PostContent.ToUpper().Contains(search.ToUpper()) || x.Topic.Name.ToUpper().Contains(search.ToUpper()))
+                            && x.Pending != true);
             if (amountToTake < total)
             {
                 total = amountToTake;
             }
 
             // Get the Posts
-            var results = ContextPerRequest.Db.Post
-                            .Include(x => x.Votes)
-                            .Where(x => x.PostContent.Contains(search) | x.Topic.Name.Contains(search))
+            var results = ContextPerRequest.Db.Post.AsNoTracking()
+                            .Where(x => (x.PostContent.ToUpper().Contains(search.ToUpper()) || x.Topic.Name.ToUpper().Contains(search.ToUpper())))
                             .Where(x => x.Pending != true)
                             .OrderByDescending(x => x.DateCreated)
                             .Skip((pageIndex - 1) * pageSize)
                             .Take(pageSize)
+                            .Include(x => x.Topic)
+                            .Include(x => x.Votes)
                             .ToList();
 
             PopulateMembers(results);
@@ -181,7 +197,7 @@ namespace Dialogue.Logic.Services
         {
             // We might only want to display the top 100
             // but there might not be 100 topics
-            var total = ContextPerRequest.Db.Post
+            var total = ContextPerRequest.Db.Post.AsNoTracking()
                                     .Include(x => x.Topic)
                                     .Count(x => x.Topic.Id == topicId && !x.IsTopicStarter && x.Pending != true);
             if (amountToTake < total)
@@ -190,11 +206,11 @@ namespace Dialogue.Logic.Services
             }
 
             // Get the topics using an efficient
-            var results = ContextPerRequest.Db.Post
+            var results = ContextPerRequest.Db.Post.AsNoTracking()
+                                  .Where(x => x.Topic.Id == topicId && !x.IsTopicStarter && x.Pending != true)
                                     .Include(x => x.Topic)
                                     .Include(x => x.Votes)
-                                    .Include(x => x.Files)
-                                  .Where(x => x.Topic.Id == topicId && !x.IsTopicStarter && x.Pending != true);
+                                    .Include(x => x.Files);
 
             // Sort what order the posts are sorted in
             switch (order)
@@ -223,10 +239,10 @@ namespace Dialogue.Logic.Services
 
         public List<Post> GetAllPendingPosts()
         {
-            var results = ContextPerRequest.Db.Post
+            var results = ContextPerRequest.Db.Post.AsNoTracking()
+                .Where(x => x.Pending)
                 .Include(x => x.Topic)
                 .Include(x => x.Files)
-                .Where(x => x.Pending)
                 .OrderBy(x => x.DateCreated)
                 .ToList();
 
@@ -239,10 +255,11 @@ namespace Dialogue.Logic.Services
         {
 
             var total = ContextPerRequest.Db.Post.Count(x => x.Pending == true);
-            var results = ContextPerRequest.Db.Post.Include(x => x.Topic)
-                .Include(x => x.Files)
+            var results = ContextPerRequest.Db.Post.AsNoTracking().Include(x => x.Topic)
                 .Where(x => x.Pending)
                 .OrderBy(x => x.DateCreated)
+                .Include(x => x.Files)
+                .Include(x => x.Topic)
                 .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
             PopulateMembers(results);
@@ -257,10 +274,11 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<Post> GetSolutionsByMember(int memberId)
         {
-            return ContextPerRequest.Db.Post
-                .Include(x => x.Votes)
+            return ContextPerRequest.Db.Post.AsNoTracking()
                 .Where(x => x.MemberId == memberId)
                 .Where(x => x.IsSolution && x.Pending != true)
+                .Include(x => x.Votes)
+                .Include(x => x.Topic)
                 .OrderByDescending(x => x.DateCreated)
                 .ToList();
         }
@@ -281,14 +299,14 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public Post Get(Guid postId)
         {
-            var post = ContextPerRequest.Db.Post.FirstOrDefault(x => x.Id == postId);
-            PopulateMembers(new List<Post>{post});
+            var post = ContextPerRequest.Db.Post.Include(x => x.Topic).FirstOrDefault(x => x.Id == postId);
+            PopulateMembers(new List<Post> { post });
             return post;
         }
 
         public List<Post> Get(List<Guid> posts)
         {
-            var allPosts = ContextPerRequest.Db.Post.Where(x => posts.Contains(x.Id)).ToList();
+            var allPosts = ContextPerRequest.Db.Post.AsNoTracking().Include(x => x.Topic).Where(x => posts.Contains(x.Id)).ToList();
             PopulateMembers(allPosts);
             return allPosts;
         }
@@ -303,37 +321,45 @@ namespace Dialogue.Logic.Services
         {
             // Here is where we can check for reasons not to delete the post
             // And change the value below if not
-
             var deleteTopic = false;
+
+            // Get the member who made this post
+            var postMember = ServiceFactory.MemberService.Get(post.MemberId);
 
             // Before we delete the post, we need to check if this is the last post in the topic
             // and if so update the topic
             var topic = post.Topic;
             var lastPost = topic.Posts.OrderByDescending(x => x.DateCreated).FirstOrDefault();
-
             if (lastPost != null && lastPost.Id == post.Id)
             {
                 // Get the new last post and update the topic
                 topic.LastPost = topic.Posts.Where(x => x.Id != post.Id).OrderByDescending(x => x.DateCreated).FirstOrDefault();
             }
 
+            // Mark topic as not solved if the post we are deleting was the solution
             if (topic.Solved && post.IsSolution)
             {
                 topic.Solved = false;
             }
 
+            // Remove this post from the topic so we can delete it without any errors
             topic.Posts.Remove(post);
 
-            deleteTopic = post.IsTopicStarter;
-
-            // now delete the post
-            ContextPerRequest.Db.Post.Remove(post);
-
             // Topic should be deleted, so make sure it has no last post to avoid circular dependency
+            deleteTopic = post.IsTopicStarter;
             if (deleteTopic)
             {
                 topic.LastPost = null;
             }
+
+            // Delete all the points the memeber who made this post has gained
+            ServiceFactory.MemberPointsService.DeletePostPoints(post);
+
+            // now delete the post
+            ContextPerRequest.Db.Post.Remove(post);
+
+            // Sync this members post count, so it's always accurate
+            ServiceFactory.PostService.SyncMembersPostCount(new List<Member> { postMember });
 
             return deleteTopic;
         }
@@ -379,7 +405,6 @@ namespace Dialogue.Logic.Services
                 newPost.Pending = true;
             }
 
-
             // create the post
             Add(newPost);
 
@@ -387,11 +412,15 @@ namespace Dialogue.Logic.Services
             ServiceFactory.MemberPointsService.Add(new MemberPoints
             {
                 Points = Dialogue.Settings().PointsAddedPerNewPost,
-                MemberId = user.Id
+                MemberId = user.Id,
+                RelatedPostId = newPost.Id
             });
 
             // add the last post to the topic
             topic.LastPost = newPost;
+
+            // Add post to members count
+            ServiceFactory.MemberService.AddPostCount(user);
 
             return newPost;
         }

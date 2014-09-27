@@ -43,6 +43,11 @@ namespace Dialogue.Logic.Controllers
                 throw new InvalidOperationException("The RenderModel.Content instance must be of type " + typeof(DialogueVirtualPage));
             }
 
+            if (string.IsNullOrEmpty(topicname))
+            {
+                return ErrorToHomePage(Lang("Errors.GenericMessage"));
+            }
+
             // Set the page index
             var pageIndex = AppHelpers.ReturnCurrentPagingNo();
 
@@ -63,12 +68,16 @@ namespace Dialogue.Logic.Controllers
 
                     // Store the amount per page
                     var amountPerPage = Settings.PostsPerPage;
+                    var hasCommentHash = Request.Url != null &&
+                                         Request.Url.PathAndQuery.IndexOf("#comment-",
+                                             StringComparison.CurrentCultureIgnoreCase) >= 0;
 
-                    if (sortQuerystring == AppConstants.AllPosts)
+                    if (sortQuerystring == PostOrderBy.All.ToString() || hasCommentHash)
                     {
                         // Overide to show all posts
                         amountPerPage = int.MaxValue;
                     }
+
 
                     // Get the posts
                     var posts = ServiceFactory.PostService.GetPagedPostsByTopic(pageIndex,
@@ -197,6 +206,31 @@ namespace Dialogue.Logic.Controllers
         public DialogueTopicSurfaceController()
         {
             _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        public void ApproveTopic(ApproveTopicViewModel model)
+        {
+            if (Request.IsAjaxRequest() && User.IsInRole(AppConstants.AdminRoleName))
+            {
+                using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var topic = ServiceFactory.TopicService.Get(model.Id);
+                    topic.Pending = false;
+                    try
+                    {
+                        unitOfWork.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        unitOfWork.Rollback();
+                        LogError(ex);
+                        throw ex;
+                    }
+                }
+            }
         }
 
         [HttpPost]
@@ -435,14 +469,6 @@ namespace Dialogue.Logic.Controllers
                                 }
                             }
 
-                            // Update the users points score for posting
-                            ServiceFactory.MemberPointsService.Add(new MemberPoints
-                            {
-                                Points = Settings.PointsAddedPerNewPost,
-                                Member = CurrentMember,
-                                MemberId = CurrentMember.Id
-                            });
-
                             // Check for moderation
                             if (category.ModerateAllTopicsInThisCategory)
                             {
@@ -459,6 +485,15 @@ namespace Dialogue.Logic.Controllers
 
                             // Now create and add the post to the topic
                             ServiceFactory.TopicService.AddLastPost(topic, topicViewModel.TopicContent);
+
+                            // Update the users points score for posting
+                            ServiceFactory.MemberPointsService.Add(new MemberPoints
+                            {
+                                Points = Settings.PointsAddedPerNewPost,
+                                Member = CurrentMember,
+                                MemberId = CurrentMember.Id,
+                                RelatedPostId = topic.LastPost.Id
+                            });
 
                             // Now check its not spam
                             var akismetHelper = new AkismetHelper();
@@ -490,6 +525,9 @@ namespace Dialogue.Logic.Controllers
                                     successfullyCreated = true;
                                 }
 
+                                // Update the users post count
+                                ServiceFactory.MemberService.AddPostCount(CurrentMember);
+
                             }
                             catch (Exception ex)
                             {
@@ -511,9 +549,6 @@ namespace Dialogue.Logic.Controllers
                     {
                         // Success so now send the emails
                         NotifyNewTopics(category);
-
-                        // Update the users post count - Do this to reduce sql calls
-                        ServiceFactory.MemberService.AddPostCount(CurrentMember);
 
                         // Redirect to the newly created topic
                         return Redirect(string.Format("{0}?postbadges=true", topic.Url));

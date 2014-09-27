@@ -7,6 +7,11 @@ using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Models.ViewModels
 {
+    public class ApproveMemberViewModel
+    {
+        public int Id { get; set; }
+    }
+
     public class RegisterViewModel
     {
         [Required]

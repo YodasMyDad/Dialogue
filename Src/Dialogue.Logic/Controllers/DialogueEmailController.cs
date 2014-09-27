@@ -7,7 +7,8 @@ using Dialogue.Logic.Services;
 
 namespace Dialogue.Logic.Controllers
 {
-    public class DialogueEmailSurfaceController : BaseSurfaceController
+    #region Surface Controllers
+    public partial class DialogueEmailSurfaceController : BaseSurfaceController
     {
         [HttpPost]
         [Authorize]
@@ -151,5 +152,6 @@ namespace Dialogue.Logic.Controllers
                 throw new Exception(Lang("Errors.GenericMessage"));
             }
         }
-    }
+    } 
+    #endregion
 }

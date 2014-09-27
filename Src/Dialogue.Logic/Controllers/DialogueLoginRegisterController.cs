@@ -1,15 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
-using Dialogue.Logic.Data.UnitOfWork;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.OAuth;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Services;
 using Umbraco.Core.Models;
@@ -64,7 +61,7 @@ namespace Dialogue.Logic.Controllers
 
     #region SurefaceController
 
-    public class DialogueLoginRegisterSurfaceController : BaseSurfaceController
+    public partial class DialogueLoginRegisterSurfaceController : BaseSurfaceController
     {
         [ChildActionOnly]
         public ActionResult LogOnForm()
@@ -115,7 +112,7 @@ namespace Dialogue.Logic.Controllers
             try
             {
                 if (ModelState.IsValid)
-                {
+                {                   
                     var message = new GenericMessageViewModel();
                     var user = new Member();
                     if (ServiceFactory.MemberService.Login(model.UserName, model.Password))
@@ -239,10 +236,12 @@ namespace Dialogue.Logic.Controllers
         [ModelStateToTempData]
         public ActionResult Register(RegisterViewModel userModel)
         {
-
-
             if (Settings.SuspendRegistration != true)
             {
+                if (!AppHelpers.IsValidEmail(userModel.Email))
+                {
+                    return CurrentUmbracoPage();
+                }
 
                 // First see if there is a spam question and if so, the answer matches
                 if (!string.IsNullOrEmpty(Settings.SpamQuestion))
@@ -258,7 +257,7 @@ namespace Dialogue.Logic.Controllers
                 }
 
                 // Do the register logic
-                MemberRegisterLogic(userModel);
+                return MemberRegisterLogic(userModel);
 
             }
 

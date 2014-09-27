@@ -1,4 +1,5 @@
-﻿@model Dialogue.Logic.Models.ViewModels.AuthoriseViewModel
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.AuthoriseViewModel
 @{
     Layout = "TwoCol.cshtml";
 }
@@ -15,21 +16,81 @@
 
 <div class="tab-content">
     <div class="tab-pane active" id="members">
-        @foreach (var member in Model.Members)
-        {
-            <p>@member.UserName</p>
-        }
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var member in Model.Members)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@member.MemberImage(AppConstants.GravatarTopicSize)" alt="@member.UserName" />
+                            </td>
+                            <td>
+                                <strong>
+                                    <a href="@member.Url">
+                                        @member.UserName
+                                    </a>
+                                </strong>
+                            </td>
+                            <td>@member.Email</td>
+                            <td>
+                                <a class="btn btn-success approvemember" data-memberid="@member.Id">
+                                    @Html.Lang("Buttons.Approve")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="tab-pane" id="topics">
-        @foreach (var topic in Model.Topics)
-        {
-            <p>@topic.Name</p>
-        }        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var topic in Model.Topics)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    @topic.Name
+                                </strong><br />
+                                @Html.Lang("Misc.By") <em><a href="@topic.Member.Url">@topic.Member.UserName</a></em>
+                            </td>
+                            <td>@Html.Raw(AppHelpers.ConvertPostContent(topic.LastPost.PostContent))</td>
+                            <td>
+                                <a class="btn btn-success approvetopic" data-topicid="@topic.Id">
+                                    @Html.Lang("Buttons.Approve")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="tab-pane" id="posts">
-        @foreach (var post in Model.Posts)
-        {
-            <p>@post.PostContent</p>
-        }
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var post in Model.Posts)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    @Html.Lang("Misc.By") <em><a href="@post.Member.Url">@post.Member.UserName</a></em>
+                                </strong>
+                            </td>
+                            <td>@Html.Raw(AppHelpers.ConvertPostContent(post.PostContent))</td>
+                            <td>
+                                <a class="btn btn-success approvepost" data-postid="@post.Id">
+                                    @Html.Lang("Buttons.Approve")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

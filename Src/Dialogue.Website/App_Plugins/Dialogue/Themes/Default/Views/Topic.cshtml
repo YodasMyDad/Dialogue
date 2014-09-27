@@ -49,7 +49,6 @@
 
 @section Head
 {
-    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
     <script>
         $(function () {
             // Any images uploaded, fire fancybox
@@ -62,10 +61,10 @@
 
 <div class="row topicheading">
 
-    <div class="col-md-9 topicheaderholder">
+    <div class="col-md-8 topicheaderholder">
         <h1 class="topicheader">@Html.Raw(Model.Topic.Name)</h1>
     </div>
-    <div class="col-md-3 topicsubscription">
+    <div class="col-md-4 topicsubscription">
         @if (Model.User != null && Html.Settings().AllowEmailSubscriptions)
         {
             <div class="subscribebuttons clearfix">
@@ -77,18 +76,6 @@
                 </a>
             </div>
         }
-
-        <div class="postsocialbuttons clearfix">
-            <div class="addthis_toolbox addthis_default_style">
-                <a class="addthis_button_preferred_1"></a>
-                <a class="addthis_button_preferred_2"></a>
-                <a class="addthis_button_preferred_3"></a>
-                <a class="addthis_button_preferred_4"></a>
-                <a class="addthis_button_compact"></a>
-                <a class="addthis_counter addthis_bubble_style"></a>
-            </div>
-        </div>
-
     </div>
 
 </div>
@@ -111,48 +98,51 @@
     @if ((totalCount) > 0)
     {
         <div class="row topicstarterpostbeginpostsheading">
-            <div class="col-md-8 topicstarterpostcomments">
+            <div class="col-md-6 topicstarterpostcomments">
                 @(totalCount) @Html.Lang("Topic.CommentsDetails")
             </div>
-            <div class="col-md-4 topicpostorderfilter">
+            <div class="col-md-6 topicpostorderfilter">
                 @Html.Lang("Post.Filter.OrderBy")
                 <a class="orderfilerlink @(string.IsNullOrEmpty(qs) ? "orderfilerlinkactive" : "")" href="@Model.Topic.Url">@Html.Lang("Post.Filter.Standard")</a> |
                 <a class="orderfilerlink @(qs.Contains(PostOrderBy.Newest.ToString()) ? "orderfilerlinkactive" : "")" href="?@AppConstants.PostOrderBy=@PostOrderBy.Newest.ToString()">@Html.Lang("Post.Filter.Newest")</a> |
-                <a class="orderfilerlink @(qs.Contains(PostOrderBy.Votes.ToString()) ? "orderfilerlinkactive" : "")" href="?@AppConstants.PostOrderBy=@PostOrderBy.Votes.ToString()">@Html.Lang("Post.Filter.Votes")</a>
+                <a class="orderfilerlink @(qs.Contains(PostOrderBy.Votes.ToString()) ? "orderfilerlinkactive" : "")" href="?@AppConstants.PostOrderBy=@PostOrderBy.Votes.ToString()">@Html.Lang("Post.Filter.Votes")</a> |
+                <a class="orderfilerlink @(qs.Contains(PostOrderBy.All.ToString()) ? "orderfilerlinkactive" : "")" href="?@AppConstants.PostOrderBy=@PostOrderBy.All.ToString()">@Html.Lang("Post.Filter.All")</a>
             </div>
         </div>
     }
 </div>
-
-@foreach (var post in Model.Posts)
-{
-    Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), post);
-}
-
-@if (Model.TotalPages > 1)
-{
-    <a class="showmoreposts btn btn-success btn-fullwidth">
-        <span class="smpactive">@Html.Lang("Topic.ShowMorePosts")</span>
-        <span class="smploading" style="display: none;">@Html.Lang("Topic.ShowMorePostsLoading")</span>
-    </a>
-}
-
-@if (!Model.Topic.IsLocked)
-{
-    <span id="newpostmarker"></span>
-
-    if (!Model.Permissions[AppConstants.PermissionDenyAccess].IsTicked && !Model.Permissions[AppConstants.PermissionReadOnly].IsTicked)
+<div class="topicposts">
+    @foreach (var post in Model.Posts)
     {
-        @Html.Partial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("CreateNewPost"),
-                        new CreateAjaxPostViewModel { Topic = Model.Topic.Id, DisablePosting = disablePosting, PostContent = Model.PostContent })
+        Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), post);
     }
-    <a id="createpost"></a>
-}
-else
-{
-    <p class="topiclockedmessage">@Html.Lang("Topic.IsLocked")</p>
-}
 
-<input type="hidden" id="pageIndex" value="@(Model.PageIndex + 1)" />
-<input type="hidden" id="topicId" value="@Model.Topic.Id" />
-<input type="hidden" id="totalPages" value="@Model.TotalPages" />
+
+    @if (Model.TotalPages > 1)
+    {
+        <a class="showmoreposts btn btn-success btn-fullwidth">
+            <span class="smpactive">@Html.Lang("Topic.ShowMorePosts")</span>
+            <span class="smploading" style="display: none;">@Html.Lang("Topic.ShowMorePostsLoading")</span>
+        </a>
+    }
+
+    @if (!Model.Topic.IsLocked && !Model.Topic.Category.LockCategory)
+    {
+        <span id="newpostmarker"></span>
+
+        if (!Model.Permissions[AppConstants.PermissionDenyAccess].IsTicked && !Model.Permissions[AppConstants.PermissionReadOnly].IsTicked)
+        {
+            @Html.Partial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("CreateNewPost"),
+                        new CreateAjaxPostViewModel { Topic = Model.Topic.Id, DisablePosting = disablePosting, PostContent = Model.PostContent })
+        }
+        <a id="createpost"></a>
+    }
+    else
+    {
+        <p class="topiclockedmessage">@Html.Lang("Topic.IsLocked")</p>
+    }
+
+    <input type="hidden" id="pageIndex" value="@(Model.PageIndex + 1)" />
+    <input type="hidden" id="topicId" value="@Model.Topic.Id" />
+    <input type="hidden" id="totalPages" value="@Model.TotalPages" />
+</div>

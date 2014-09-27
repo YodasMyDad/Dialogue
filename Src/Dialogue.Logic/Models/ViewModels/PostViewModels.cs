@@ -8,6 +8,11 @@ using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Models.ViewModels
 {
+    public class ApprovePostViewModel
+    {
+        public Guid Id { get; set; }
+    }
+
     public class CreateAjaxPostViewModel
     {
         [UIHint(AppConstants.EditorType), AllowHtml]
@@ -32,6 +37,7 @@ namespace Dialogue.Logic.Models.ViewModels
         public bool IsAdminOrMod { get; set; }
         public bool HasFavourited { get; set; }
         public bool IsTopicStarter { get; set; }
+        public bool ShowTopicLinks { get; set; }
     }
 
     public class EditPostPageViewModel : MasterModel

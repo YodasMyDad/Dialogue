@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Data.Context;
@@ -79,7 +80,7 @@ namespace Dialogue.Logic.Services
 
         public bool HasUserVotedAlready(Guid answerId, int userId)
         {
-            var vote = ContextPerRequest.Db.PollVote.FirstOrDefault(x => x.PollAnswer.Id == answerId && x.MemberId == userId);
+            var vote = ContextPerRequest.Db.PollVote.AsNoTracking().Where(x => x.PollAnswer.Id == answerId && x.MemberId == userId).Include(x => x.PollAnswer).FirstOrDefault();
             return (vote != null);
         }
 

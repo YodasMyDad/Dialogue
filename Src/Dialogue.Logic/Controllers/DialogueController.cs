@@ -40,7 +40,7 @@ namespace Dialogue.Logic.Controllers
     #endregion
 
     #region SurfaceControllers
-    public class DialogueSurfaceController : BaseSurfaceController
+    public partial class DialogueSurfaceController : BaseSurfaceController
     {
 
         [ChildActionOnly]

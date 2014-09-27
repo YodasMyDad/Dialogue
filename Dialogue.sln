@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dialogue.Logic", "Src\Dialogue.Logic\Dialogue.Logic.csproj", "{DD101876-52AC-494C-B1FB-78A205C05AB3}"
 EndProject
@@ -27,9 +27,10 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Dialogue.Website", "http://
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{ACABA814-701D-4C5E-A7A5-3AABAFD6EA25}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{ACABA814-701D-4C5E-A7A5-3AABAFD6EA25}"
 	ProjectSection(SolutionItems) = preProject
-		Src\ReadMe\DevNotesToSelf.txt = Src\ReadMe\DevNotesToSelf.txt
+		Src\ReadMe\LeeNotes.txt = Src\ReadMe\LeeNotes.txt
+		Src\ReadMe\ReadMe.md = Src\ReadMe\ReadMe.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{389FF9D0-561B-4C10-8F2F-F30212BFBE8A}"
@@ -56,6 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badge.VoteTheGrouch", "Src\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Externals", "Externals", "{9EF25FB9-B4FA-46F5-BF0C-41408E26B3C1}"
 	ProjectSection(SolutionItems) = preProject
+		Src\Externals\PackageActionsContrib.dll = Src\Externals\PackageActionsContrib.dll
 		Src\Externals\Skybrud.Social.dll = Src\Externals\Skybrud.Social.dll
 	EndProjectSection
 EndProject

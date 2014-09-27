@@ -28,7 +28,8 @@
                 @DatesUI.GetPrettyDate(post.DateCreated.ToString())
             </div>
             <div id="postcontent-@post.Id" class="postcontent">
-                <p>@Html.Raw(AppHelpers.ConvertPostContent(post.PostContent))</p>
+                <p>@Html.Lang("Post.PostedIn") <a href="@post.Topic.Url#comment-@post.Id">@post.Topic.Name</a></p>
+                @Html.Raw(AppHelpers.ConvertPostContent(post.PostContent))
                 @if (post.DateEdited > post.DateCreated)
                 {
                     <p class="postlastedited">

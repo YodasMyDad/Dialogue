@@ -182,6 +182,13 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public PermissionSet GetPermissions(Category category, IMemberGroup memberGroup)
         {
+            if (memberGroup == null)
+            {
+                // This can only happen if the user has deleted a group, and not reassigned them
+                // so in this occasion we just set them to a guest until the admin assigns them a new group
+                memberGroup = ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName);
+            }
+
             // Pass the role in to see select which permissions to apply
             // Going to cache this per request, just to help with performance
             var objectContextKey = string.Concat(HttpContext.Current.GetHashCode().ToString("x"), "-", category.Id, "-", memberGroup.Id);

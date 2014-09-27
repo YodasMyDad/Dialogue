@@ -6,12 +6,12 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
+using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.Activity;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Routes;
 using Dialogue.Logic.Services;
-using umbraco.cms.businesslogic.datatype;
 using Umbraco.Core.Models;
 using Umbraco.Web.Models;
 
@@ -108,11 +108,9 @@ namespace Dialogue.Logic.Controllers
 
                 case AppConstants.PageUrlAuthorise:
                     return Authorise(page);
-                    
-                default:
-                    return null;
-
             }
+
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
 
         }
 
@@ -191,9 +189,7 @@ namespace Dialogue.Logic.Controllers
                     {
                         LogError(ex);
                     }
-      
-
-                return Redirect(Settings.ForumRootUrl);
+     
             }
 
             return ErrorToHomePage(Lang("Errors.GenericMessage"));
@@ -212,6 +208,7 @@ namespace Dialogue.Logic.Controllers
                         {
                             Categories = allowedCategories,
                             LoggedOnUser = CurrentMember,
+                            SubscribeToTopic = true,
                             PageTitle = Lang("Topic.CreateTopic")
                         };
 
@@ -238,7 +235,7 @@ namespace Dialogue.Logic.Controllers
                     // Create an empty viewmodel
                     var viewModel = new SearchViewModel(page)
                     {
-                        Topics = new PagedList<Topic>(new List<Topic>(), 1, 20, 0),
+                        Posts = new List<ViewPostViewModel>(),
                         AllPermissionSets = new Dictionary<Category, PermissionSet>(),
                         PageIndex = pageIndex,
                         TotalCount = 0,
@@ -252,24 +249,37 @@ namespace Dialogue.Logic.Controllers
                     }
 
                     //// Get all the topics based on the search value
-                    var topics = ServiceFactory.TopicService.SearchTopics(pageIndex,
-                                                         Settings.TopicsPerPage,
+                    var posts = ServiceFactory.PostService.SearchPosts(pageIndex,
+                                                         Settings.PostsPerPage,
                                                          AppConstants.ActiveTopicsListSize,
                                                          term);
 
 
                     // Get all the categories for this topic collection
-                    var categories = topics.Select(x => x.Category).Distinct();
+                    var topics = posts.Select(x => x.Topic).Distinct().ToList();
+                    var categoryIds = topics.Select(x => x.CategoryId).Distinct().ToList();
+                    var categories = ServiceFactory.CategoryService.Get(categoryIds);
 
                     // create the view model
                     viewModel = new SearchViewModel(page)
                     {
-                        Topics = topics,
                         AllPermissionSets = new Dictionary<Category, PermissionSet>(),
                         PageIndex = pageIndex,
-                        TotalCount = topics.TotalCount,
-                        Term = formattedSearchTerm
+                        TotalCount = posts.TotalCount,
+                        Term = formattedSearchTerm,
+                        TotalPages = posts.TotalPages
                     };
+
+                    // Current members favourites
+                    var favourites = new List<Favourite>();
+                    if (CurrentMember != null)
+                    {
+                        favourites = ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id);
+                    }
+
+                    // Get all votes for all the posts
+                    var postIds = posts.Select(x => x.Id).ToList();
+                    var allPostVotes = ServiceFactory.VoteService.GetAllVotesForPosts(postIds);
 
                     // loop through the categories and get the permissions
                     foreach (var category in categories)
@@ -277,6 +287,18 @@ namespace Dialogue.Logic.Controllers
                         var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
                         viewModel.AllPermissionSets.Add(category, permissionSet);
                     }
+
+                    // Map the posts to the posts viewmodel
+                    viewModel.Posts = new List<ViewPostViewModel>();
+                    foreach (var post in posts)
+                    {
+                        // TODO - See if we can make this more efficient
+                        var cat = categories.FirstOrDefault(x => x.Id == post.Topic.CategoryId);
+                        var postViewModel = PostMapper.MapPostViewModel(viewModel.AllPermissionSets[cat], post, CurrentMember, Settings, post.Topic, allPostVotes, favourites, true);
+                        viewModel.Posts.Add(postViewModel);
+                    }
+
+                    viewModel.PageTitle = string.Concat(Lang("Search.PageTitle"), AppHelpers.SafePlainText(term));
 
                     return View(PathHelper.GetThemeViewPath("Search"), viewModel);
                 }
@@ -331,7 +353,7 @@ namespace Dialogue.Logic.Controllers
                 }
             }
 
-            return Redirect(Settings.ForumRootUrl);
+            return ErrorToHomePage(Lang("Errors.GenericMessage"));
         }
 
 
@@ -340,7 +362,10 @@ namespace Dialogue.Logic.Controllers
         public ActionResult ReportMember(DialoguePage page)
         {
             var id = Request["id"];
-
+            if (string.IsNullOrEmpty(id))
+            {
+                return ErrorToHomePage(Lang("Errors.GenericMessage"));
+            }
             if (Settings.EnableMemberReporting)
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
@@ -395,6 +420,11 @@ namespace Dialogue.Logic.Controllers
             using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
                 var id = Request["id"];
+                if (string.IsNullOrEmpty(id))
+                {
+                    return ErrorToHomePage(Lang("Errors.GenericMessage"));
+                }
+
                 var message = ServiceFactory.PrivateMessageService.Get(new Guid(id));
 
                 if (message.MemberToId == CurrentMember.Id | message.MemberFromId == CurrentMember.Id)
@@ -522,6 +552,10 @@ namespace Dialogue.Logic.Controllers
                 // Got to get a lot of things here as we have to check permissions
                 // Get the post
                 var id = Request["id"];
+                if (string.IsNullOrEmpty(id))
+                {
+                    return ErrorToHomePage(Lang("Errors.GenericMessage"));
+                }
                 var post = ServiceFactory.PostService.Get(new Guid(id));
 
                 // Get the topic
@@ -573,15 +607,18 @@ namespace Dialogue.Logic.Controllers
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
                     var id = Request["id"];
-                    var post = ServiceFactory.PostService.Get(new Guid(id));
-                    var viewModel = new ReportPostPageViewModel(page)
+                    if (!string.IsNullOrEmpty(id))
                     {
-                        PostId = post.Id,
-                        Post = post,
-                        PostCreatorUsername = post.Member.UserName,
-                        PageTitle = string.Concat(Lang("Report.ReportPostBy"), post.Member.UserName)
-                    };
-                    return View(PathHelper.GetThemeViewPath("PostReport"), viewModel);
+                        var post = ServiceFactory.PostService.Get(new Guid(id));
+                        var viewModel = new ReportPostPageViewModel(page)
+                        {
+                            PostId = post.Id,
+                            Post = post,
+                            PostCreatorUsername = post.Member.UserName,
+                            PageTitle = string.Concat(Lang("Report.ReportPostBy"), post.Member.UserName)
+                        };
+                        return View(PathHelper.GetThemeViewPath("PostReport"), viewModel);
+                    }
                 }
             }
             return ErrorToHomePage(Lang("Errors.GenericMessage"));
@@ -772,7 +809,7 @@ namespace Dialogue.Logic.Controllers
                             Description = badgeActivity.Badge.Description,
                             Title = string.Concat(badgeActivity.User.UserName, " ", Lang("Activity.UserAwardedBadge"), " ", badgeActivity.Badge.DisplayName, " ", Lang("Activity.Badge")),
                             PublishedDate = badgeActivity.ActivityMapped.Timestamp,
-                            RssImage = AppHelpers.ReturnBadgeUrl(badgeActivity.Badge.Image),
+                            RssImage = AppHelpers.ReturnBadgeUrl(badgeActivity.Badge.Image).Replace("~", ""),
                             Link = activityLink
                         });
                     }

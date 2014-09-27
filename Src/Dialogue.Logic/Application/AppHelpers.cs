@@ -71,17 +71,56 @@ namespace Dialogue.Logic.Application
 
         #region Validation
 
+        private static bool invalid = false;
         public static bool IsValidEmail(string strIn)
         {
-            if (string.IsNullOrEmpty(strIn))
+            invalid = false;
+            if (String.IsNullOrEmpty(strIn))
+                return false;
+
+            // Use IdnMapping class to convert Unicode domain names. 
+            try
+            {
+                strIn = Regex.Replace(strIn, @"(@)(.+)$", DomainMapper,
+                                      RegexOptions.None, TimeSpan.FromMilliseconds(200));
+            }
+            catch (RegexMatchTimeoutException)
             {
                 return false;
             }
 
-            // Return true if strIn is in valid e-mail format.
-            return Regex.IsMatch(strIn,
-                   @"^(?("")("".+?""@)|(([0-9a-zA-Z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-zA-Z])@))" +
-                   @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,6}))$");
+            if (invalid)
+                return false;
+
+            // Return true if strIn is in valid e-mail format. 
+            try
+            {
+                return Regex.IsMatch(strIn,
+                      @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+                      @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
+                      RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                return false;
+            }
+        }
+
+        private static string DomainMapper(Match match)
+        {
+            // IdnMapping class with default property values.
+            var idn = new IdnMapping();
+
+            var domainName = match.Groups[2].Value;
+            try
+            {
+                domainName = idn.GetAscii(domainName);
+            }
+            catch (ArgumentException)
+            {
+                invalid = true;
+            }
+            return match.Groups[1].Value + domainName;
         }
 
         #endregion
@@ -387,7 +426,7 @@ namespace Dialogue.Logic.Application
 
         public static string ReturnBadgeUrl(string badgeFile)
         {
-            return String.Concat(AppConstants.AssetsImagePath, "/badges/", badgeFile);
+            return string.Concat(AppConstants.AssetsImagePath, "badges/", badgeFile);
         }
         public static string GetStaticMediaUrl(string imagename)
         {
@@ -645,7 +684,7 @@ namespace Dialogue.Logic.Application
             searchTerm = Regex.Replace(searchTerm, @"[^\w\.@\- ]", "");
 
             // Now strip common words out and retun the final result
-            return string.Join(" ", searchTerm.Split().Where(w => !CommonWords().Contains(w)).ToArray());
+            return string.Join(" ", searchTerm.Split().Where(w => !CommonWords().Contains(w)).ToArray()).Trim();
         }
 
         /// <summary>

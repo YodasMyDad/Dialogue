@@ -7,9 +7,10 @@
     @Model.PageTitle
 }
 
-<div class="row">
+<div class="row spamoverview">
     <div class="col-md-6">
         <h2>@Html.Lang("Spam.DodgyMembers")</h2>
+        <p>@Html.Lang("Spam.DogdyMembers.Description")</p>
         @if (Model.DodgyMembers.Any())
         {
             <ul>
@@ -24,6 +25,7 @@
     </div>
     <div class="col-md-6">
         <h2>@Html.Lang("Spam.DodgyPosts")</h2>
+        <p>@Html.Lang("Spam.DodgyPosts.Description")</p>
         @if (Model.DodgyPosts.Any())
         {
             <ul>
@@ -31,7 +33,7 @@
                 {
                     <li>
                         @Html.Lang("Spam.InTopic") 
-                        <a href="@post.Topic.Url">@post.Topic.Name</a> 
+                        <a href="@(post.Topic.Url)#comment-@(post.Id)">@post.Topic.Name</a> 
                         @Html.Lang("Spam.PostBy") 
                         <a href="@post.Member.Url">@post.Member.UserName</a> 
                         <span class="badge">@post.VoteCount</span>

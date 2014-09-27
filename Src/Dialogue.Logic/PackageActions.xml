@@ -1,0 +1,267 @@
+﻿<Action runat="install" alias="Dialogue_ExecuteSql"  provider="umbraco.DataLayer.SqlHelpers.SqlServer.SqlServerHelper">
+<![CDATA[
+
+CREATE TABLE [dbo].[DialogueActivity](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Timestamp] [datetime] NOT NULL,
+	[Data] [nvarchar](max) NOT NULL,
+	[Type] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_DialogueActivity] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueBadge](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[Name] [NVARCHAR](50) NOT NULL,
+	[Description] [NTEXT] NULL,
+	[Type] [NVARCHAR](50) NOT NULL,
+	[Image] [NVARCHAR](50) NULL,
+	[DisplayName] [NVARCHAR](50) NOT NULL,
+	[AwardsPoints] [INT] NULL,
+ CONSTRAINT [PK_DialogueBadge] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueBadgeTypeTimeLastChecked](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[MemberId] [INT] NOT NULL,
+	[BadgeType] [NVARCHAR](50) NOT NULL,
+	[TimeLastChecked] [DATETIME] NOT NULL,
+ CONSTRAINT [PK_DialogueBadgeTypeTimeLastChecked] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueBannedEmail](
+	[Id] [INT] IDENTITY(1,1) NOT NULL,
+	[Email] [NVARCHAR](200) NOT NULL,
+	[DateAdded] [DATETIME] NOT NULL,
+ CONSTRAINT [PK_BannedEmail] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueBannedWord](
+	[Id] [INT] IDENTITY(1,1) NOT NULL,
+	[Word] [NVARCHAR](100) NOT NULL,
+	[DateAdded] [DATETIME] NOT NULL,
+ CONSTRAINT [PK_BannedWord] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueCategoryNotification](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[CategoryId] [INT] NOT NULL,
+	[MemberId] [INT] NOT NULL,
+ CONSTRAINT [PK_DialogueCategoryNotification] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueCategoryPermission](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[Permission_Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[MemberGroupId] [INT] NOT NULL,
+	[CategoryId] [INT] NOT NULL,
+	[IsTicked] [BIT] NOT NULL,
+ CONSTRAINT [PK_CategoryPermissionForRole] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueFavourite](
+	[Id] [INT] IDENTITY(1,1) NOT NULL,
+	[MemberId] [INT] NOT NULL,
+	[PostId] [UNIQUEIDENTIFIER] NOT NULL,
+	[TopicId] [UNIQUEIDENTIFIER] NOT NULL,
+	[DateCreated] [DATETIME] NOT NULL,
+ CONSTRAINT [PK_DialogueFavourite] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueMember_Badge](
+	[Id] [INT] IDENTITY(1,1) NOT NULL,
+	[DialogueBadgeId] [UNIQUEIDENTIFIER] NOT NULL,
+	[MemberId] [INT] NOT NULL,
+ CONSTRAINT [PK_DialogueMember_Badge] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueMemberPoints](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[MemberId] [INT] NOT NULL,
+	[Points] [INT] NOT NULL,
+	[DateAdded] [DATETIME] NOT NULL,
+	[RelatedPostId] [UNIQUEIDENTIFIER] NULL,
+ CONSTRAINT [PK_DialogueMembershipUser_Points] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialoguePermission](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[Name] [NVARCHAR](150) NOT NULL,
+ CONSTRAINT [PK_Permissions] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialoguePoll](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[IsClosed] [BIT] NOT NULL,
+	[MemberId] [INT] NOT NULL,
+	[DateCreated] [DATETIME] NOT NULL,
+ CONSTRAINT [PK_DialoguePoll] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialoguePollAnswer](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[Answer] [NVARCHAR](600) NOT NULL,
+	[DialoguePoll_Id] [UNIQUEIDENTIFIER] NOT NULL,
+ CONSTRAINT [PK_DialoguePollAnswer] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialoguePollVote](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[MemberId] [INT] NOT NULL,
+	[DialoguePollAnswer_Id] [UNIQUEIDENTIFIER] NOT NULL,
+ CONSTRAINT [PK_PollVote] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialoguePost](
+	[Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[MemberId] [INT] NOT NULL,
+	[PostContent] [NVARCHAR](MAX) NOT NULL,
+	[DateCreated] [DATETIME] NOT NULL,
+	[VoteCount] [INT] NOT NULL,
+	[DialogueTopic_Id] [UNIQUEIDENTIFIER] NOT NULL,
+	[DateEdited] [DATETIME] NULL,
+	[IsSolution] [BIT] NOT NULL,
+	[IsTopicStarter] [BIT] NOT NULL,
+	[FlaggedAsSpam] [BIT] NOT NULL,
+	[IpAddress] [NVARCHAR](50) NULL,
+	[Pending] [BIT] NOT NULL,
+ CONSTRAINT [PK_DialoguePost] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialoguePrivateMessage](
+	[Id] [uniqueidentifier] NOT NULL,
+	[MemberToId] [int] NOT NULL,
+	[MemberFromId] [int] NOT NULL,
+	[DateSent] [datetime] NOT NULL,
+	[Subject] [nvarchar](80) NOT NULL,
+	[Message] [nvarchar](max) NOT NULL,
+	[IsRead] [bit] NOT NULL,
+	[IsSentMessage] [bit] NOT NULL,
+ CONSTRAINT [PK_DialoguePrivateMessage] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueTopic](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](450) NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
+	[MemberId] [int] NOT NULL,
+	[Solved] [bit] NOT NULL,
+	[CategoryId] [int] NOT NULL,
+	[DialoguePost_Id] [uniqueidentifier] NULL,
+	[Slug] [nvarchar](450) NOT NULL,
+	[Views] [int] NOT NULL,
+	[IsSticky] [bit] NOT NULL,
+	[IsLocked] [bit] NOT NULL,
+	[DialoguePoll_Id] [uniqueidentifier] NULL,
+	[Pending] [bit] NOT NULL,
+ CONSTRAINT [PK_DialogueTopic] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+ALTER TABLE [dbo].[DialogueTopic] ADD  CONSTRAINT [DF_DialogueTopic_Views]  DEFAULT ((0)) FOR [Views]
+
+CREATE TABLE [dbo].[DialogueTopicNotification](
+	[Id] [uniqueidentifier] NOT NULL,
+	[DialogueTopic_Id] [uniqueidentifier] NOT NULL,
+	[MemberId] [int] NOT NULL,
+ CONSTRAINT [PK_[DialogueTopicNotification] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueUploadedFile](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Filename] [nvarchar](200) NOT NULL,
+	[MemberId] [int] NOT NULL,
+	[DialoguePost_Id] [uniqueidentifier] NOT NULL,
+	[DateCreated] [datetime] NOT NULL,
+ CONSTRAINT [PK_DialogueUploadedFile] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+CREATE TABLE [dbo].[DialogueVote](
+	[Id] [uniqueidentifier] NOT NULL,
+	[MemberId] [int] NOT NULL,
+	[DialoguePost_Id] [uniqueidentifier] NOT NULL,
+	[Amount] [int] NOT NULL,
+	[VotedByMemberId] [int] NOT NULL,
+	[DateVoted] [datetime] NOT NULL,
+ CONSTRAINT [PK_DialogueVote] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON)
+)
+
+INSERT [dbo].[DialoguePermission] ([Id], [Name]) VALUES (N'5f11cce9-4202-4c83-86a3-26cea1e466b7', N'Read Only')
+INSERT [dbo].[DialoguePermission] ([Id], [Name]) VALUES (N'a232aa04-c2d7-4b22-a04c-a10a00e34ca7', N'Vote In Polls')
+INSERT [dbo].[DialoguePermission] ([Id], [Name]) VALUES (N'440859aa-4cf9-4580-9591-a196010d4751', N'Create Polls')
+INSERT [dbo].[DialoguePermission] ([Id], [Name]) VALUES (N'9cac8911-cdca-45dd-9677-a196010d5070', N'Create Topics')
+INSERT [dbo].[DialoguePermission] ([Id], [Name]) VALUES (N'865cbd1f-28e1-43f0-a490-a196010d5893', N'Attach Files')
+INSERT [dbo].[DialoguePermission] ([Id], [Name]) VALUES (N'39f7f477-da90-4337-a0c8-a36800a2be0e', N'Moderate')
+INSERT [dbo].[DialoguePermission] ([Id], [Name]) VALUES (N'86fa0e78-a054-436d-a74c-df72cc8057be', N'Deny Access')
+
+]]>
+</Action>‏
+
+
+<!--
+
+Example of updating db in future versions
+<Action runat="install" alias="SEOChecker_ExecuteSql"  provider="umbraco.DataLayer.SqlHelpers.SqlServer.SqlServerHelper">
+  <![CDATA[
+            ALTER TABLE [dbo].[SEOChecker_Queue]
+ADD [Priority] int NOT NULL 
+            ]]>
+</Action>-->

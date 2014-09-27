@@ -21,7 +21,7 @@
 
     <div class="form-group">
         @Html.LabelFor(m => m.CreatePrivateMessageViewModel.UserToUsername)
-        @Html.TextBoxFor(m => m.CreatePrivateMessageViewModel.UserToUsername, new { @class = "form-control usertotextbox" })
+        @Html.TextBoxFor(m => m.CreatePrivateMessageViewModel.UserToUsername, new { @class = "form-control usertotextbox", @readonly = "readonly" })
         @Html.ValidationMessageFor(m => m.CreatePrivateMessageViewModel.UserToUsername)
     </div>
 
@@ -46,8 +46,8 @@
 
 @if (!string.IsNullOrEmpty(Model.CreatePrivateMessageViewModel.PreviousMessage))
 {
-    <p class="previousmessageholder">
-        <span class="originalmessage">@Html.Lang("PM.OriginalMessage")</span>
+    <div class="previousmessageholder">
+        <p class="originalmessage">@Html.Lang("PM.OriginalMessage")</p>
         @Html.Raw(AppHelpers.ConvertPostContent(Model.CreatePrivateMessageViewModel.PreviousMessage))
-    </p>
+    </div>
 }

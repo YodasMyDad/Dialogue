@@ -9,8 +9,11 @@ using Dialogue.Logic.Constants;
 using Dialogue.Logic.Data.UnitOfWork;
 using Dialogue.Logic.Mapping;
 using Dialogue.Logic.Models;
+using umbraco.BusinessLogic;
+using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Persistence.Querying;
+using Umbraco.Core.Services;
 using Umbraco.Web.Security;
 using Member = Dialogue.Logic.Models.Member;
 
@@ -18,14 +21,18 @@ namespace Dialogue.Logic.Services
 {
     public partial class MemberService
     {
-        private readonly Umbraco.Core.Services.IMemberService _memberService;
-        private readonly Umbraco.Core.Services.IMemberGroupService _memberGroupService;
+        private readonly IMemberService _memberService;
+        private readonly IMemberGroupService _memberGroupService;
+        private readonly IMemberTypeService _memberTypeService;
+        private readonly IDataTypeService _dataTypeService;
         private readonly MembershipHelper _membershipHelper;
         public MemberService()
         {
             _memberService = AppHelpers.UmbServices().MemberService;
             _memberGroupService = AppHelpers.UmbServices().MemberGroupService;
             _membershipHelper = AppHelpers.UmbMemberHelper();
+            _memberTypeService = AppHelpers.UmbServices().MemberTypeService;
+            _dataTypeService = AppHelpers.UmbServices().DataTypeService;
         }
 
         #region Members
@@ -314,15 +321,38 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <param name="member"></param>
         /// <param name="banMemberToo"></param>
-        public void ClearWebsiteAndSignature(Member member, bool banMemberToo = false)
+        public void KillSpammer(Member member, bool banMemberToo = false)
         {
             var baseMember = _memberService.GetById(member.Id);
             baseMember.Properties[AppConstants.PropMemberWebsite].Value = string.Empty;
             baseMember.Properties[AppConstants.PropMemberSignature].Value = string.Empty;
-            if (banMemberToo)
+            baseMember.Properties[AppConstants.PropMemberUmbracoMemberLockedOut].Value = 1;
+            baseMember.Properties[AppConstants.PropMemberPostCount].Value = 0;
+            _memberService.Save(baseMember);
+        }
+
+        public void RefreshMemberPosts(Member member, int amount)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            baseMember.Properties[AppConstants.PropMemberPostCount].Value = amount;
+            _memberService.Save(baseMember);
+        }
+
+        public void ReducePostCount(Member member, int amount)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            if (member.PostCount > 0)
             {
-                baseMember.Properties[AppConstants.PropMemberUmbracoMemberLockedOut].Value = 1;
+                baseMember.Properties[AppConstants.PropMemberPostCount].Value = (member.PostCount - amount);
+                _memberService.Save(baseMember);   
             }
+        }
+
+        public void AddPostCount(Member member)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            var newPostCount = (member.PostCount + 1);
+            baseMember.Properties[AppConstants.PropMemberPostCount].Value = newPostCount;
             _memberService.Save(baseMember);
         }
 
@@ -342,8 +372,7 @@ namespace Dialogue.Logic.Services
                 baseMember.Name = member.UserName;
             }
 
-            baseMember.Email = member.Email;
-            //baseMember.Properties[AppConstants.PropMemberEmail].Value = member.Email;            
+            baseMember.Email = member.Email;       
             baseMember.Properties[AppConstants.PropMemberSignature].Value = member.Signature;
             baseMember.Properties[AppConstants.PropMemberWebsite].Value = member.Website;
             baseMember.Properties[AppConstants.PropMemberTwitter].Value = member.Twitter;
@@ -365,6 +394,13 @@ namespace Dialogue.Logic.Services
             _memberService.Save(baseMember);
         }
 
+        public void ApproveMember(Member member)
+        {
+            var baseMember = _memberService.GetById(member.Id);
+            baseMember.Properties[AppConstants.PropMemberUmbracoMemberApproved].Value = 1;
+            _memberService.Save(baseMember);
+        }
+
         public void UnBanMember(Member member)
         {
             var baseMember = _memberService.GetById(member.Id);
@@ -377,25 +413,6 @@ namespace Dialogue.Logic.Services
             var baseMember = _memberService.GetById(member.Id);
             baseMember.Properties[AppConstants.PropMemberLastActiveDate].Value = member.LastActiveDate;
             _memberService.Save(baseMember);
-        }
-
-        public void AddPostCount(Member member)
-        {
-            var baseMember = _memberService.GetById(member.Id);
-            var newPostCount = (member.PostCount + 1);
-            baseMember.Properties[AppConstants.PropMemberPostCount].Value = newPostCount;
-            _memberService.Save(baseMember);
-        }
-
-        public void RemovePostCount(Member member)
-        {
-            var baseMember = _memberService.GetById(member.Id);
-            if (member.PostCount > 0)
-            {
-                var newPostCount = (member.PostCount - 1);
-                baseMember.Properties[AppConstants.PropMemberPostCount].Value = newPostCount;
-                _memberService.Save(baseMember);
-            }
         }
 
         public int MemberCount()
@@ -416,6 +433,8 @@ namespace Dialogue.Logic.Services
               .Select(x => x.Id);
             return MemberMapper.MapMember(ids.ToList());
         }
+
+
 
         public void LogOff()
         {
@@ -487,6 +506,235 @@ namespace Dialogue.Logic.Services
         public IEnumerable<IMemberGroup> GetAll()
         {
             return _memberGroupService.GetAll();
+        }
+
+        public bool MemberGroupExists(string name)
+        {
+            var mGroup = _memberGroupService.GetByName(name);
+            return mGroup != null;
+        }
+
+        public IMemberGroup CreateMemberGroup(string name)
+        {
+            var group = new MemberGroup
+            {
+                Name = name
+            };
+            //group.AdditionalData.Add("test1", 123);
+            //group.AdditionalData.Add("test2", "hello");
+            _memberGroupService.Save(group);
+
+            return group;
+        }
+
+        #endregion
+
+        #region Member Types
+
+        public bool MemberTypeExists(string memberType)
+        {
+            var mType = _memberTypeService.Get(memberType);
+            return mType != null;
+        }
+
+        public IMemberType AddDialogueMemberType()
+        {
+
+            #region DataType Ids
+            //-49	    Umbraco.TrueFalse
+            //-51	    Umbraco.Integer
+            //-87	    Umbraco.TinyMCEv3
+            //-88	    Umbraco.Textbox
+            //-89	    Umbraco.TextboxMultiple
+            //-90	    Umbraco.UploadField
+            //-92	    Umbraco.NoEdit
+            //-36	    Umbraco.DateTime
+            //-37	    Umbraco.ColorPickerAlias
+            //-38	    Umbraco.FolderBrowser
+            //-39	    Umbraco.DropDownMultiple
+            //-40	    Umbraco.RadioButtonList
+            //-41	    Umbraco.Date
+            //-42	    Umbraco.DropDown
+            //-43	    Umbraco.CheckBoxList
+            //1034	    Umbraco.ContentPickerAlias
+            //1035	    Umbraco.MediaPicker
+            //1036	    Umbraco.MemberPicker
+            //1040	    Umbraco.RelatedLinks
+            //1041	    Umbraco.Tags
+            //1045	    Umbraco.MultipleMediaPicker
+            //1077	    Apt.PartialPicker
+            //1089	    Umbraco.ImageCropper
+            //1092	    Umbraco.TinyMCEv3
+            //1103	    Our.Umbraco.FilePicker
+            //1104	    Umbraco.MemberGroupPicker
+            //1105	    Apt.CssPicker
+            //1128	    Dialogue.ThemePicker
+            //1132	    Dialogue.Permissions
+            //1147	    Umbraco.MultipleTextstring 
+            #endregion
+
+            var label = _dataTypeService.GetDataTypeDefinitionById(-92);
+            var upload = _dataTypeService.GetDataTypeDefinitionById(-90);
+            var textstring = _dataTypeService.GetDataTypeDefinitionById(-88);
+            var textboxMultiple = _dataTypeService.GetDataTypeDefinitionById(-89);
+            var truefalse = _dataTypeService.GetDataTypeDefinitionById(-49);
+            var numeric = _dataTypeService.GetDataTypeDefinitionById(-51);
+            var datetime = _dataTypeService.GetDataTypeDefinitionById(-36);
+
+            // Profile, Settings, Social Tokens
+
+            // Create the member Type
+            var memType = new MemberType(-1)
+            {
+                Alias = AppConstants.MemberTypeAlias,
+                Name = "Dialogue Member"
+            };
+
+            // Create the Profile group/tab
+            var profileGroup = new PropertyGroup
+            {
+                Name = "Profile",
+            };
+            profileGroup.PropertyTypes.Add(new PropertyType(label)
+            {
+                Alias = "email",
+                Name = "Email",
+                SortOrder = 0,
+                Description = "This is a bit rubbish, but it's the only way to get the email from the new member service at the current time"
+            });
+            profileGroup.PropertyTypes.Add(new PropertyType(upload)
+            {
+                Alias = "avatar",
+                Name = "Avatar",
+                SortOrder = 0,
+                Description = ""
+            });
+            profileGroup.PropertyTypes.Add(new PropertyType(textstring)
+            {
+                Alias = "website",
+                Name = "Website",
+                SortOrder = 0,
+                Description = ""
+            });
+            profileGroup.PropertyTypes.Add(new PropertyType(textstring)
+            {
+                Alias = "twitter",
+                Name = "Twitter",
+                SortOrder = 0,
+                Description = ""
+            });
+            profileGroup.PropertyTypes.Add(new PropertyType(textboxMultiple)
+            {
+                Alias = "signature",
+                Name = "Signature",
+                SortOrder = 0,
+                Description = ""
+            });
+            profileGroup.PropertyTypes.Add(new PropertyType(datetime)
+            {
+                Alias = "lastActiveDate",
+                Name = "Last Active Date",
+                SortOrder = 0,
+                Description = ""
+            });
+            memType.PropertyGroups.Add(profileGroup);
+
+            // Create the Settings group/tab
+            var settingsGroup = new PropertyGroup
+            {
+                Name = "Settings",
+            };
+            settingsGroup.PropertyTypes.Add(new PropertyType(truefalse)
+            {
+                Alias = "canEditOtherMembers",
+                Name = "Can Edit Other Members",
+                SortOrder = 0,
+                Description = "Enable this and the user can edit other members posts, their profiles and ban members (Usually use in conjunction with moderate permissions)."
+            });
+            settingsGroup.PropertyTypes.Add(new PropertyType(truefalse)
+            {
+                Alias = "disableEmailNotifications",
+                Name = "Disable Email Notifications",
+                SortOrder = 0,
+                Description = ""
+            });
+            settingsGroup.PropertyTypes.Add(new PropertyType(truefalse)
+            {
+                Alias = "disablePosting",
+                Name = "Disable Posting",
+                SortOrder = 0,
+                Description = ""
+            });
+            settingsGroup.PropertyTypes.Add(new PropertyType(truefalse)
+            {
+                Alias = "disablePrivateMessages",
+                Name = "Disable Private Messages",
+                SortOrder = 0,
+                Description = ""
+            });
+            settingsGroup.PropertyTypes.Add(new PropertyType(truefalse)
+            {
+                Alias = "disableFileUploads",
+                Name = "Disable File Uploads",
+                SortOrder = 0,
+                Description = ""
+            });
+            settingsGroup.PropertyTypes.Add(new PropertyType(numeric)
+            {
+                Alias = "postCount",
+                Name = "Post Count",
+                SortOrder = 0,
+                Description = "The users post count. This is kept like this to help reduce SQL queries and improve performance of the forum"
+            });
+            memType.PropertyGroups.Add(settingsGroup);
+
+            // Create the Settings group/tab
+            var socialGroup = new PropertyGroup
+            {
+                Name = "Social Tokens",
+            };
+            socialGroup.PropertyTypes.Add(new PropertyType(textstring)
+            {
+                Name = "Facebook Access Token",
+                Alias = "facebookAccessToken",
+                SortOrder = 0,
+                Description = ""
+            });
+            socialGroup.PropertyTypes.Add(new PropertyType(textstring)
+            {
+                Name = "Facebook Id",
+                Alias = "facebookId",
+                SortOrder = 0,
+                Description = ""
+            });
+            socialGroup.PropertyTypes.Add(new PropertyType(textstring)
+            {
+                Name = "Google Access Token",
+                Alias = "googleAccessToken",
+                SortOrder = 0,
+                Description = ""
+            });
+            socialGroup.PropertyTypes.Add(new PropertyType(textstring)
+            {
+                Name = "Google Id",
+                Alias = "googleId",
+                SortOrder = 0,
+                Description = ""
+            });
+            memType.PropertyGroups.Add(socialGroup);
+
+            // Add Slug
+            memType.AddPropertyType(new PropertyType(textstring)
+            {
+                Name = "Slug",
+                Alias = "slug",
+                SortOrder = 0,
+                Description = "This is what we use to look up the member in the front end"
+            });
+
+            _memberTypeService.Save(memType);
+
+            return memType;
         }
 
         #endregion

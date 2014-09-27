@@ -6,11 +6,12 @@
 }
 
 @if (!User.Identity.IsAuthenticated)
-{    
-    @Html.ValidationSummary(false)
+{
+    @Html.ThemedPartial("SocialButtons")
 
     using (Html.BeginUmbracoForm<DialogueLoginRegisterSurfaceController>("Register", FormMethod.Post, new { @class = "form", role = "form" }))
-    {            
+    {
+        @Html.ValidationSummary(false)
         @Html.AntiForgeryToken()
 
         <div class="form-group">
@@ -48,7 +49,6 @@
         @Html.HiddenFor(x => x.ReturnUrl)
     }
 
-    @Html.ThemedPartial("SocialButtons")
 }
 else
 {

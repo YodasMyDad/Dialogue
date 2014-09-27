@@ -78,11 +78,11 @@ namespace Dialogue.Logic.Services
         public IEnumerable<Category> GetAllowedCategories(IMemberGroup role)
         {
             var filteredCats = new List<Category>();
-            var allCats = GetAll();
+            var allCats = GetAll().Where(x => !x.LockCategory);
             foreach (var category in allCats)
             {
                 var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, role);
-                if (!permissionSet[AppConstants.PermissionDenyAccess].IsTicked)
+                if (!permissionSet[AppConstants.PermissionDenyAccess].IsTicked && !permissionSet[AppConstants.PermissionReadOnly].IsTicked)
                 {
                     filteredCats.Add(category);
                 }

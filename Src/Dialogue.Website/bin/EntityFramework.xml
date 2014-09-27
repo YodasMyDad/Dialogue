@@ -6184,8 +6184,8 @@
             <remarks>
             An abstract base class allows the possibility of patterns other than
             Property = Value in future versions, e.g.,
-            <code>update Foo
-                set ComplexTypeColumn.Bar()
+            <code>update SomeTable
+                set ComplexTypeColumn.SomeProperty()
                 where Id = 2</code>
             </remarks>
         </member>
@@ -7429,6 +7429,14 @@
             <param name="propertyName">The name of the property to retrieve.</param>
             <exception cref="T:System.ArgumentNullException">propertyName is null or instance is null and the property is not static.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">No property with the specified name is declared by the type of instance.</exception>
+        </member>
+        <member name="M:System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder.DbExpressionBuilder.SetClause(System.Data.Entity.Core.Common.CommandTrees.DbExpression,System.Data.Entity.Core.Common.CommandTrees.DbExpression)">
+            <summary>
+            Creates a new <see cref="T:System.Data.Entity.Core.Common.CommandTrees.DbSetClause" /> representing setting a property to a value.
+            </summary>
+            <param name="property">The property to be set.</param>
+            <param name="value">The value to set the property to.</param>
+            <returns>The newly created set clause.</returns>
         </member>
         <member name="M:System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder.DbExpressionBuilder.All(System.Data.Entity.Core.Common.CommandTrees.DbExpression,System.Func{System.Data.Entity.Core.Common.CommandTrees.DbExpression,System.Data.Entity.Core.Common.CommandTrees.DbExpression})">
             <summary>
@@ -13166,24 +13174,32 @@
         </member>
         <member name="M:System.Data.Entity.DbContext.Set``1">
             <summary>
-            Returns a DbSet instance for access to entities of the given type in the context,
-            the ObjectStateManager, and the underlying store.
+            Returns a <see cref="T:System.Data.Entity.DbSet`1"/> instance for access to entities of the given type in the context
+            and the underlying store.
             </summary>
             <remarks>
-            See the DbSet class for more details.
+            Note that Entity Framework requires that this method return the same instance each time that it is called
+            for a given context instance and entity type. Also, the non-generic <see cref="T:System.Data.Entity.DbSet"/> returned by the
+            <see cref="M:System.Data.Entity.DbContext.Set(System.Type)"/> method must wrap the same underlying query and set of entities. These invariants must
+            be maintained if this method is overridden for anything other than creating test doubles for unit testing.
+            See the <see cref="T:System.Data.Entity.DbSet`1"/> class for more details.
             </remarks>
             <typeparam name="TEntity"> The type entity for which a set should be returned. </typeparam>
             <returns> A set for the given entity type. </returns>
         </member>
         <member name="M:System.Data.Entity.DbContext.Set(System.Type)">
             <summary>
-            Returns a non-generic DbSet instance for access to entities of the given type in the context,
-            the ObjectStateManager, and the underlying store.
+            Returns a non-generic <see cref="T:System.Data.Entity.DbSet"/> instance for access to entities of the given type in the context
+            and the underlying store.
             </summary>
             <param name="entityType"> The type of entity for which a set should be returned. </param>
             <returns> A set for the given entity type. </returns>
             <remarks>
-            See the DbSet class for more details.
+            Note that Entity Framework requires that this method return the same instance each time that it is called
+            for a given context instance and entity type. Also, the generic <see cref="T:System.Data.Entity.DbSet`1"/> returned by the
+            <see cref="M:System.Data.Entity.DbContext.Set(System.Type)"/> method must wrap the same underlying query and set of entities. These invariants must
+            be maintained if this method is overridden for anything other than creating test doubles for unit testing.
+            See the <see cref="T:System.Data.Entity.DbSet"/> class for more details.
             </remarks>
         </member>
         <member name="M:System.Data.Entity.DbContext.SaveChanges">
@@ -21835,6 +21851,17 @@
             A new instance of <see cref="T:System.Data.Entity.Infrastructure.DbExecutionStrategy"/>
             </returns>
         </member>
+        <member name="M:System.Data.Entity.Core.Common.DbProviderServices.GetExecutionStrategy(System.Data.Common.DbConnection,System.String)">
+            <summary>
+            Gets the <see cref="T:System.Data.Entity.Infrastructure.IDbExecutionStrategy"/> that will be used to execute methods that use the specified connection.
+            This overload should be used by the derived classes for compatability with wrapping providers.
+            </summary>
+            <param name="connection">The database connection</param>
+            <param name="providerInvariantName">The provider invariant name</param>
+            <returns>
+            A new instance of <see cref="T:System.Data.Entity.Infrastructure.DbExecutionStrategy"/>
+            </returns>
+        </member>
         <member name="M:System.Data.Entity.Core.Common.DbProviderServices.GetSpatialDataReader(System.Data.Common.DbDataReader,System.String)">
             <summary>
             Gets the spatial data reader for the <see cref="T:System.Data.Entity.Core.Common.DbProviderServices" />.
@@ -21958,12 +21985,27 @@
             <param name="commandTimeout">Execution timeout for any commands needed to determine the existence of the database.</param>
             <param name="storeItemCollection">The collection of all store items from the model. This parameter is no longer used for determining database existence.</param>
         </member>
+        <member name="M:System.Data.Entity.Core.Common.DbProviderServices.DatabaseExists(System.Data.Common.DbConnection,System.Nullable{System.Int32},System.Lazy{System.Data.Entity.Core.Metadata.Edm.StoreItemCollection})">
+            <summary>Returns a value indicating whether a given database exists on the server.</summary>
+            <returns>True if the provider can deduce the database only based on the connection.</returns>
+            <param name="connection">Connection to a database whose existence is checked by this method.</param>
+            <param name="commandTimeout">Execution timeout for any commands needed to determine the existence of the database.</param>
+            <param name="storeItemCollection">The collection of all store items from the model. This parameter is no longer used for determining database existence.</param>
+        </member>
         <member name="M:System.Data.Entity.Core.Common.DbProviderServices.DbDatabaseExists(System.Data.Common.DbConnection,System.Nullable{System.Int32},System.Data.Entity.Core.Metadata.Edm.StoreItemCollection)">
             <summary>Returns a value indicating whether a given database exists on the server.</summary>
             <returns>True if the provider can deduce the database only based on the connection.</returns>
             <param name="connection">Connection to a database whose existence is checked by this method.</param>
             <param name="commandTimeout">Execution timeout for any commands needed to determine the existence of the database.</param>
             <param name="storeItemCollection">The collection of all store items from the model. This parameter is no longer used for determining database existence.</param>
+        </member>
+        <member name="M:System.Data.Entity.Core.Common.DbProviderServices.DbDatabaseExists(System.Data.Common.DbConnection,System.Nullable{System.Int32},System.Lazy{System.Data.Entity.Core.Metadata.Edm.StoreItemCollection})">
+            <summary>Returns a value indicating whether a given database exists on the server.</summary>
+            <returns>True if the provider can deduce the database only based on the connection.</returns>
+            <param name="connection">Connection to a database whose existence is checked by this method.</param>
+            <param name="commandTimeout">Execution timeout for any commands needed to determine the existence of the database.</param>
+            <param name="storeItemCollection">The collection of all store items from the model. This parameter is no longer used for determining database existence.</param>
+            <remarks>Override this method to avoid creating the store item collection if it is not needed. The default implementation evaluates the Lazy and calls the other overload of this method.</remarks>
         </member>
         <member name="M:System.Data.Entity.Core.Common.DbProviderServices.DeleteDatabase(System.Data.Common.DbConnection,System.Nullable{System.Int32},System.Data.Entity.Core.Metadata.Edm.StoreItemCollection)">
             <summary>Deletes the specified database.</summary>
@@ -36042,7 +36084,9 @@
             </returns>
             <param name="functionName">The name of the stored procedure or function. The name can include the container name, such as &lt;Container Name&gt;.&lt;Function Name&gt;. When the default container name is known, only the function name is required.</param>
             <param name="parameters">
-            An array of <see cref="T:System.Data.Entity.Core.Objects.ObjectParameter" /> objects.
+            An array of <see cref="T:System.Data.Entity.Core.Objects.ObjectParameter" /> objects. If output parameters are used, 
+            their values will not be available until the results have been read completely. This is due to the underlying behavior 
+            of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
             </param>
             <typeparam name="TElement">
             The entity type of the <see cref="T:System.Data.Entity.Core.Objects.ObjectResult`1" /> returned when the function is executed against the data source. This type must implement
@@ -36068,7 +36112,9 @@
             The <see cref="T:System.Data.Entity.Core.Objects.MergeOption" /> to use when executing the query.
             </param>
             <param name="parameters">
-            An array of <see cref="T:System.Data.Entity.Core.Objects.ObjectParameter" /> objects.
+            An array of <see cref="T:System.Data.Entity.Core.Objects.ObjectParameter" /> objects. If output parameters are used, 
+            their values will not be available until the results have been read completely. This is due to the underlying behavior 
+            of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
             </param>
             <typeparam name="TElement">
             The entity type of the <see cref="T:System.Data.Entity.Core.Objects.ObjectResult`1" /> returned when the function is executed against the data source. This type must implement
@@ -36088,7 +36134,11 @@
             Name of function. May include container (e.g. ContainerName.FunctionName) or just function name when DefaultContainerName is known.
             </param>
             <param name="executionOptions"> The options for executing this function. </param>
-            <param name="parameters"> The parameter values to use for the function. </param>
+            <param name="parameters"> 
+            The parameter values to use for the function. If output parameters are used, their values 
+            will not be available until the results have been read completely. This is due to the underlying 
+            behavior of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+            </param>
             <returns>An object representing the result of executing this function.</returns>
             <exception cref="T:System.ArgumentException"> If function is null or empty </exception>
             <exception cref="T:System.InvalidOperationException">
@@ -36101,7 +36151,9 @@
             <returns>The number of rows affected.</returns>
             <param name="functionName">The name of the stored procedure or function. The name can include the container name, such as &lt;Container Name&gt;.&lt;Function Name&gt;. When the default container name is known, only the function name is required.</param>
             <param name="parameters">
-            An array of <see cref="T:System.Data.Entity.Core.Objects.ObjectParameter" /> objects.
+            An array of <see cref="T:System.Data.Entity.Core.Objects.ObjectParameter" /> objects. If output parameters are used, 
+            their values will not be available until the results have been read completely. This is due to the underlying 
+            behavior of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
             </param>
             <exception cref="T:System.ArgumentException"> function  is null or empty or function  is not found.</exception>
             <exception cref="T:System.InvalidOperationException">The entity reader does not support this  function or there is a type mismatch on the reader and the  function .</exception>
@@ -36276,7 +36328,11 @@
              </summary>
              <typeparam name="TElement"> The element type of the result sequence. </typeparam>
              <param name="commandText"> The query specified in the server's native query language. </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              An enumeration of objects of type <typeparamref name="TElement" /> .
              </returns>
@@ -36295,7 +36351,11 @@
              <typeparam name="TElement"> The element type of the result sequence. </typeparam>
              <param name="commandText"> The query specified in the server's native query language. </param>
              <param name="executionOptions"> The options for executing this query. </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior of 
+             DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              An enumeration of objects of type <typeparamref name="TElement" /> .
              </returns>
@@ -36318,7 +36378,11 @@
              The <see cref="T:System.Data.Entity.Core.Objects.MergeOption" /> to use when executing the query. The default is
              <see cref="F:System.Data.Entity.Core.Objects.MergeOption.AppendOnly" />.
              </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              An enumeration of objects of type <typeparamref name="TElement" /> .
              </returns>
@@ -36338,7 +36402,11 @@
              <param name="commandText"> The query specified in the server's native query language. </param>
              <param name="entitySetName">The entity set of the  TResult  type. If an entity set name is not provided, the results are not going to be tracked.</param>
              <param name="executionOptions"> The options for executing this query. </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              An enumeration of objects of type <typeparamref name="TElement" /> .
              </returns>
@@ -36360,7 +36428,11 @@
              </remarks>
              <typeparam name="TElement"> The element type of the result sequence. </typeparam>
              <param name="commandText"> The query specified in the server's native query language. </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A task that represents the asynchronous operation.
              The task result contains an enumeration of objects of type <typeparamref name="TElement" /> .
@@ -36386,7 +36458,11 @@
              <param name="cancellationToken">
              A <see cref="T:System.Threading.CancellationToken"/> to observe while waiting for the task to complete.
              </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A task that represents the asynchronous operation.
              The task result contains an enumeration of objects of type <typeparamref name="TElement"/> .
@@ -36410,7 +36486,11 @@
              <typeparam name="TElement"> The element type of the result sequence. </typeparam>
              <param name="commandText"> The query specified in the server's native query language. </param>
              <param name="executionOptions"> The options for executing this query. </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A task that represents the asynchronous operation.
              The task result contains an enumeration of objects of type <typeparamref name="TElement" /> .
@@ -36437,7 +36517,11 @@
              <param name="cancellationToken">
              A <see cref="T:System.Threading.CancellationToken"/> to observe while waiting for the task to complete.
              </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A task that represents the asynchronous operation.
              The task result contains an enumeration of objects of type <typeparamref name="TElement"/> .
@@ -36462,7 +36546,11 @@
              <param name="commandText"> The query specified in the server's native query language. </param>
              <param name="entitySetName">The entity set of the  TResult  type. If an entity set name is not provided, the results are not going to be tracked.</param>
              <param name="executionOptions"> The options for executing this query. </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A task that represents the asynchronous operation.
              The task result contains an enumeration of objects of type <typeparamref name="TElement" /> .
@@ -36490,7 +36578,11 @@
              <param name="cancellationToken">
              A <see cref="T:System.Threading.CancellationToken"/> to observe while waiting for the task to complete.
              </param>
-             <param name="parameters"> The parameter values to use for the query. </param>
+             <param name="parameters"> 
+             The parameter values to use for the query. If output parameters are used, their values will not be 
+             available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A task that represents the asynchronous operation.
              The task result contains an enumeration of objects of type <typeparamref name="TElement"/> .
@@ -39180,6 +39272,7 @@
             <summary>
             Creates a new instance of the connection factory for the given version of LocalDb.
             For SQL Server 2012 LocalDb use "v11.0".
+            For SQL Server 2014 and later LocalDb use "mssqllocaldb".
             </summary>
             <param name="localDbVersion"> The LocalDb version to use. </param>
         </member>
@@ -39187,6 +39280,7 @@
             <summary>
             Creates a new instance of the connection factory for the given version of LocalDb.
             For SQL Server 2012 LocalDb use "v11.0".
+            For SQL Server 2014 and later LocalDb use "mssqllocaldb".
             </summary>
             <param name="localDbVersion"> The LocalDb version to use. </param>
             <param name="baseConnectionString"> The connection string to use for options to the database other than the 'Initial Catalog', 'Data Source', and 'AttachDbFilename'. The 'Initial Catalog' and 'AttachDbFilename' will be prepended to this string based on the database name when CreateConnection is called. The 'Data Source' will be set based on the LocalDbVersion argument. </param>
@@ -39220,8 +39314,21 @@
         </member>
         <member name="M:System.Data.Entity.MigrateDatabaseToLatestVersion`2.#ctor">
             <summary>
-            Initializes a new instance of the MigrateDatabaseToLatestVersion class.
+            Initializes a new instance of the MigrateDatabaseToLatestVersion class that will use
+            the connection information from a context constructed using the default constructor 
+            or registered factory if applicable
             </summary>
+        </member>
+        <member name="M:System.Data.Entity.MigrateDatabaseToLatestVersion`2.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the MigrateDatabaseToLatestVersion class specifying whether to
+            use the connection information from the context that triggered initialization to perform the migration.
+            </summary>
+            <param name="useSuppliedContext">
+            If set to <c>true</c> the initializer is run using the connection information from the context that 
+            triggered initialization. Otherwise, the connection information will be taken from a context constructed 
+            using the default constructor or registered factory if applicable. 
+            </param>
         </member>
         <member name="M:System.Data.Entity.MigrateDatabaseToLatestVersion`2.#ctor(System.String)">
             <summary>
@@ -40789,6 +40896,13 @@
             <param name="value"> Value to be returned. </param>
             <param name="writer"> Text writer to add the generated code to. </param>
         </member>
+        <member name="M:System.Data.Entity.Migrations.Design.CSharpMigrationCodeGenerator.WriteClassAttributes(System.Data.Entity.Migrations.Utilities.IndentedTextWriter,System.Boolean)">
+            <summary>
+            Generates class attributes.
+            </summary>
+            <param name="writer"> Text writer to add the generated code to. </param>
+            <param name="designer"> A value indicating if this class is being generated for a code-behind file. </param>
+        </member>
         <member name="M:System.Data.Entity.Migrations.Design.CSharpMigrationCodeGenerator.WriteClassStart(System.String,System.String,System.Data.Entity.Migrations.Utilities.IndentedTextWriter,System.String,System.Boolean,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Generates a namespace, using statements and class definition.
@@ -41385,6 +41499,13 @@
             <param name="name"> Name of the property. </param>
             <param name="value"> Value to be returned. </param>
             <param name="writer"> Text writer to add the generated code to. </param>
+        </member>
+        <member name="M:System.Data.Entity.Migrations.Design.VisualBasicMigrationCodeGenerator.WriteClassAttributes(System.Data.Entity.Migrations.Utilities.IndentedTextWriter,System.Boolean)">
+            <summary>
+            Generates class attributes.
+            </summary>
+            <param name="writer"> Text writer to add the generated code to. </param>
+            <param name="designer"> A value indicating if this class is being generated for a code-behind file. </param>
         </member>
         <member name="M:System.Data.Entity.Migrations.Design.VisualBasicMigrationCodeGenerator.WriteClassStart(System.String,System.String,System.Data.Entity.Migrations.Utilities.IndentedTextWriter,System.String,System.Boolean,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
@@ -46559,7 +46680,11 @@
              </summary>
              <typeparam name="TElement"> The type of object returned by the query. </typeparam>
              <param name="sql"> The SQL query string. </param>
-             <param name="parameters"> The parameters to apply to the SQL query string. </param>
+             <param name="parameters"> 
+             The parameters to apply to the SQL query string. If output parameters are used, their values will 
+             not be available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A <see cref="T:System.Data.Entity.Infrastructure.DbRawSqlQuery`1"/> object that will execute the query when it is enumerated.
              </returns>
@@ -46580,7 +46705,11 @@
              </summary>
              <param name="elementType"> The type of object returned by the query. </param>
              <param name="sql"> The SQL query string. </param>
-             <param name="parameters"> The parameters to apply to the SQL query string. </param>
+             <param name="parameters"> 
+             The parameters to apply to the SQL query string. If output parameters are used, their values 
+             will not be available until the results have been read completely. This is due to the underlying 
+             behavior of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A <see cref="T:System.Data.Entity.Infrastructure.DbRawSqlQuery"/> object that will execute the query when it is enumerated.
              </returns>
@@ -47313,7 +47442,11 @@
              context.Set(typeof(Blog)).SqlQuery("SELECT * FROM dbo.Posts WHERE Author = @author", new SqlParameter("@author", userSuppliedAuthor));
              </summary>
              <param name="sql"> The SQL query string. </param>
-             <param name="parameters"> The parameters to apply to the SQL query string. </param>
+             <param name="parameters"> 
+             The parameters to apply to the SQL query string. If output parameters are used, their values 
+             will not be available until the results have been read completely. This is due to the underlying 
+             behavior of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A <see cref="T:System.Data.Entity.Infrastructure.DbSqlQuery"/> object that will execute the query when it is enumerated.
              </returns>
@@ -47716,7 +47849,11 @@
              context.Blogs.SqlQuery("SELECT * FROM dbo.Posts WHERE Author = @author", new SqlParameter("@author", userSuppliedAuthor));
              </summary>
              <param name="sql"> The SQL query string. </param>
-             <param name="parameters"> The parameters to apply to the SQL query string. </param>
+             <param name="parameters"> 
+             The parameters to apply to the SQL query string. If output parameters are used, their values will 
+             not be available until the results have been read completely. This is due to the underlying behavior 
+             of DbDataReader, see http://go.microsoft.com/fwlink/?LinkID=398589 for more details.
+             </param>
              <returns>
              A <see cref="T:System.Data.Entity.Infrastructure.DbSqlQuery`1"/> object that will execute the query when it is enumerated.
              </returns>
@@ -50036,48 +50173,60 @@
         </member>
         <member name="T:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration">
             <summary>
-            Allows the conventions used by a <see cref="T:System.Data.Entity.DbModelBuilder"/> instance to be customized.
-            The default conventions can be found in the System.Data.Entity.ModelConfiguration.Conventions namespace.
+                Allows the conventions used by a <see cref="T:System.Data.Entity.DbModelBuilder"/> instance to be customized.
+                The default conventions can be found in the System.Data.Entity.ModelConfiguration.Conventions namespace.
             </summary>
+        </member>
+        <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.AddFromAssembly(System.Reflection.Assembly)">
+            <summary>
+                Discover all conventions in the given assembly and add them to the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
+            </summary>
+            <remarks>
+                This method add all conventions ordered by type name. The order in which conventions are added
+                can have an impact on how they behave because it governs the order in which they are run.
+                All conventions found must have a parameterless public constructor.
+            </remarks>
+            <param name="assembly">The assembly containing conventions to be added.</param>
         </member>
         <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.Add(System.Data.Entity.ModelConfiguration.Conventions.IConvention[])">
             <summary>
-            Enables one or more conventions for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
+                Enables one or more conventions for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
             </summary>
             <param name="conventions"> The conventions to be enabled. </param>
         </member>
         <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.Add``1">
             <summary>
-            Enables a convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
+                Enables a convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
             </summary>
             <typeparam name="TConvention"> The type of the convention to be enabled. </typeparam>
         </member>
         <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.AddAfter``1(System.Data.Entity.ModelConfiguration.Conventions.IConvention)">
             <summary>
-            Enables a convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>. This convention
-            will run after the one specified.
+                Enables a convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>. This convention
+                will run after the one specified.
             </summary>
             <typeparam name="TExistingConvention"> The type of the convention after which the enabled one will run. </typeparam>
             <param name="newConvention"> The convention to enable. </param>
         </member>
         <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.AddBefore``1(System.Data.Entity.ModelConfiguration.Conventions.IConvention)">
             <summary>
-            Enables a configuration convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>. This convention
-            will run before the one specified.
+                Enables a configuration convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>. This convention
+                will run before the one specified.
             </summary>
             <typeparam name="TExistingConvention"> The type of the convention before which the enabled one will run. </typeparam>
             <param name="newConvention"> The convention to enable. </param>
         </member>
         <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.Remove(System.Data.Entity.ModelConfiguration.Conventions.IConvention[])">
             <summary>
-            Disables one or more conventions for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
+                Disables one or more conventions for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
             </summary>
             <param name="conventions"> The conventions to be disabled. </param>
         </member>
         <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.Remove``1">
             <summary>
-            Disables a convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
-            The default conventions that are available for removal can be found in the System.Data.Entity.ModelConfiguration.Conventions namespace.
+                Disables a convention for the <see cref="T:System.Data.Entity.DbModelBuilder"/>.
+                The default conventions that are available for removal can be found in the
+                System.Data.Entity.ModelConfiguration.Conventions namespace.
             </summary>
             <typeparam name="TConvention"> The type of the convention to be disabled. </typeparam>
         </member>
@@ -50092,7 +50241,7 @@
         </member>
         <member name="M:System.Data.Entity.ModelConfiguration.Configuration.ConventionsConfiguration.GetType">
             <summary>
-            Gets the <see cref="T:System.Type"/> of the current instance.
+                Gets the <see cref="T:System.Type"/> of the current instance.
             </summary>
             <returns>The exact runtime type of the current instance.</returns>
         </member>

@@ -10,10 +10,13 @@ $(function () {
     ShowFileUploadClickHandler();
     DisplayWaitForPostUploadClickHandler();
 
+    // Attach Approve Click Handers
+    ApproveHandlers();
+
     // **** GLOBAL MESSAGES **** //
     var globalMessage = $('div.globalmessageholder');
     if (globalMessage.length > 0) {
-        globalMessage.delay(4000).fadeOut();
+        globalMessage.delay(7000).fadeOut();
     }
     // **** GLOBAL MESSAGES ENDS **** //
 
@@ -111,6 +114,7 @@ $(function () {
 
     // **** Email subscription Start **** //
     $(".emailsubscription").click(function (e) {
+        e.preventDefault();
         var entityId = $(this).attr('rel');
         $(this).hide();
         var subscriptionType = $(this).find('span').attr('rel');
@@ -135,11 +139,10 @@ $(function () {
             }
         });
 
-        e.preventDefault();
-        e.stopImmediatePropagation();
     });
 
     $(".emailunsubscription").click(function (e) {
+        e.preventDefault();
         var entityId = $(this).attr('rel');
         $(this).hide();
         var subscriptionType = $(this).find('span').attr('rel');
@@ -163,9 +166,6 @@ $(function () {
                 ShowUserMessage("Error: " + xhr.status + " " + thrownError);
             }
         });
-
-        e.preventDefault();
-        e.stopImmediatePropagation();
     });
     // **** Email subscription End **** //
 
@@ -227,6 +227,7 @@ $(function () {
 
     //**** Private Messages ****//
     $(".privatemessagedelete").click(function (e) {
+        e.preventDefault();
         var linkClicked = $(this);
         var messageId = linkClicked.data('messageid');
         var deletePrivateMessageViewModel = new Object();
@@ -248,11 +249,88 @@ $(function () {
                 ShowUserMessage("Error: " + xhr.status + " " + thrownError);
             }
         });
-        e.preventDefault();
-        e.stopImmediatePropagation();
     });
 
 });
+
+function ApproveHandlers() {
+
+    $(".approvemember").click(function (e) {
+        e.preventDefault();
+
+        var linkClicked = $(this);
+        var id = linkClicked.data('memberid');
+
+        // create viewmodel
+        var viewModel = new Object();
+        viewModel.Id = id;
+        var strung = JSON.stringify(viewModel);
+
+        $.ajax({
+            url: app_base + 'umbraco/Surface/DialogueMemberSurface/ApproveMember',
+            type: 'POST',
+            data: strung,
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+                linkClicked.parents('tr').first().fadeOut();                
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                ShowUserMessage("Error: " + xhr.status + " " + thrownError);
+            }
+        });
+    });
+
+    $(".approvepost").click(function (e) {
+        e.preventDefault();
+
+        var linkClicked = $(this);
+        var id = linkClicked.data('postid');
+
+        // create viewmodel
+        var viewModel = new Object();
+        viewModel.Id = id;
+        var strung = JSON.stringify(viewModel);
+
+        $.ajax({
+            url: app_base + 'umbraco/Surface/DialoguePostSurface/ApprovePost',
+            type: 'POST',
+            data: strung,
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+                linkClicked.parents('tr').first().fadeOut();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                ShowUserMessage("Error: " + xhr.status + " " + thrownError);
+            }
+        });
+    });
+
+    $(".approvetopic").click(function (e) {
+        e.preventDefault();
+
+        var linkClicked = $(this);
+        var id = linkClicked.data('topicid');
+
+        // create viewmodel
+        var viewModel = new Object();
+        viewModel.Id = id;
+        var strung = JSON.stringify(viewModel);
+
+        $.ajax({
+            url: app_base + 'umbraco/Surface/DialogueTopicSurface/ApproveTopic',
+            type: 'POST',
+            data: strung,
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+                linkClicked.parents('tr').first().fadeOut();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                ShowUserMessage("Error: " + xhr.status + " " + thrownError);
+            }
+        });
+    });
+
+}
 
 function RemovePrivateMessageTableRow(linkClicked) {
     linkClicked.parents('tr').first().fadeOut();
@@ -340,6 +418,9 @@ function AddPostClickEvents() {
         var voteType = voteLink.data('votetype');
         var isVoteUp = (voteType == "up");
         var numberHolder = voteLink.find('span');
+        var postHolder = voteLink.closest('.post');
+        var totalVoteCount = postHolder.find('.posttotalvotecount');
+
 
         var ajaxUrl = "umbraco/Surface/DialogueVoteSurface/PostVote";
 
@@ -357,7 +438,10 @@ function AddPostClickEvents() {
             contentType: 'application/json; charset=utf-8',
             dataType: 'html',
             success: function (data) {
-                numberHolder.html(data);
+                // Data returned is comma seperated
+                var splitData = data.split(',');
+                numberHolder.html(splitData[0]);
+                totalVoteCount.html(splitData[1]);
                 BadgeVote(postId, isVoteUp);
 
                 // Add disable class to vote pills and remove click
@@ -535,7 +619,7 @@ function ShowUserMessage(message) {
         var toInject = "<div class=\"alert alert-block alert-info fade in\"><a href=\"#\" data-dismiss=\"alert\" class=\"close\">&times;<\/a>" + message + "<\/div>";
         jsMessage.html(toInject);
         jsMessage.show();
-        $('div.alert').delay(2200).fadeOut();
+        $('div.alert').delay(7000).fadeOut();
     }
 }
 function AjaxPostSuccess() {

@@ -8,6 +8,11 @@ using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Models.ViewModels
 {
+    public class ApproveTopicViewModel
+    {
+        public Guid Id { get; set; }
+    }
+
     public class CreateTopicViewModel
     {
         [Required]
@@ -143,10 +148,11 @@ namespace Dialogue.Logic.Models.ViewModels
         {
         }
 
-        public PagedList<Topic> Topics { get; set; }
+        public List<ViewPostViewModel> Posts { get; set; }
         public Dictionary<Category, PermissionSet> AllPermissionSets { get; set; }
         public string Term { get; set; }
         public int? PageIndex { get; set; }
         public int? TotalCount { get; set; }
+        public int TotalPages { get; set; }
     }
 }

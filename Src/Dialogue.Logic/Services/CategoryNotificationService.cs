@@ -28,7 +28,7 @@ namespace Dialogue.Logic.Services
         /// <returns></returns>
         public IList<CategoryNotification> GetByCategory(Category category)
         {
-            return ContextPerRequest.Db.CategoryNotification.Where(x => x.CategoryId == category.Id).ToList();
+            return ContextPerRequest.Db.CategoryNotification.AsNoTracking().Where(x => x.CategoryId == category.Id).ToList();
         }
 
         /// <summary>

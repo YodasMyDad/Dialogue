@@ -53,11 +53,13 @@
     <Reference Include="EFCache">
       <HintPath>..\..\packages\EntityFramework.Cache.1.0.0-beta\lib\net45\EFCache.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework">
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -222,6 +224,7 @@
     <Compile Include="Models\DialogueFavourite.cs" />
     <Compile Include="Models\DialoguePage.cs" />
     <Compile Include="Models\Email.cs" />
+    <Compile Include="Models\InstallerResult.cs" />
     <Compile Include="Models\MasterModel.cs" />
     <Compile Include="Models\MemberPoints.cs" />
     <Compile Include="Models\MembersPaged.cs" />
@@ -325,8 +328,19 @@
     <Compile Include="Services\TopicService.cs" />
     <Compile Include="Services\UploadedFileService.cs" />
     <Compile Include="Services\VoteService.cs" />
+    <Compile Include="UserControls\DialogueInstaller.ascx.cs">
+      <DependentUpon>DialogueInstaller.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\DialogueInstaller.ascx.designer.cs">
+      <DependentUpon>DialogueInstaller.ascx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PackageActions.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="UserControls\DialogueInstaller.ascx" />
     <Content Include="web.config" />
     <Content Include="packages.config" />
     <None Include="web.Debug.config">
@@ -370,7 +384,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /s /y "$(TargetDir)*.dll" "$(SolutionDir)Src\Dialogue.Website\bin\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /s /y "$(TargetDir)*.dll" "$(SolutionDir)Src\Dialogue.Website\bin\"
+xcopy /s /y "$(ProjectDir)UserControls\*.ascx" "$(SolutionDir)Src\Dialogue.Website\UserControls\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

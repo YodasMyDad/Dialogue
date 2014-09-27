@@ -31,7 +31,7 @@ namespace Dialogue.Logic.Services
 
         public List<Vote> GetAllVotesForPosts(List<Guid> postids)
         {
-            return ContextPerRequest.Db.Vote.Where(x => postids.Contains(x.Post.Id)).ToList();
+            return ContextPerRequest.Db.Vote.AsNoTracking().Where(x => postids.Contains(x.Post.Id)).ToList();
         }
     }
 }

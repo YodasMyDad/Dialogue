@@ -8,24 +8,23 @@
     @Model.PageTitle
 }
 
-@if (Model.Topics.Any())
-{
-    foreach (var topic in Model.Topics)
+
+<div class="searchresults">
+    <h1>@Model.PageTitle</h1>
+    @if (Model.Posts.Any())
     {
-        // Get the permissions for this topic via its parent category
-        var permissions = Model.AllPermissionSets[topic.Category];
+        foreach (var post in Model.Posts)
+        {
+            Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), post);
+        }
 
-        var viewModel = new ViewTopicViewModel { Permissions = permissions, Topic = topic, ShowCategoryName = false };
-        Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("TopicRow"), viewModel);
+        if (Model.TotalPages > 1)
+        {
+            @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().PostsPerPage, Convert.ToInt32(Model.TotalCount), new { term = Model.Term })
+        }
     }
-
-    if (Model.Topics.TotalPages > 1)
+    else
     {
-        @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().TopicsPerPage, Convert.ToInt32(Model.TotalCount), new { term = Model.Term })
+        @Html.Lang("Search.NoResults")
     }
-}
-else
-{
-    @Html.Lang("Search.NoResults")
-}
-
+</div>

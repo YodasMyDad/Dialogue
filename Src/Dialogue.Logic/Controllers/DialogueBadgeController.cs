@@ -1,24 +1,16 @@
 ﻿using System;
-using System.Linq;
 using System.Web.Mvc;
-using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Controllers
 {
 
+    #region Surface Controllers
+
     public partial class DialogueBadgeSurfaceController : BaseSurfaceController
     {
-        private readonly IMemberGroup _usersRole;
-
-        public DialogueBadgeSurfaceController()
-        {
-            _usersRole = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-        }
-
         [HttpPost]
         [Authorize]
         public void VoteUpPost(VoteBadgeViewModel voteUpBadgeViewModel)
@@ -166,5 +158,6 @@ namespace Dialogue.Logic.Controllers
             }
         }
 
-    }
+    } 
+    #endregion
 }

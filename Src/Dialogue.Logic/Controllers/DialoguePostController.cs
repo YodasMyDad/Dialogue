@@ -25,11 +25,36 @@ namespace Dialogue.Logic.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        public void ApprovePost(ApprovePostViewModel model)
+        {
+            if (Request.IsAjaxRequest() && User.IsInRole(AppConstants.AdminRoleName))
+            {
+                using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+                {
+                    var post = ServiceFactory.PostService.Get(model.Id);
+                    post.Pending = false;
+                    try
+                    {
+                        unitOfWork.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        unitOfWork.Rollback();
+                        LogError(ex);
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        [HttpPost]
         public PartialViewResult CreatePost(CreateAjaxPostViewModel post)
         {
             PermissionSet permissions;
             Post newPost;
             Topic topic;
+            var postContent = string.Empty;
             using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
                 // Quick check to see if user is locked out, when logged in
@@ -47,7 +72,7 @@ namespace Dialogue.Logic.Controllers
 
                 topic = ServiceFactory.TopicService.Get(post.Topic);
 
-                var postContent = ServiceFactory.BannedWordService.SanitiseBannedWords(post.PostContent);
+                postContent = ServiceFactory.BannedWordService.SanitiseBannedWords(post.PostContent);
 
                 var akismetHelper = new AkismetHelper();
 
@@ -87,13 +112,13 @@ namespace Dialogue.Logic.Controllers
                 var viewModel = PostMapper.MapPostViewModel(permissions, newPost, CurrentMember, Settings, topic, new List<Vote>(), new List<Favourite>());
 
                 // Success send any notifications
-                NotifyNewTopics(topic);
+                NotifyNewTopics(topic, postContent);
 
                 return PartialView(PathHelper.GetThemePartialViewPath("Post"), viewModel);
             }
         }
 
-        private void NotifyNewTopics(Topic topic)
+        private void NotifyNewTopics(Topic topic, string postContent)
         {
             // Get all notifications for this category
             var notifications = ServiceFactory.TopicNotificationService.GetByTopic(topic).Select(x => x.MemberId).ToList();
@@ -113,6 +138,7 @@ namespace Dialogue.Logic.Controllers
                     var sb = new StringBuilder();
                     sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Post.Notification.NewPosts"), topic.Name));
                     sb.AppendFormat("<p>{0}</p>", string.Concat(Settings.ForumRootUrlWithDomain, topic.Url));
+                    sb.Append(postContent);
 
                     // create the emails only to people who haven't had notifications disabled
                     var emails = usersToNotify.Where(x => x.DisableEmailNotifications != true).Select(user => new Email
@@ -168,6 +194,7 @@ namespace Dialogue.Logic.Controllers
 
                     try
                     {
+                        // Commit changes
                         unitOfWork.Commit();
                     }
                     catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Dialogue.Logic.Interfaces.Badges;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.Attributes;
@@ -18,7 +19,7 @@ namespace Badge.PostMentionUmbraco
         {
             var usersPosts = ServiceFactory.PostService.GetByMember(user.Id);
             var lastPost = usersPosts.OrderByDescending(x => x.DateCreated).FirstOrDefault();
-            if (lastPost != null && lastPost.PostContent.ToLower().Contains("umbraco"))
+            if (lastPost != null && lastPost.PostContent.IndexOf("umbraco", StringComparison.CurrentCultureIgnoreCase) >= 0)
             {
                 return true;
             }

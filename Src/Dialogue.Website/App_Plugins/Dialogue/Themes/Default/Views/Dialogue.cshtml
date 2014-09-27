@@ -1,4 +1,9 @@
-﻿@using Dialogue.Logic.Application
+﻿@using System.Collections.Specialized
+@using System.Configuration
+@using System.Web.Configuration
+@using System.Web.Hosting
+@using System.Xml
+@using Dialogue.Logic.Application
 @using Dialogue.Logic.Application.ExtensionMethods
 @using Dialogue.Logic.Data.Context
 @using Dialogue.Logic.Services
@@ -17,19 +22,19 @@
 }
 
 @*<div class="openingtext">
-    <h1>@Model.MainHeading</h1>
-    @Html.Raw(Model.MainContent)
-</div>*@
+        <h1>@Model.MainHeading</h1>
+        @Html.Raw(Model.MainContent)
+    </div>*@
 
 
 @*<h2>@Html.Lang("Home.MainCategories")</h2>
-@foreach (var category in Model.MainCategories)
-{
-    <div class="maincategory">
-        <h3><a href="@category.Url">@category.Name</a></h3>
-        @Html.Raw(category.Description)
-    </div>
-}*@
+    @foreach (var category in Model.MainCategories)
+    {
+        <div class="maincategory">
+            <h3><a href="@category.Url">@category.Name</a></h3>
+            @Html.Raw(category.Description)
+        </div>
+    }*@
 
 
 <div class="row">

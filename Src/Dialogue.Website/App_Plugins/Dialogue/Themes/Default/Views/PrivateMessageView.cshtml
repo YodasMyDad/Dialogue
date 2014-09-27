@@ -25,7 +25,11 @@
     @Model.Message.DateSent.ToShortDateString()
 </p>
 
-<p class="privatemessagecontent">
+<div class="privatemessagecontent">
     @Html.Raw(AppHelpers.ConvertPostContent(Model.Message.Message))
+</div>
+
+<p>
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageCreate)?id=@Model.Message.Id" class="btn btn-default pmreply">@Html.Lang("PM.Reply")</a>
 </p>
 
