@@ -56,15 +56,15 @@ namespace Dialogue.Logic.UserControls
             sb.Append("<div style='margin:10px 0;padding:10px 0;border-bottom:1px #efefef dotted'>").AppendLine();
             sb.AppendFormat(HFormat, resultItem.Name).AppendLine();
             sb.AppendFormat(PFormat, resultItem.Description).AppendLine();
-            sb.AppendFormat(PFormat, string.Concat("Completed Successfully: ", resultItem.CompletedSuccessfully)).AppendLine();
+            if (!resultItem.CompletedSuccessfully)
+            {
+                sb.AppendFormat(PFormat, string.Concat("Completed Successfully: ", resultItem.CompletedSuccessfully)).AppendLine();   
+            }
             sb.Append("<div>").AppendLine();
         }
 
         protected void CompleteInstallation(object sender, EventArgs e)
         {
-            // TODO - List of things todo
-            // TODO - Must check if exists before doing, so it doesn't screw up on update
-
             InstallerResult = new InstallerResult();
 
             try
@@ -156,7 +156,6 @@ namespace Dialogue.Logic.UserControls
                 InstallerResult.ResultItems.Add(standardRoleResult);
 
                 // Web.Config Stuff
-                var updateConfig = false;
                 var webConfigPath = HostingEnvironment.MapPath("~/web.config");
                 if (webConfigPath != null)
                 {
@@ -178,7 +177,7 @@ namespace Dialogue.Logic.UserControls
                         efResult.Description = "Successfully added the config sections to the web.config";
 
                         // Tell the installer to save the config
-                        updateConfig = true;
+                        efResult.RequiresConfigUpdate = true;
                     }
                     else
                     {
@@ -187,11 +186,15 @@ namespace Dialogue.Logic.UserControls
                     }
                     InstallerResult.ResultItems.Add(efResult);
 
+                    // Add required appsettings
+                    InstallerResult.ResultItems.Add(AddAppSetting("ClientValidationEnabled", "true", xDoc));
+                    InstallerResult.ResultItems.Add(AddAppSetting("UnobtrusiveJavaScriptEnabled", "true", xDoc));
 
                     //TODO Add other web.config changes here if needed
 
-
-                    if (updateConfig)
+                    //See if any results, require a config update.
+                    var updateResults = InstallerResult.ResultItems.Where(x => x.RequiresConfigUpdate);
+                    if (updateResults.Any())
                     {
                         // Finally save web.config
                         xDoc.Save(webConfigPath);
@@ -228,70 +231,127 @@ namespace Dialogue.Logic.UserControls
             return entityFrameworkConfig != null;
         }
 
+        private static bool AppSettingsExists(XmlDocument webconfig, string key)
+        {
+            var appSettingsClientVal = webconfig.SelectSingleNode(string.Format("configuration/appSettings/add[@key='{0}']", key));
+            return appSettingsClientVal != null;
+        }
+
+        private ResultItem AddAppSetting(string key, string value, XmlDocument webconfig)
+        {
+            var rs = new ResultItem
+            {
+                Name = "Adding AppSetting",
+                CompletedSuccessfully = true,
+                Description = string.Format("Successfully added {0} appsetting", key),
+                RequiresConfigUpdate = true
+            };
+
+            if (!AppSettingsExists(webconfig, key))
+            {
+                try
+                {
+                    // App settings root
+                    var appSettings = webconfig.SelectSingleNode("configuration/appSettings");
+
+                    // Create new section
+                    var newAppSetting = webconfig.CreateNode(XmlNodeType.Element, "add", null);
+
+                    // Attributes
+                    var keyAttr = webconfig.CreateAttribute("key");
+                    keyAttr.Value = key;
+
+                    var valueAttr = webconfig.CreateAttribute("value");
+                    valueAttr.Value = value;
+
+                    newAppSetting.Attributes.Append(keyAttr);
+                    newAppSetting.Attributes.Append(valueAttr);
+
+                    // Append it
+                    appSettings.AppendChild(newAppSetting);
+
+                    return rs;
+                }
+                catch (Exception ex)
+                {
+                    rs.Description = string.Format("Failed to add {0} to config, error: {1}", key, ex.InnerException);
+                    rs.CompletedSuccessfully = false;
+                    rs.RequiresConfigUpdate = false;
+                }
+            }
+            else
+            {
+                rs.Description = string.Format("Skipped adding {0} to config, already exists", key);
+                rs.CompletedSuccessfully = true;
+                rs.RequiresConfigUpdate = false;
+            }
+            return rs;
+        }
+
         private static void AddEntityFrameworkConfigSections(XmlDocument webconfig)
         {
 
-                // get the configSections
-                var configSections = webconfig.SelectSingleNode("configuration/configSections");
+            // get the configSections
+            var configSections = webconfig.SelectSingleNode("configuration/configSections");
 
-                // Create new section
-                var newSection = webconfig.CreateNode(XmlNodeType.Element, "section", null);
+            // Create new section
+            var newSection = webconfig.CreateNode(XmlNodeType.Element, "section", null);
 
-                // Attributes
-                var nameAttr = webconfig.CreateAttribute("name");
-                nameAttr.Value = "entityFramework";
-                var typeAttr = webconfig.CreateAttribute("type");
-                typeAttr.Value = "System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
-                var requirePermissionAttr = webconfig.CreateAttribute("requirePermission");
-                requirePermissionAttr.Value = "false";
-                newSection.Attributes.Append(nameAttr);
-                newSection.Attributes.Append(typeAttr);
-                newSection.Attributes.Append(requirePermissionAttr);
+            // Attributes
+            var nameAttr = webconfig.CreateAttribute("name");
+            nameAttr.Value = "entityFramework";
+            var typeAttr = webconfig.CreateAttribute("type");
+            typeAttr.Value = "System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
+            var requirePermissionAttr = webconfig.CreateAttribute("requirePermission");
+            requirePermissionAttr.Value = "false";
+            newSection.Attributes.Append(nameAttr);
+            newSection.Attributes.Append(typeAttr);
+            newSection.Attributes.Append(requirePermissionAttr);
 
-                // Append it
-                configSections.AppendChild(newSection);
+            // Append it
+            configSections.AppendChild(newSection);
 
-                // get the configSections
-                var mainConfig = webconfig.SelectSingleNode("configuration");
+            // get the configSections
+            var mainConfig = webconfig.SelectSingleNode("configuration");
 
-                // Create <entityFramework>
-                var entityFramework = webconfig.CreateNode(XmlNodeType.Element, "entityFramework", null);
+            // Create <entityFramework>
+            var entityFramework = webconfig.CreateNode(XmlNodeType.Element, "entityFramework", null);
 
-                // Create 
-                var defaultConnectionFactory = webconfig.CreateNode(XmlNodeType.Element, "defaultConnectionFactory", null);
-                var dcType = webconfig.CreateAttribute("type");
-                dcType.Value = "System.Data.Entity.Infrastructure.SqlConnectionFactory, EntityFramework";
-                defaultConnectionFactory.Attributes.Append(dcType);
-                entityFramework.AppendChild(defaultConnectionFactory);
+            // Create 
+            var defaultConnectionFactory = webconfig.CreateNode(XmlNodeType.Element, "defaultConnectionFactory", null);
+            var dcType = webconfig.CreateAttribute("type");
+            dcType.Value = "System.Data.Entity.Infrastructure.SqlConnectionFactory, EntityFramework";
+            defaultConnectionFactory.Attributes.Append(dcType);
+            entityFramework.AppendChild(defaultConnectionFactory);
 
-                // Create Providers
-                var providers = webconfig.CreateNode(XmlNodeType.Element, "providers", null);
+            // Create Providers
+            var providers = webconfig.CreateNode(XmlNodeType.Element, "providers", null);
 
-                // Create Provider element
-                var provider = webconfig.CreateNode(XmlNodeType.Element, "provider", null);
-                var provinvariantName = webconfig.CreateAttribute("invariantName");
-                provinvariantName.Value = "System.Data.SqlClient";
-                provider.Attributes.Append(provinvariantName);
-                var provType = webconfig.CreateAttribute("type");
-                provType.Value = "System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer";
-                provider.Attributes.Append(provType);
+            // Create Provider element
+            var provider = webconfig.CreateNode(XmlNodeType.Element, "provider", null);
+            var provinvariantName = webconfig.CreateAttribute("invariantName");
+            provinvariantName.Value = "System.Data.SqlClient";
+            provider.Attributes.Append(provinvariantName);
+            var provType = webconfig.CreateAttribute("type");
+            provType.Value = "System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer";
+            provider.Attributes.Append(provType);
 
-                // Append Provide to Providers
-                providers.AppendChild(provider);
+            // Append Provide to Providers
+            providers.AppendChild(provider);
 
-                // Append Providers 
-                entityFramework.AppendChild(providers);
+            // Append Providers 
+            entityFramework.AppendChild(providers);
 
-                // Append Providers 
-                mainConfig.AppendChild(entityFramework);
+            // Append Providers 
+            mainConfig.AppendChild(entityFramework);
 
-                //<entityFramework>
-                //    <defaultConnectionFactory type="System.Data.Entity.Infrastructure.SqlConnectionFactory, EntityFramework" />
-                //    <providers>
-                //        <provider invariantName="System.Data.SqlClient" type="System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer" />
-                //    </providers>
-                //</entityFramework>
-       
+            //<entityFramework>
+            //    <defaultConnectionFactory type="System.Data.Entity.Infrastructure.SqlConnectionFactory, EntityFramework" />
+            //    <providers>
+            //        <provider invariantName="System.Data.SqlClient" type="System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer" />
+            //    </providers>
+            //</entityFramework>
+
         }
     }
 }

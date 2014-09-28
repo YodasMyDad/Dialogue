@@ -94,7 +94,6 @@ namespace Dialogue.Logic.Constants
         public const string LogOut = "logout";
 
         // Editor
-        //public const string EditorType = "bbeditor";
         //public const string EditorType = "tinymceeditor";
         public const string EditorType = "markdowneditor";
 

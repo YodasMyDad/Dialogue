@@ -338,6 +338,36 @@ users to authenticate with the Google API, you must specify the ID, secret and r
 
 Notice: When a user is redirected to the Google of Facebook login dialog, the scope (permissions of the app) are specified. You can change these if you require further permissions. Just look in the OAuthControllers folder and edit the controller as needed.
 
+## Swapping Out The Markdown Editor ##
+
+Dialogue comes with 2 Rich Text Editors build in. MarkDown Editor (Default) and TinyMCE. These can be found in the following folder in your Umbraco installation (Read here to find out more about EditorTemplates)
+
+Views > Shared > EditorTemplates
+
+To swap out the markdown editor with the TinyMCE Editor you just need to search for the following attribute in a few of the ViewModels.
+
+    [UIHint(AppConstants.EditorType), AllowHtml]
+
+And then just change it to whatever editor you want to use, by adding using the view name of the editor without the .cshtml - We have a constant for this, and you can just uncomment the editor you want.
+
+    //public const string EditorType = "tinymceeditor";
+    public const string EditorType = "markdowneditor";
+
+To use TinyMCE, comment out the markdown one and uncomment the tinymce one. If you wanted to change it manually, you would change the attribute to.
+
+    [UIHint("tinymceeditor"), AllowHtml]
+
+> NOTE: Also remove you can remove the AllowHtml parameter if you don't want to allow HTML to be entered into your editor. i.e.
+
+    [UIHint("markdowneditor")]
+
+###Create Your Own###
+
+If there is another Editor you want to use, its very simple to add it in. Just make a new view in the `EditorTemplates` folder and name it whatever the editor is. Then as above just change the UIHint to your `EditorTemplates` name without the .cshtml at the end.
+
+## Embed Videos ##
+
+You can embed YouTube, Vimeo and Screenr videos into your posts, just paste the full link to the video in and the videos will be auto updated to the embed code.
 
 ## Upgrading ##
 

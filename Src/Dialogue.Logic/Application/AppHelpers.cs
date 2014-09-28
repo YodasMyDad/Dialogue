@@ -642,25 +642,38 @@ namespace Dialogue.Logic.Application
         /// <returns></returns>
         public static string ConvertMarkDown(string str)
         {
-            var md = new MarkdownSharp.Markdown { AutoHyperlink = true, LinkEmails = false };
+            var md = new MarkdownSharp.Markdown { AutoHyperlink = false, LinkEmails = false };
             return md.Transform(str);
         }
 
         public static string EmbedVideosInPosts(string str)
         {
-            // YouTube Insert Video, just add the video ID and it inserts video into post
-            var exp = new Regex(@"\[youtube\]([^\]]+)\[/youtube\]");
-            str = exp.Replace(str, "<div class=\"video-container\"><iframe title=\"YouTube video player\" width=\"500\" height=\"281\" src=\"http://www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe></div>");
+            if (str.IndexOf("youtube.com", StringComparison.CurrentCultureIgnoreCase) > 0 || str.IndexOf("youtu.be", StringComparison.CurrentCultureIgnoreCase) > 0)
+            {
+                const string pattern = @"(?:https?:\/\/)?(?:www\.)?(?:(?:(?:youtube.com\/watch\?[^?]*v=|youtu.be\/)([\w\-]+))(?:[^\s?]+)?)";
+                const string replacement = "<div class=\"video-container\"><iframe title='YouTube video player' width='500' height='281' src='http://www.youtube.com/embed/$1' frameborder='0' allowfullscreen='1'></iframe></div>";
 
-            // YouTube Insert Video, just add the video ID and it inserts video into post
-            exp = new Regex(@"\[vimeo\]([^\]]+)\[/vimeo\]");
-            str = exp.Replace(str, "<div class=\"video-container\"><iframe src=\"http://player.vimeo.com/video/$1?portrait=0\" width=\"500\" height=\"281\" frameborder=\"0\"></iframe></div>");
+                var rgx = new Regex(pattern);
+                str = rgx.Replace(str, replacement);
+            }
 
-            // YouTube Screenr Video, just add the video ID and it inserts video into post
-            exp = new Regex(@"\[screenr\]([^\]]+)\[/screenr\]");
-            str = exp.Replace(str, "<div class=\"video-container\"><iframe src=\"http://www.screenr.com/embed/$1\" width=\"500\" height=\"281\" frameborder=\"0\"></iframe></div>");
+            if (str.IndexOf("vimeo.com", StringComparison.CurrentCultureIgnoreCase) > 0)
+            {
+                const string pattern = @"(?:https?:\/\/)?vimeo\.com/(?:.*#|.*/videos/)?([0-9]+)";
+                const string replacement = "<div class=\"video-container\"><iframe src=\"http://player.vimeo.com/video/$1?portrait=0\" width=\"500\" height=\"281\" frameborder=\"0\"></iframe></div>";
 
-            // Add tweets
+                var rgx = new Regex(pattern);
+                str = rgx.Replace(str, replacement);
+            }
+
+            if (str.IndexOf("screenr.com", StringComparison.CurrentCultureIgnoreCase) > 0)
+            {
+                const string pattern = @"(?:https?:\/\/)?(?:www\.)screenr\.com/([a-zA-Z0-9]+)";
+                const string replacement = "<div class=\"video-container\"><iframe src=\"http://www.screenr.com/embed/$1\" width=\"500\" height=\"281\" frameborder=\"0\"></iframe></div>";
+
+                var rgx = new Regex(pattern);
+                str = rgx.Replace(str, replacement);
+            }
 
             return str;
         }

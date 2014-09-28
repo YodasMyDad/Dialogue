@@ -27,5 +27,6 @@ namespace Dialogue.Logic.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public bool CompletedSuccessfully { get; set; }
+        public bool RequiresConfigUpdate { get; set; }
     }
 }
