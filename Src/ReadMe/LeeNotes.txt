@@ -1,46 +1,8 @@
-TODO
+New Features
 --------------------------
-Create ReadMe.md
-Documentation (See what I can use from MVCForum)
 
-Packaging Notes
-------------------------
-Speak to Richard S about packaging and tables etc...
-EditorTemplates in root Views/Shared = Include. Can't figure out custom editortemplate locations yet
-Create Tables (Want a robust checker. Check tables exists, Check properties exists, create if not.)
-Create initial data for forum (As in set theme etc... - See Shannons Articulate package)
-Multiple Textbox needs adding as a properyt editor??
+1) Import Dashboard
+Allow users to import members, and also import posts & topics. Posts will fail if members not imported. Use XML structure for posts and members.
+Add to installer.
 
-Social Logins
-------------------------
-Facebook uses OAuth 2.0 for authentication and communication. In order for
-users to authenticate with the Facebook API, you must specify the ID, secret and redirect
-URI of your Facebook app. You can create a new app at the following URL:
-https://developers.facebook.com/
-
-Notice: When a user authenticates with the Facebook API, an access token
-is saved along with information about the user. With the Facebook API, access tokens will
-expire after roughly two months.
-        
-Notice: When a user is redirected to the Facebook login dialog, the scope
-(permissions of the app) is specified. It is currently not possible to specify a scope, but
-this will be possible in a future version of this package. The current scope sent to the
-login dialog is: <samp>read_stream user_status user_about_me user_photos</samp>.
-
----
-
-Google uses <strong>OAuth 2.0</strong> for authentication and communication. In order for
-users to authenticate with the Google API, you must specify the ID, secret and redirect URI
-of your Google app. You can create a new app at the following URL:
-<strong>https://console.developers.google.com/project</strong>
-
-<strong>Notice:</strong> When a user authenticates with the Google API, a refresh token is
-saved along with information about the user. The refresh token can be used to obtain an
-access token, which again can be used to make calls to the Google API. Refresh tokens will
-not expire unless the user deauthorizes the app. Access tokens will only have a lifetime of
-about an hour.
-
-<strong>Notice:</strong> When a user is redirected to the Google login dialog, the scope
-(permissions of the app) is specified. It is currently not possible to specify a scope, but
-this will be possible in a future version of this package. The current scope sent to the
-login dialog is: <samp>openid email profile</samp>.
+2) Add message is user posts no content

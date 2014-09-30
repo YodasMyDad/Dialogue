@@ -179,12 +179,25 @@ namespace Dialogue.Logic.Application
 
         public static string Lang(string key)
         {
-            var result = library.GetDictionaryItem(key);
-            if (string.IsNullOrEmpty(result))
+            if (!string.IsNullOrEmpty(key))
             {
-                return key;
+                try
+                {
+                    var result = library.GetDictionaryItem(key.Trim());
+                    if (string.IsNullOrEmpty(result))
+                    {
+                        return key;
+                    }
+                    return result;
+                }
+                catch (Exception)
+                {
+                    // Just return original key
+                    return key;
+                }
+
             }
-            return result;
+            return "Error, no dictionary key";
         }
 
 

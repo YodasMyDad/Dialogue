@@ -22,7 +22,7 @@ namespace Dialogue.Logic.Application
 
         public override string FormatErrorMessage(string name)
         {
-            return umbraco.library.GetDictionaryItem(base.FormatErrorMessage(name));
+            return AppHelpers.Lang(base.FormatErrorMessage(name));
         }
 
 
@@ -31,7 +31,7 @@ namespace Dialogue.Logic.Application
             // Kodus to "Chad" http://stackoverflow.com/a/9914117
             var rule = new ModelClientValidationRule
             {
-                ErrorMessage = umbraco.library.GetDictionaryItem(this.ErrorMessage),
+                ErrorMessage = AppHelpers.Lang(this.ErrorMessage),
                 ValidationType = "range"
             };
 
@@ -57,7 +57,7 @@ namespace Dialogue.Logic.Application
         {
             get
             {
-                _resourceValue = umbraco.library.GetDictionaryItem(ResourceKey.Trim());
+                _resourceValue = AppHelpers.Lang(ResourceKey);
                 return _resourceValue;
             }
         }

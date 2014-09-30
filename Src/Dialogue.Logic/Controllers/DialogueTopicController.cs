@@ -562,7 +562,7 @@ namespace Dialogue.Logic.Controllers
                 }
             }
             ShowModelErrors();
-            return CurrentUmbracoPage();
+            return Redirect(Urls.GenerateUrl(Urls.UrlType.TopicCreate));
         }
 
         private void NotifyNewTopics(Category cat)
