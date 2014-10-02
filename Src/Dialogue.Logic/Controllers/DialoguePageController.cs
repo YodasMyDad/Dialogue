@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -40,6 +42,15 @@ namespace Dialogue.Logic.Controllers
             // TODO - Must be a better way of doing this
             // TODO - I'd just like to be able to call the action with a string based on the pagename
             // TODO - Like Action("ActionName", viewModel) ??
+
+            // Set language from the root here
+            //var language = AppHelpers.GetRootLanguage(model.Content);
+            //if (language != null)
+            //{
+            //    var ci = new CultureInfo(language.CultureName);
+            //    Thread.CurrentThread.CurrentCulture = ci;
+            //    Thread.CurrentThread.CurrentUICulture = ci;   
+            //}
 
             var page = new DialoguePage(model.Content.Parent);
             var pageLowered = pagename.ToLower();

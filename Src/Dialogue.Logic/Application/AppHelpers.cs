@@ -15,6 +15,7 @@ using System.Web.Mvc;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
 using HtmlAgilityPack;
+using umbraco.cms.businesslogic.web;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -177,28 +178,139 @@ namespace Dialogue.Logic.Application
 
         #region General Umbraco
 
+        public static Language GetRootLanguage(IPublishedContent currentNode)
+        {
+            var key = string.Concat("lang-page-", currentNode.Id);
+            if (!HttpContext.Current.Items.Contains(key))
+            {
+                var domains = Domain.GetDomainsById(currentNode.AncestorOrSelf(1).Id);
+                if (domains != null && domains.Any())
+                {
+                    HttpContext.Current.Items.Add(key, domains[0].Language);                    
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return HttpContext.Current.Items[key] as Language;            
+        }
+
+        public static ILanguage GetLanguage(string languageCode)
+        {
+            var key = string.Concat("lang-", languageCode);
+            if (!HttpContext.Current.Items.Contains(key))
+            {
+                HttpContext.Current.Items.Add(key, UmbServices().LocalizationService.GetLanguageByCultureCode(languageCode));
+            }
+            return HttpContext.Current.Items[key] as ILanguage;
+        }
+
         public static string Lang(string key)
         {
-            if (!string.IsNullOrEmpty(key))
+            
+            var cachekey = string.Concat("dialoguedictionary-", key);
+            if (!HttpContext.Current.Items.Contains(cachekey))
             {
-                try
+                var dictResult = key;
+                if (!string.IsNullOrEmpty(key))
                 {
-                    var result = library.GetDictionaryItem(key.Trim());
-                    if (string.IsNullOrEmpty(result))
+                    try
                     {
-                        return key;
+                        // Get the dictionary item
+                        var dictValue = UmbHelper().GetDictionaryValue(key);
+                        if (!string.IsNullOrEmpty(dictValue))
+                        {
+                            dictResult = dictValue;
+                        }
+
+                        if (dictResult == key)
+                        {
+                            // Fall back...
+                            var result = library.GetDictionaryItem(key.Trim());
+                            if (!string.IsNullOrEmpty(result))
+                            {
+                                dictResult = result;
+                            }
+                        }
                     }
-                    return result;
+                    catch (Exception)
+                    {
+                        // Just return original key
+                    }
+
                 }
-                catch (Exception)
+                else
                 {
-                    // Just return original key
-                    return key;
+                    dictResult = "Error, no dictionary key";
                 }
 
+                HttpContext.Current.Items.Add(cachekey, dictResult);
             }
-            return "Error, no dictionary key";
+            return HttpContext.Current.Items[cachekey] as string;
         }
+
+        //public static string Lang(string key, string languageCode)
+        //{            
+        //var cultureCode = Thread.CurrentThread.CurrentCulture.Name;
+        //    var cachekey = string.Concat("dict-", key, "-", languageCode);
+        //    if (!HttpContext.Current.Items.Contains(cachekey))
+        //    {
+        //        var dictResult = key;
+        //        if (!string.IsNullOrEmpty(key))
+        //        {
+        //            try
+        //            {
+        //                // Get the dictionary item
+        //                var dictionaryItem = UmbServices().LocalizationService.GetDictionaryItemByKey(key.Trim());
+
+        //                // See if we have a language too
+        //                if (string.IsNullOrEmpty(languageCode) && dictionaryItem != null)
+        //                {
+        //                    // We don't so just get the first dictionary value found for this key
+        //                    var firstFound = dictionaryItem.Translations.FirstOrDefault();
+        //                    if (firstFound != null)
+        //                    {
+        //                        dictResult = firstFound.Value;
+        //                    }
+        //                }
+        //                else if (dictionaryItem != null)
+        //                {
+        //                    // We have a language, so get the correct dictionery item by the language ISO code
+        //                    var dict = dictionaryItem.Translations.FirstOrDefault(x => x.Language.IsoCode == languageCode);
+        //                    if (dict != null)
+        //                    {
+        //                        dictResult = dict.Value;
+        //                    }                  
+        //                }
+
+        //                if (dictResult == key)
+        //                {
+        //                    // Fall back...
+        //                    var result = library.GetDictionaryItem(key.Trim());
+        //                    if (!string.IsNullOrEmpty(result))
+        //                    {
+        //                        dictResult = result;
+        //                    }
+        //                }
+        //            }
+        //            catch (Exception)
+        //            {
+        //                // Just return original key
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            dictResult = "Error, no dictionary key";
+        //        }
+
+        //        HttpContext.Current.Items.Add(cachekey, dictResult);
+        //    }
+        //    return HttpContext.Current.Items[cachekey] as string;
+
+
+        //}
 
 
         /// <summary>
