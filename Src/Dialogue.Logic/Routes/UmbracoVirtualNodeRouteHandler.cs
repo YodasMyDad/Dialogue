@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using System.Globalization;
+using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Umbraco.Core.Models;
@@ -18,9 +20,13 @@ namespace Dialogue.Logic.Routes
         {
             var umbracoContext = UmbracoContext.Current;
 
-            //TODO: (From Shannon) This is a huge hack - we need to publicize some stuff in the core
-            //TODO: publicize: ctor (or static method to create it), Prepared()
-            var ensurePcr = new EnsurePublishedContentRequestAttribute(umbracoContext, "__virtualnodefinder__");
+            //TODO: Problem with the core and EnsurePublishedContentRequestAttribute - If more than one language then it just chooses default
+            //TODO: Currently speaking to Shannon about this
+            var defaultLanguage = umbraco.cms.businesslogic.language.Language.GetAllAsList().FirstOrDefault();
+            var currentCulture = ((defaultLanguage == null) ? CultureInfo.CurrentUICulture : new CultureInfo(defaultLanguage.CultureAlias));
+         
+            // Pass the 
+            var ensurePcr = new EnsurePublishedContentRequestAttribute(umbracoContext, "__virtualnodefinder__", currentCulture.Name);
 
             var found = FindContent(requestContext, umbracoContext);
             if (found == null) return new NotFoundHandler();

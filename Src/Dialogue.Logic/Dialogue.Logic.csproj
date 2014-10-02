@@ -275,6 +275,8 @@
     <Compile Include="Models\OAuth\GoogleOAuthData.cs" />
     <Compile Include="PathHelper.cs" />
     <Compile Include="Routes\DialogueRoutes.cs" />
+    <Compile Include="Routes\DialogueMemberRouteHandler.cs" />
+    <Compile Include="Routes\DialoguePageRouteHandler.cs" />
     <Compile Include="Routes\DialogueTopicRouteHandler.cs" />
     <Compile Include="Routes\DialogueVirtualPage.cs" />
     <Compile Include="Routes\RouteCollectionExtensions.cs" />

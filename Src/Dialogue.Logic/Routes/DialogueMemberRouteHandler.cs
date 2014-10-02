@@ -8,7 +8,7 @@ using Umbraco.Web;
 
 namespace Dialogue.Logic.Routes
 {
-    public class DialogueTopicRouteHandler : UmbracoVirtualNodeByIdRouteHandler
+    public class DialogueMemberRouteHandler : UmbracoVirtualNodeByIdRouteHandler
     {
 
        private struct UrlNames
@@ -21,7 +21,7 @@ namespace Dialogue.Logic.Routes
         private readonly List<UrlNames> _urlNames = new List<UrlNames>();
 
         
-        public DialogueTopicRouteHandler(IEnumerable<IPublishedContent> itemsForRoute)
+        public DialogueMemberRouteHandler(IEnumerable<IPublishedContent> itemsForRoute)
             : base(itemsForRoute)
         {
             foreach (var node in itemsForRoute)
@@ -29,13 +29,14 @@ namespace Dialogue.Logic.Routes
                 _urlNames.Add(new UrlNames
                 {
                     NodeId = node.Id,
-                    SearchUrlName = node.GetPropertyValue<string>(AppConstants.PropTopicUrlName),
-                    SearchPageName = "Topic Page"
+                    SearchUrlName = node.GetPropertyValue<string>(AppConstants.PropMemberUrlName),
+                    //SearchPageName = node.GetPropertyValue<string>("searchPageName")
+                    SearchPageName = "Member Page"
                 });
             }
         }
 
-        public DialogueTopicRouteHandler(int realNodeId,
+        public DialogueMemberRouteHandler(int realNodeId,
             string searchUrlName,
             string searchPageName)
             : base(realNodeId)
@@ -61,6 +62,7 @@ namespace Dialogue.Logic.Routes
                 controllerName,
                 rootUrl.EnsureEndsWith('/') + urlNames.SearchUrlName);
         }
+
 
     }
 }

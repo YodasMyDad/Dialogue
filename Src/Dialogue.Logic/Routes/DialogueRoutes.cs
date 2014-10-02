@@ -20,84 +20,121 @@ namespace Dialogue.Logic.Routes
             //find all Dialogue forum root nodes
             var dialogueNodes = umbracoCache.GetByXPath(string.Concat("//", AppConstants.DocTypeForumRoot)).ToArray();
            
+
             //NOTE: need to write lock because this might need to be remapped while the app is running if
             // any articulate nodes are updated with new values
             using (routes.GetWriteLock())
             {
-                //for each one of them we need to create some virtual routes/nodes
-                foreach (var node in dialogueNodes)
+                // For each articulate root, we need to create some custom route, BUT routes can overlap
+                // based on multi-tenency so we need to deal with that. 
+                // For example a root articulate node might yield a route like:
+                //      /
+                // and another articulate root node that has a domain might have this url:
+                //      http://mydomain/
+                // but when that is processed through RoutePathFromNodeUrl, it becomes:
+                //      /
+                // which already exists and is already assigned to a specific node ID.
+                // So what we need to do in these cases is use a special route handler that takes
+                // into account the domain assigned to the route.
+                var groups = dialogueNodes.GroupBy(x => RouteCollectionExtensions.RoutePathFromNodeUrl(x.Url));
+                foreach (var grouping in groups)
                 {
-                    RemoveExisting(routes,
-                        string.Format(TopicRouteName, node.Id),
-                        string.Format(MemberRouteName, node.Id),
-                        string.Format(DialoguePageRouteName, node.Id)
-                        );
+                    var groupHash = grouping.Key.GetHashCode();
 
-                    MapTopicRoute(routes, node);
-                    MapDialoguePages(routes, node);
-                    MapMemberRoute(routes, node);
+                    RemoveExisting(routes,
+                        string.Format(TopicRouteName, groupHash),
+                        string.Format(MemberRouteName, groupHash),
+                        string.Format(DialoguePageRouteName, groupHash)
+                    );
+
+                    var nodesAsArray = grouping.ToArray();
+
+                    MapTopicRoute(routes, grouping.Key, nodesAsArray);
+                    MapDialoguePages(routes, grouping.Key, nodesAsArray);
+                    MapMemberRoute(routes, grouping.Key, nodesAsArray);
                 }
+            }
+
+        }
+
+        /// <summary>
+        /// Create the member profile route - It's a fake page
+        /// </summary>
+        /// <param name="routes"></param>
+        /// <param name="nodeRoutePath"></param>
+        /// <param name="nodesWithPath"></param>
+        private static void MapMemberRoute(RouteCollection routes, string nodeRoutePath, IPublishedContent[] nodesWithPath)
+        {
+ 
+            foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropMemberUrlName)))
+            {
+                var routeHash = nodeSearch.Key.GetHashCode();
+
+                //Create the route for the /search/{term} results
+                routes.MapUmbracoRoute(
+                    string.Format(MemberRouteName, routeHash),
+                    (nodeRoutePath.EnsureEndsWith('/') + nodeSearch.Key + "/{membername}").TrimStart('/'),
+                    new
+                    {
+                        controller = "DialogueMember",
+                        action = "Show",
+                        topicname = UrlParameter.Optional
+                    },
+                    new DialogueMemberRouteHandler(nodesWithPath));
+            }
+
+        }
+
+        /// <summary>
+        /// Create the Topic route - It's a fake page
+        /// </summary>
+        /// <param name="routes"></param>
+        /// <param name="nodeRoutePath"></param>
+        /// <param name="nodesWithPath"></param>
+        private static void MapTopicRoute(RouteCollection routes, string nodeRoutePath, IPublishedContent[] nodesWithPath)
+        {
+            foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropTopicUrlName)))
+            {
+                var routeHash = nodeSearch.Key.GetHashCode();
+
+                //Create the route for the /search/{term} results
+                routes.MapUmbracoRoute(
+                    string.Format(TopicRouteName, routeHash),
+                    (nodeRoutePath.EnsureEndsWith('/') + nodeSearch.Key + "/{topicname}").TrimStart('/'),
+                    new
+                    {
+                        controller = "DialogueTopic",
+                        action = "Show",
+                        topicname = UrlParameter.Optional
+                    },
+                    new DialogueTopicRouteHandler(nodesWithPath));
             }
         }
 
         /// <summary>
-        /// Create the Topic route - It's a fake page
+        /// Create the dialogue page route - It's a fake page
         /// </summary>
         /// <param name="routes"></param>
-        /// <param name="node"></param>
-        private static void MapMemberRoute(RouteCollection routes, IPublishedContent node)
+        /// <param name="nodeRoutePath"></param>
+        /// <param name="nodesWithPath"></param>
+        private static void MapDialoguePages(RouteCollection routes, string nodeRoutePath, IPublishedContent[] nodesWithPath)
         {
-            //Create the route for the /search/{term} results
-            routes.MapUmbracoRoute(
-                string.Format(MemberRouteName, node.Id),
-                (node.Url.EnsureEndsWith('/') + node.GetPropertyValue<string>(AppConstants.PropMemberUrlName) + "/{membername}").TrimStart('/'),
-                new
-                {
-                    controller = "DialogueMember",
-                    action = "Show",
-                    topicname = UrlParameter.Optional
-                },
-                new PageBySlugRouteHandler(node.Id, node.GetPropertyValue<string>(AppConstants.PropMemberUrlName), "MemberPageNamePlaceHolder"));
-        }
 
-        /// <summary>
-        /// Create the Topic route - It's a fake page
-        /// </summary>
-        /// <param name="routes"></param>
-        /// <param name="node"></param>
-        private static void MapTopicRoute(RouteCollection routes, IPublishedContent node)
-        {
-            //Create the route for the /search/{term} results
-            routes.MapUmbracoRoute(
-                string.Format(TopicRouteName, node.Id),
-                (node.Url.EnsureEndsWith('/') + node.GetPropertyValue<string>(AppConstants.PropTopicUrlName) + "/{topicname}").TrimStart('/'),
-                new
-                {
-                    controller = "DialogueTopic",
-                    action = "Show",
-                    topicname = UrlParameter.Optional
-                },
-                new PageBySlugRouteHandler(node.Id, node.GetPropertyValue<string>(AppConstants.PropTopicUrlName), "TopicPageNamePlaceHolder"));
-        }
+            foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropDialogueUrlName)))
+            {
+                var routeHash = nodeSearch.Key.GetHashCode();
 
-        /// <summary>
-        /// Create the Topic route - It's a fake page
-        /// </summary>
-        /// <param name="routes"></param>
-        /// <param name="node"></param>
-        private static void MapDialoguePages(RouteCollection routes, IPublishedContent node)
-        {
-            //Create the route for the /search/{term} results
-            routes.MapUmbracoRoute(
-                string.Format(DialoguePageRouteName, node.Id),
-                (node.Url.EnsureEndsWith('/') + node.GetPropertyValue<string>(AppConstants.PropDialogueUrlName) + "/{pagename}").TrimStart('/'),
-                new
-                {
-                    controller = "DialoguePage",
-                    action = "Show",
-                    pagename = UrlParameter.Optional
-                },
-                new PageBySlugRouteHandler(node.Id, node.GetPropertyValue<string>(AppConstants.PropDialogueUrlName), "DialoguePageNamePlaceHolder"));
+                routes.MapUmbracoRoute(
+                    string.Format(DialoguePageRouteName, routeHash),
+                    (nodeRoutePath.EnsureEndsWith('/') + nodeSearch.Key + "/{pagename}").TrimStart('/'),
+                    new
+                    {
+                        controller = "DialoguePage",
+                        action = "Show",
+                        topicname = UrlParameter.Optional
+                    },
+                    new DialoguePageRouteHandler(nodesWithPath));
+            }
         }
 
         private static void RemoveExisting(RouteCollection routes, params string[] names)

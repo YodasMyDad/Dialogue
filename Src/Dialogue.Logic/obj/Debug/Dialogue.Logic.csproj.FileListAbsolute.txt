@@ -1,87 +1,3 @@
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.pdb
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.Mvc.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.WebApi.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\businesslogic.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\cms.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\controls.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\DevTrends.MvcDonutCaching.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EFCache.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.SqlServer.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\HtmlAgilityPack.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\interfaces.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Practices.ServiceLocation.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Practices.Unity.Configuration.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Practices.Unity.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Web.Infrastructure.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Formatting.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Helpers.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Http.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Mvc.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Razor.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.WebPages.Deployment.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.WebPages.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.WebPages.Razor.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Umbraco.Core.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.DataLayer.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.providers.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Umbraco.Web.UI.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Unity.Mvc4.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\AutoMapper.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\ICSharpCode.SharpZipLib.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\TidyNet.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\ClientDependency.Core.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\CookComputing.XmlRpcV2.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Examine.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Lucene.Net.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Http.WebHost.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\UmbracoExamine.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\log4net.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MySql.Data.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.ApplicationBlocks.Data.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.Mvc.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Autofac.Integration.WebApi.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\businesslogic.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\cms.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\controls.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\DevTrends.MvcDonutCaching.pdb
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\DevTrends.MvcDonutCaching.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\EntityFramework.SqlServer.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\HtmlAgilityPack.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\interfaces.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Practices.ServiceLocation.pdb
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Practices.ServiceLocation.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Practices.Unity.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Practices.Unity.Configuration.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Formatting.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Helpers.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Http.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Mvc.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Razor.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.WebPages.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.WebPages.Deployment.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.WebPages.Razor.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Umbraco.Core.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.DataLayer.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.providers.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\AutoMapper.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Lucene.Net.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Http.WebHost.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\UmbracoExamine.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.xml
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.XmlSerializers.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.dll
-C:\Users\Lee\Documents\My Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.pdb
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.dll.config
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Dialogue.Logic.pdb
@@ -114,9 +30,9 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Examine.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Lucene.Net.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Http.WebHost.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\UmbracoExamine.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\log4net.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MySql.Data.dll
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.ApplicationBlocks.Data.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\businesslogic.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\cms.xml
@@ -142,4 +58,3 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.XmlSerializers.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.pdb
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.csprojResolveAssemblyReference.cache
