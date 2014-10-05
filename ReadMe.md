@@ -52,6 +52,8 @@ Also, don't forget to set up your Category Permissions (On every category node) 
 
 Have a look through all the tabs on the forum root, and edit the settings as needed. Most options has descriptions explaining what they do.
 
+**PLEASE NOTE** DO NOT change the names of the default roles/groups. You will break the forum.
+
 ## Integration ##
 
 You should be able to integrate Dialogue into your own sites, you just need to copy the 'Default' theme folder (Including all sub folders and files) and rename it to whatever you want.

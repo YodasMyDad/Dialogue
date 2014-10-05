@@ -502,6 +502,43 @@ namespace Dialogue.Logic.Application
             return upResult;
         }
 
+        //public HttpResponseMessage CreateMedia()
+        //{
+        //    var mediaService = Services.MediaService;
+        //    var request = WebRequest.Create("http://karl.media.local/Uploads/ef093845-41dd-4620-b220-1b346a5f9b2e.jpg");
+        //    var webResponse = request.GetResponse();
+        //    var responseStream = webResponse.GetResponseStream();
+
+        //    if (responseStream != null)
+        //    {
+        //        var originalImage = new Bitmap(responseStream);
+
+        //        var path = HttpContext.Current.Server.MapPath("~/_tmp/ef093845-41dd-4620-b220-1b346a5f9b2e.jpg");
+
+
+        //        originalImage.Save(path, ImageFormat.Jpeg);
+
+
+        //        FileStream fileStream = new FileStream(path, FileMode.Open);
+        //        var test = fileStream.Name;
+
+
+        //        var mediaImage = mediaService.CreateMedia("test4", 1152, "Image");
+        //        mediaImage.SetValue("umbracoFile", test, fileStream);
+        //        mediaService.Save(mediaImage);
+
+        //        responseStream.Dispose();
+        //        webResponse.Dispose();
+        //        originalImage.Dispose();
+        //    }
+
+
+        //    var response = Request.CreateResponse(HttpStatusCode.OK);
+
+        //    response.Content = new StringContent("ExternalMediaCreate", Encoding.UTF8, "application/json");
+        //    return response;
+        //}
+
         public static UploadFileResult UploadFile(Image file, string uploadFolderPath)
         {
 

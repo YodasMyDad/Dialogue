@@ -5904,6 +5904,26 @@
             Marker interface for database migrations
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Persistence.SqlSyntax.MicrosoftSqlSyntaxProviderBase`1">
+            <summary>
+            Abstract class for defining MS sql implementations
+            </summary>
+            <typeparam name="TSyntax"></typeparam>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.SqlSyntax.SqlSyntaxProviderBase`1">
+            <summary>
+            Represents the Base Sql Syntax provider implementation.
+            </summary>
+            <remarks>
+            All Sql Syntax provider implementations should derive from this abstract class.
+            </remarks>
+            <typeparam name="TSyntax"></typeparam>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.SqlSyntax.ISqlSyntaxProvider">
+            <summary>
+            Defines an SqlSyntaxProvider
+            </summary>
+        </member>
         <member name="T:Umbraco.Core.PropertyEditors.DefaultPropertyValueConverterAttribute">
             <summary>
             Indicates that this is a default property value converter (shipped with Umbraco)
@@ -10596,11 +10616,48 @@
             Logic that is shared with the expression helpers
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Persistence.Querying.IQuery`1">
+            <summary>
+            Represents a query for building Linq translatable SQL queries
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Querying.IQuery`1.Where(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Adds a where clause to the query
+            </summary>
+            <param name="predicate"></param>
+            <returns>This instance so calls to this method are chainable</returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Querying.IQuery`1.GetWhereClauses">
+            <summary>
+            Returns all translated where clauses and their sql parameters
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Umbraco.Core.Persistence.Querying.Query`1">
             <summary>
             Represents the Query Builder for building LINQ translatable queries
             </summary>
             <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Querying.Query`1.Where(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Adds a where clause to the query
+            </summary>
+            <param name="predicate"></param>
+            <returns>This instance so calls to this method are chainable</returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Querying.Query`1.GetWhereClauses">
+            <summary>
+            Returns all translated where clauses and their sql parameters
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Umbraco.Core.Persistence.Querying.Query`1.Builder">
+            <summary>
+            Helper method to be used instead of manually creating an instance
+            </summary>
         </member>
         <member name="T:Umbraco.Core.Persistence.Querying.SqlTranslator`1">
             <summary>
@@ -11391,24 +11448,10 @@
             Returns the RepositoryInstanceFactory object
             </summary>
         </member>
-        <member name="T:Umbraco.Core.Persistence.SqlSyntax.ISqlSyntaxProvider">
-            <summary>
-            Defines an SqlSyntaxProvider
-            </summary>
-        </member>
         <member name="T:Umbraco.Core.Persistence.SqlSyntax.MySqlSyntaxProvider">
             <summary>
             Represents an SqlSyntaxProvider for MySql
             </summary>
-        </member>
-        <member name="T:Umbraco.Core.Persistence.SqlSyntax.SqlSyntaxProviderBase`1">
-            <summary>
-            Represents the Base Sql Syntax provider implementation.
-            </summary>
-            <remarks>
-            All Sql Syntax provider implementations should derive from this abstract class.
-            </remarks>
-            <typeparam name="TSyntax"></typeparam>
         </member>
         <member name="T:Umbraco.Core.Persistence.SqlSyntax.SqlCeSyntaxProvider">
             <summary>
@@ -11499,6 +11542,21 @@
             <param name="callback"></param>
             <param name="dr"></param>
             <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.Database.ManagedCache">
+            <summary>
+            Container for a Memory cache object
+            </summary>
+            <remarks>
+            Better to have one memory cache instance than many so it's memory management can be handled more effectively
+            http://stackoverflow.com/questions/8463962/using-multiple-instances-of-memorycache
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Database.PocoData.PrintDebugCacheReport(System.Double@,System.Collections.Generic.IEnumerable{System.String}@)">
+            <summary>
+            Returns a report of the current cache being utilized by PetaPoco
+            </summary>
             <returns></returns>
         </member>
         <member name="P:Umbraco.Core.Persistence.UmbracoDatabase.InstanceId">

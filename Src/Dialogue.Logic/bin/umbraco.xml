@@ -6521,6 +6521,14 @@
             <param name="queryStrings"></param>
             <returns></returns>
         </member>
+        <member name="M:Umbraco.Web.Trees.ContentTreeControllerBase.PerformGetTreeNodes(System.String,System.Net.Http.Formatting.FormDataCollection)">
+            <summary>
+            Gets the tree nodes for the given id
+            </summary>
+            <param name="id"></param>
+            <param name="queryStrings"></param>
+            <returns></returns>        
+        </member>
         <member name="M:Umbraco.Web.Trees.ContentTreeControllerBase.HasPathAccess(System.String,System.Net.Http.Formatting.FormDataCollection)">
             <summary>
             Returns true or false if the current user has access to the node based on the user's allowed start node (path) access
@@ -6531,12 +6539,14 @@
         </member>
         <member name="M:Umbraco.Web.Trees.ContentTreeControllerBase.GetTreeNodes(System.String,System.Net.Http.Formatting.FormDataCollection)">
             <summary>
-            This will automatically check if the recycle bin needs to be rendered (i.e. its the first level)
-            and will automatically append it to the result of GetChildNodes.
+            Ensures the recycle bin is appended when required (i.e. user has access to the root and it's not in dialog mode)
             </summary>
             <param name="id"></param>
             <param name="queryStrings"></param>
             <returns></returns>
+            <remarks>
+            This method is overwritten strictly to render the recycle bin, it should serve no other purpose
+            </remarks>
         </member>
         <member name="M:Umbraco.Web.Trees.ContentTreeControllerBase.GetTreeNodesInternal(System.String,System.Net.Http.Formatting.FormDataCollection)">
             <summary>
@@ -7227,17 +7237,6 @@
             <summary>
             For backwards compatibility, this provider supports this option
             </summary>
-        </member>
-        <member name="M:Umbraco.Web.Trees.ContentTreeController.PerformGetTreeNodes(System.String,System.Net.Http.Formatting.FormDataCollection)">
-            <summary>
-            Gets the tree nodes for the given id
-            </summary>
-            <param name="id"></param>
-            <param name="queryStrings"></param>
-            <returns></returns>
-            <remarks>
-            If the content item is a container node then we will not return anything
-            </remarks>
         </member>
         <member name="M:Umbraco.Web.Trees.ContentTreeController.GetSingleTreeNode(Umbraco.Core.Models.EntityBase.IUmbracoEntity,System.String,System.Net.Http.Formatting.FormDataCollection)">
             <summary>

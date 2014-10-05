@@ -60,7 +60,7 @@ namespace Dialogue.Logic.Constants
         public const int TimeSpanInMinutesToShowMembers = 20;
 
         //Uploads
-        public const string UploadFolderPath = "~/App_Plugins/Dialogue/Content/MemberUploads/";
+        public const string UploadFolderPath = "~/media/MemberUploads/";
 
         // Page Names
         public const string PageUrlLeaderboard = "leaderboard";
