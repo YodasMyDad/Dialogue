@@ -31,7 +31,7 @@ namespace Dialogue.Logic.Routes
                     NodeId = node.Id,
                     SearchUrlName = node.GetPropertyValue<string>(AppConstants.PropMemberUrlName),
                     //SearchPageName = node.GetPropertyValue<string>("searchPageName")
-                    SearchPageName = "Member Page"
+                    SearchPageName = string.Format("Member Page ({0})", node.Id)
                 });
             }
         }

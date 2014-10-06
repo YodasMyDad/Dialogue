@@ -30,7 +30,7 @@ namespace Dialogue.Logic.Routes
                 {
                     NodeId = node.Id,
                     SearchUrlName = node.GetPropertyValue<string>(AppConstants.PropTopicUrlName),
-                    SearchPageName = "Topic Page"
+                    SearchPageName = string.Format("Topic Page ({0})", node.Id)
                 });
             }
         }

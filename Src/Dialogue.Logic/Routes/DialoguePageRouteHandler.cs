@@ -30,7 +30,7 @@ namespace Dialogue.Logic.Routes
                 {
                     NodeId = node.Id,
                     SearchUrlName = node.GetPropertyValue<string>(AppConstants.PropDialogueUrlName),
-                    SearchPageName = "Dialogue Page"
+                    SearchPageName = string.Format("Dialogue Page ({0})", node.Id)
                 });
             }
         }
