@@ -14,6 +14,7 @@ using System.Web.Hosting;
 using System.Web.Mvc;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
+using Dialogue.Logic.Services;
 using HtmlAgilityPack;
 using umbraco.cms.businesslogic.web;
 using Umbraco.Core;
@@ -58,7 +59,7 @@ namespace Dialogue.Logic.Application
             if (!string.IsNullOrEmpty(avatar))
             {
                 // Has an avatar image
-                return VirtualPathUtility.ToAbsolute(string.Concat(AppConstants.UploadFolderPath, userId, "/", avatar, string.Format("?width={0}&crop=0,0,{0},{0}", size)));
+                return VirtualPathUtility.ToAbsolute(string.Concat("~/", avatar, string.Format("?width={0}&crop=0,0,{0},{0}", size)));
             }
             return GetGravatarImage(email, size);
         }
@@ -438,51 +439,11 @@ namespace Dialogue.Logic.Application
             var fileName = Path.GetFileName(file.FileName);
             if (fileName != null)
             {
-                //Before we do anything, check file size
-                if (file.ContentLength > Dialogue.Settings().FileUploadMaximumFilesize)
+
+                upResult = FileChecks(file, upResult, fileName, onlyImages);
+                if (!upResult.UploadSuccessful)
                 {
-                    //File is too big
-                    upResult.UploadSuccessful = false;
-                    upResult.ErrorMessage = Lang("Post.UploadFileTooBig");
                     return upResult;
-                }
-
-                // now check allowed extensions
-                var allowedFileExtensions = Dialogue.Settings().FileUploadAllowedExtensions;
-
-                if (onlyImages)
-                {
-                    allowedFileExtensions = new List<string>
-                    {
-                        "jpg",
-                        "jpeg",
-                        "png",
-                        "gif"
-                    };
-                }
-
-                if (allowedFileExtensions.Any())
-                {
-
-                    // Get the file extension
-                    var fileExtension = Path.GetExtension(fileName.ToLower());
-
-                    // If can't work out extension then just error
-                    if (string.IsNullOrEmpty(fileExtension))
-                    {
-                        upResult.UploadSuccessful = false;
-                        upResult.ErrorMessage = Lang("Errors.GenericMessage");
-                        return upResult;
-                    }
-
-                    // Remove the dot then check against the extensions in the web.config settings
-                    fileExtension = fileExtension.TrimStart('.');
-                    if (!allowedFileExtensions.Contains(fileExtension))
-                    {
-                        upResult.UploadSuccessful = false;
-                        upResult.ErrorMessage = Lang("Post.UploadBannedFileExtension");
-                        return upResult;
-                    }
                 }
 
                 // Sort the file name
@@ -502,42 +463,138 @@ namespace Dialogue.Logic.Application
             return upResult;
         }
 
-        //public HttpResponseMessage CreateMedia()
-        //{
-        //    var mediaService = Services.MediaService;
-        //    var request = WebRequest.Create("http://karl.media.local/Uploads/ef093845-41dd-4620-b220-1b346a5f9b2e.jpg");
-        //    var webResponse = request.GetResponse();
-        //    var responseStream = webResponse.GetResponseStream();
+        /// <summary>
+        /// Upload a file to an Umbraco upload field
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="onlyImages"></param>
+        /// <returns></returns>
+        public static UploadFileResult UploadFile(HttpPostedFileBase file, bool onlyImages = false)
+        {
+            var upResult = new UploadFileResult { UploadSuccessful = true };
 
-        //    if (responseStream != null)
-        //    {
-        //        var originalImage = new Bitmap(responseStream);
+            var fileName = Path.GetFileName(file.FileName);
+            if (fileName != null)
+            {
+                // check standard Dialogue stuff
+                upResult = FileChecks(file, upResult, fileName, onlyImages);
+                if (!upResult.UploadSuccessful)
+                {
+                    return upResult;
+                }
 
-        //        var path = HttpContext.Current.Server.MapPath("~/_tmp/ef093845-41dd-4620-b220-1b346a5f9b2e.jpg");
+                // Create the umbraco media file
+                var memberMediaFolderId = ConfirmMemberAvatarMediaFolder();
+                var ms = UmbServices().MediaService;
+                var media = ms.CreateMedia(fileName, memberMediaFolderId, "Image");
+                media.SetValue("umbracoFile", file);
+                ms.Save(media);
 
+                // Get this saved media out the cache
+                var typedMedia = UmbHelper().TypedMedia(media.Id);
 
-        //        originalImage.Save(path, ImageFormat.Jpeg);
+                // Set the Urls
+                upResult.UploadedFileName = typedMedia.Name;
+                upResult.UploadedFileUrl = typedMedia.Url;
+                upResult.MediaId = typedMedia.Id;
+            }
 
+            return upResult;
+        }
 
-        //        FileStream fileStream = new FileStream(path, FileMode.Open);
-        //        var test = fileStream.Name;
+        private static UploadFileResult FileChecks(HttpPostedFileBase file, UploadFileResult upResult, string fileName, bool onlyImages = false)
+        {
+            //Before we do anything, check file size
+            if (file.ContentLength > Dialogue.Settings().FileUploadMaximumFilesize)
+            {
+                //File is too big
+                upResult.UploadSuccessful = false;
+                upResult.ErrorMessage = Lang("Post.UploadFileTooBig");
+                return upResult;
+            }
 
+            // now check allowed extensions
+            var allowedFileExtensions = Dialogue.Settings().FileUploadAllowedExtensions;
 
-        //        var mediaImage = mediaService.CreateMedia("test4", 1152, "Image");
-        //        mediaImage.SetValue("umbracoFile", test, fileStream);
-        //        mediaService.Save(mediaImage);
+            if (onlyImages)
+            {
+                allowedFileExtensions = new List<string>
+                    {
+                        "jpg",
+                        "jpeg",
+                        "png",
+                        "gif"
+                    };
+            }
 
-        //        responseStream.Dispose();
-        //        webResponse.Dispose();
-        //        originalImage.Dispose();
-        //    }
+            if (allowedFileExtensions.Any())
+            {
 
+                // Get the file extension
+                var fileExtension = Path.GetExtension(fileName.ToLower());
 
-        //    var response = Request.CreateResponse(HttpStatusCode.OK);
+                // If can't work out extension then just error
+                if (string.IsNullOrEmpty(fileExtension))
+                {
+                    upResult.UploadSuccessful = false;
+                    upResult.ErrorMessage = Lang("Errors.GenericMessage");
+                    return upResult;
+                }
 
-        //    response.Content = new StringContent("ExternalMediaCreate", Encoding.UTF8, "application/json");
-        //    return response;
-        //}
+                // Remove the dot then check against the extensions in the web.config settings
+                fileExtension = fileExtension.TrimStart('.');
+                if (!allowedFileExtensions.Contains(fileExtension))
+                {
+                    upResult.UploadSuccessful = false;
+                    upResult.ErrorMessage = Lang("Post.UploadBannedFileExtension");
+                    return upResult;
+                }
+            }
+
+            return upResult;
+        }
+
+        public static int ConfirmMemberAvatarMediaFolder()
+        {
+            // We want to look for the 'Member Avatars' folder in the media section
+            // If it doesn't exist then we create it
+            var rootMediaId = -1;
+            const string folderName = "Dialogue Members Avatars";
+
+            // Media Service
+            var ms = UmbServices().MediaService;
+            
+            // Check main media folder
+            var mediaFolder = ms.GetRootMedia().FirstOrDefault(x => x.Name == folderName);
+            if (mediaFolder == null)
+            {
+                // Doesn't exist, so create it
+                mediaFolder = ms.CreateMedia(folderName, rootMediaId, "Folder");
+                ms.Save(mediaFolder);
+            }
+
+            // Set id
+            rootMediaId = mediaFolder.Id;
+
+            // Check current user has a folder
+            var cUser = ServiceFactory.MemberService.CurrentMember();
+            if (cUser != null)
+            {
+                // Get the members folder
+                var memberFolder = mediaFolder.Children().FirstOrDefault(x => x.Name == cUser.UserName);
+                if (memberFolder == null)
+                {
+                    // Doesn't exist, so create it
+                    memberFolder = ms.CreateMedia(cUser.UserName, mediaFolder.Id, "Folder");
+                    ms.Save(memberFolder);
+                }
+
+                // reset id
+                rootMediaId = memberFolder.Id;
+            }
+
+            return rootMediaId;
+        }
 
         public static UploadFileResult UploadFile(Image file, string uploadFolderPath)
         {

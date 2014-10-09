@@ -317,7 +317,7 @@ namespace Dialogue.Logic.Services
 
         /// <summary>
         /// Use this when banning a spammer
-        /// They use signature and website fields for urls. This clears both
+        /// They use signature and website fields for urls. This clears both as well as banning them
         /// </summary>
         /// <param name="member"></param>
         /// <param name="banMemberToo"></param>

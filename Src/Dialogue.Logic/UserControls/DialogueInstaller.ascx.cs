@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Hosting;
@@ -155,7 +156,7 @@ namespace Dialogue.Logic.UserControls
                 }
                 InstallerResult.ResultItems.Add(standardRoleResult);
 
-                // Web.Config Stuff
+                // ############ Web.Config Stuff
                 var webConfigPath = HostingEnvironment.MapPath("~/web.config");
                 if (webConfigPath != null)
                 {
@@ -211,6 +212,46 @@ namespace Dialogue.Logic.UserControls
                     };
                     InstallerResult.ResultItems.Add(nowebConfig);
                 }
+
+                
+                // ############ Dashboard Stuff
+                var dashboardPath = HostingEnvironment.MapPath("~/config/dashboard.config");
+                if (dashboardPath != null)
+                {
+                    var updateDashboardConfig = false;
+                    var xDoc = new XmlDocument();
+                    xDoc.Load(dashboardPath);
+
+                    //############# Custom Dashboards
+
+                    // Dialogue Importer Dashboard
+                    var efResult = new ResultItem
+                    {
+                        CompletedSuccessfully = false,
+                        Name = "Add Dialogue Importer Dashboard"
+                    };
+
+                    var importerUserControls = new List<string>
+                    {
+                        "/usercontrols/dialogueimporter.ascx"
+                    };
+                    efResult = AddDashboard(importerUserControls, "StartupDeveloperDashboardSection", "Dialogue Importer", xDoc);
+                    InstallerResult.ResultItems.Add(efResult);
+                    updateDashboardConfig = efResult.RequiresConfigUpdate;
+
+
+                    // Add more dashboards here
+
+
+                    // Save if update needed
+                    if (updateDashboardConfig)
+                    {
+                        xDoc.Save(dashboardPath);
+                    }
+
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -235,6 +276,85 @@ namespace Dialogue.Logic.UserControls
         {
             var appSettingsClientVal = webconfig.SelectSingleNode(string.Format("configuration/appSettings/add[@key='{0}']", key));
             return appSettingsClientVal != null;
+        }
+
+        private static bool DashboardExists(XmlDocument dbconfig, string tabCaption)
+        {
+            var tab = dbconfig.SelectSingleNode(string.Format("dashBoard/section/tab[@caption='{0}']", tabCaption));
+            return tab != null;
+        }
+
+        /// <summary>
+        /// Adds a dashboard to the config
+        /// </summary>
+        /// <param name="usercontrols"></param>
+        /// <param name="section"></param>
+        /// <param name="tabCaption"></param>
+        /// <param name="dbconfig"></param>
+        /// <returns></returns>
+        private ResultItem AddDashboard(List<string> usercontrols, string section, string tabCaption, XmlDocument dbconfig)
+        {
+            var rs = new ResultItem
+            {
+                Name = "Adding Dashboard",
+                CompletedSuccessfully = true,
+                Description = string.Format("Successfully added {0} Dashboard", tabCaption),
+                RequiresConfigUpdate = true
+            };
+
+            if (!DashboardExists(dbconfig, tabCaption))
+            {
+                try
+                {
+                    //StartupDeveloperDashboardSection
+
+                    //  <tab caption="Dialogue Importer">
+                    //      <control addPanel="true" panelCaption="">
+                    //          /usercontrols/dialogueimporter.ascx
+                    //      </control>
+                    //  </tab>
+
+                    // App settings root
+                    var dbSection = dbconfig.SelectSingleNode(string.Format("dashBoard/section[@alias='{0}']", section));
+
+                    // Create new tab
+                    var tab = dbconfig.CreateNode(XmlNodeType.Element, "tab", null);
+                    var captionAttr = dbconfig.CreateAttribute("caption");
+                    captionAttr.Value = tabCaption;
+                    tab.Attributes.Append(captionAttr);
+
+                    // Loop through usercontrols to add controls
+                    for (var i = 0; i < usercontrols.Count; i++)
+                    {
+                        // Create control
+                        var control = dbconfig.CreateNode(XmlNodeType.Element, "control", null);
+                        var addPanelAttr = dbconfig.CreateAttribute("addPanel");
+                        addPanelAttr.Value = "true";
+                        control.Attributes.Append(addPanelAttr);
+                        control.InnerText = usercontrols[i];
+
+                        tab.AppendChild(control);
+                    }
+                  
+                    // Append tab to Section
+                    dbSection.AppendChild(tab);
+
+                    return rs;
+                }
+                catch (Exception ex)
+                {
+                    rs.Description = string.Format("Failed to add {0} to dashboard config, error: {1}", tabCaption, ex.InnerException);
+                    rs.CompletedSuccessfully = false;
+                    rs.RequiresConfigUpdate = false;
+                }
+            }
+            else
+            {
+                rs.Description = string.Format("Skipped adding {0} to dashboard config, already exists", tabCaption);
+                rs.CompletedSuccessfully = true;
+                rs.RequiresConfigUpdate = false;
+            }
+            return rs;
         }
 
         private ResultItem AddAppSetting(string key, string value, XmlDocument webconfig)

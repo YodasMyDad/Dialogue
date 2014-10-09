@@ -43,6 +43,7 @@ namespace Dialogue.Logic.Models.ViewModels
     {
         public Member LoggedOnUser { get; set; }
         public bool UserCanPostTopics { get; set; }
+        public int CategoryId { get; set; }
     }
 
     public class ShowTopicViewModel : MasterModel

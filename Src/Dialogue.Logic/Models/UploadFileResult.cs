@@ -6,5 +6,6 @@
         public string ErrorMessage { get; set; }
         public string UploadedFileName { get; set; }
         public string UploadedFileUrl { get; set; }
+        public int MediaId { get; set; }
     }
 }

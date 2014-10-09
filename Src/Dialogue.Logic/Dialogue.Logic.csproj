@@ -330,6 +330,13 @@
     <Compile Include="Services\TopicService.cs" />
     <Compile Include="Services\UploadedFileService.cs" />
     <Compile Include="Services\VoteService.cs" />
+    <Compile Include="UserControls\DialogueImporter.ascx.cs">
+      <DependentUpon>DialogueImporter.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\DialogueImporter.ascx.designer.cs">
+      <DependentUpon>DialogueImporter.ascx</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\DialogueInstaller.ascx.cs">
       <DependentUpon>DialogueInstaller.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -339,9 +346,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MemberImportSample.xml" />
     <Content Include="PackageActions.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="UserControls\DialogueImporter.ascx" />
     <Content Include="UserControls\DialogueInstaller.ascx" />
     <Content Include="web.config" />
     <Content Include="packages.config" />

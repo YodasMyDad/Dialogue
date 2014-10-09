@@ -1,0 +1,18 @@
+﻿<members>
+  <member>
+    <username>Username</username>
+    <email>email@email.com</email>
+    <website></website>
+    <twitter></twitter>
+    <points>1200</points>
+    <isadmin>true</isadmin>
+  </member>
+  <member>
+    <username>Another</username>
+    <email>another@email.com</email>
+    <website></website>
+    <twitter></twitter>
+    <points>0</points>
+    <isadmin>false</isadmin>
+  </member>
+</members>

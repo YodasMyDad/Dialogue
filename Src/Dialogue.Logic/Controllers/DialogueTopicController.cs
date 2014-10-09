@@ -611,7 +611,8 @@ namespace Dialogue.Logic.Controllers
         {
             var viewModel = new CreateTopicButtonViewModel
             {
-                LoggedOnUser = CurrentMember
+                LoggedOnUser = CurrentMember,
+                CategoryId = 0
             };
 
             if (CurrentMember != null)
@@ -631,6 +632,13 @@ namespace Dialogue.Logic.Controllers
                             viewModel.UserCanPostTopics = true;
                             break;
                         }
+                    }
+
+                    // Now check current page
+                    if (AppHelpers.CurrentPage().DocumentTypeAlias == AppConstants.DocTypeForumCategory)
+                    {
+                        // In a category - So pass id to create button
+                        viewModel.CategoryId = CurrentPage.Id;
                     }
                 }
             }

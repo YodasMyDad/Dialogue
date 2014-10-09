@@ -223,6 +223,17 @@ namespace Dialogue.Logic.Controllers
                             PageTitle = Lang("Topic.CreateTopic")
                         };
 
+                        // Pre-Select category user is in
+                        var cat = Request["cat"];
+                        if (!string.IsNullOrEmpty(cat))
+                        {
+                            var catId = Convert.ToInt32(cat);
+                            if (catId > 0)
+                            {
+                                viewModel.Category = catId;
+                            }
+                        }
+
                         return View(PathHelper.GetThemeViewPath("Create"), viewModel);
                     }
                 }

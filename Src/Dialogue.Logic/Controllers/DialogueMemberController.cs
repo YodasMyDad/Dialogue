@@ -157,14 +157,14 @@ namespace Dialogue.Logic.Controllers
                 if (userModel.MemberEditViewModel.Files != null)
                 {
                     // Before we save anything, check the user already has an upload folder and if not create one
-                    var uploadFolderPath = AppHelpers.GetMemberUploadPath(CurrentMember.Id);
+                    //var uploadFolderPath = AppHelpers.GetMemberUploadPath(CurrentMember.Id);
 
                     // Loop through each file and get the file info and save to the users folder and Db
                     var file = userModel.MemberEditViewModel.Files[0];
                     if (file != null)
                     {
                         // If successful then upload the file
-                        var uploadResult = AppHelpers.UploadFile(file, uploadFolderPath, true);
+                        var uploadResult = AppHelpers.UploadFile(file, true);
 
                         if (!uploadResult.UploadSuccessful)
                         {
@@ -178,7 +178,7 @@ namespace Dialogue.Logic.Controllers
 
 
                         // Save avatar to user
-                        user.Avatar = uploadResult.UploadedFileName;
+                        user.Avatar = uploadResult.UploadedFileUrl;
 
                     }
                 }
