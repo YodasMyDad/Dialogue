@@ -148,7 +148,7 @@ namespace Dialogue.Logic
                 if (forumNode == null)
                 {
                     // Only do this is if we can't find the forum normally
-                    currentPage.DescendantOrSelf(AppConstants.DocTypeForumRoot);
+                    forumNode = currentPage.DescendantOrSelf(AppConstants.DocTypeForumRoot);
                 }
                 HttpContext.Current.Items.Add(AppConstants.SiteSettingsKey, Settings(forumNode));
             }
