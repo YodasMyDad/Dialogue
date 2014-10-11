@@ -5,6 +5,7 @@ using System.Web.Routing;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Web;
+using Umbraco.Web.Routing;
 
 namespace Dialogue.Logic.Routes
 {
@@ -29,7 +30,7 @@ namespace Dialogue.Logic.Routes
                 }
                 else
                 {
-                    _hostsAndIds.Add(new Tuple<string, int>(string.Empty, publishedContent.Id));
+                    _hostsAndIds.Add(new Tuple<string, int>(string.Empty, publishedContent.Id));       
                 }
             }
         }
@@ -70,6 +71,20 @@ namespace Dialogue.Logic.Routes
         protected virtual IPublishedContent FindContent(RequestContext requestContext, UmbracoContext umbracoContext, IPublishedContent baseContent)
         {
             return baseContent;
+        }
+
+        //NOTE: This is the manual way we could assign culture this but I think there's more logic for edge case scenarios in Umbraco's Prepare method.
+        protected override void PreparePublishedContentRequest(PublishedContentRequest publishedContentRequest)
+        {
+            //if (_hostsAndIds.Any(x => x.Item2 == publishedContentRequest.PublishedContent.Parent.Id))
+            //{
+            //    var hostAndId = _hostsAndIds.Single(x => x.Item2 == publishedContentRequest.PublishedContent.Parent.Id);
+            //    var domain = Domain.GetDomain(hostAndId.Item1);
+            //    publishedContentRequest.Culture = new CultureInfo(domain.Language.CultureAlias);
+            //}
+            
+            base.PreparePublishedContentRequest(publishedContentRequest);          
+            
         }
     }
 }

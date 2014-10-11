@@ -279,6 +279,7 @@
     <Compile Include="Routes\DialoguePageRouteHandler.cs" />
     <Compile Include="Routes\DialogueTopicRouteHandler.cs" />
     <Compile Include="Routes\DialogueVirtualPage.cs" />
+    <Compile Include="Routes\ReflectionHelper.cs" />
     <Compile Include="Routes\RouteCollectionExtensions.cs" />
     <Compile Include="Routes\UmbracoVirtualNodeByIdRouteHandler.cs" />
     <Compile Include="Routes\UmbracoVirtualNodeRouteHandler.cs" />
