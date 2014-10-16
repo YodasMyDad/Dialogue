@@ -1,0 +1,16 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = null;
+    var topicService = Dialogue.Logic.Services.ServiceFactory.TopicService;
+    var recent = topicService.GetRecentTopics(1, 10, 10);
+}
+
+<h1>Dummy Home Page</h1>
+<p>Test page for checking dialogue can be used nested in websites</p>
+
+<ul>
+    @foreach (var topic in recent)
+    {
+        <li><a href="@topic.Url">@topic.Name</a></li>
+    }
+</ul>

@@ -468,7 +468,11 @@ namespace Dialogue.Logic.Controllers
         {
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                var count = ServiceFactory.PrivateMessageService.NewPrivateMessageCount(CurrentMember.Id);
+                var count = 0;
+                if (CurrentMember != null)
+                {
+                    count = ServiceFactory.PrivateMessageService.NewPrivateMessageCount(CurrentMember.Id);
+                }
                 if (count > 0)
                 {
                     ShowMessage(new GenericMessageViewModel

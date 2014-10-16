@@ -58,10 +58,12 @@ namespace Dialogue.Logic.Routes
             // to find the domain.
 
             var engine = publishedContentRequest.GetPropertyValue("Engine");
+
             var findDomainMethod = engine.GetType().GetMethod("FindDomain", BindingFlags.Instance |
                                                                             BindingFlags.NonPublic |
                                                                             BindingFlags.Public);
             findDomainMethod.Invoke(engine, null);
+
 
             //NOTE: In Umbraco 7.2, when this is fixed: http://issues.umbraco.org/issue/U4-5628, we don't need to do this and 
             // we can just call Prepare(). Currently we cannot use reflection to call Prepare() because it will still launch
