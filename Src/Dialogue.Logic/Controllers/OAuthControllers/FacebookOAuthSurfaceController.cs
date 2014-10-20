@@ -170,12 +170,16 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                         // First see if this user has registered already - Use email address
                         using (UnitOfWorkManager.NewUnitOfWork())
                         {
-                            var userExists = ServiceFactory.MemberService.GetByEmail(data.Email);
+                            var userExists = AppHelpers.UmbServices().MemberService.GetByEmail(data.Email);
 
                             if (userExists != null)
                             {
+                                // Update access token
+                                userExists.Properties[AppConstants.PropMemberFacebookAccessToken].Value = userAccessToken;
+                                AppHelpers.UmbServices().MemberService.Save(userExists);
+
                                 // Users already exists, so log them in
-                                FormsAuthentication.SetAuthCookie(userExists.UserName, true);
+                                FormsAuthentication.SetAuthCookie(userExists.Username, true);
                                 resultMessage.Message = Lang("Members.NowLoggedIn");
                                 resultMessage.MessageType = GenericMessages.Success;
                             }

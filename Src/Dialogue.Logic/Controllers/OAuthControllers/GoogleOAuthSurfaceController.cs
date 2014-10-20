@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.Mvc;
 using System.Web.Security;
 using Dialogue.Logic.Application;
+using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
 using Dialogue.Logic.Services;
@@ -156,12 +157,16 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                     var user = service.GetUserInfo();                    
                     using (UnitOfWorkManager.NewUnitOfWork())
                     {
-                        var userExists = ServiceFactory.MemberService.GetByEmail(user.Email);
+                        var userExists = AppHelpers.UmbServices().MemberService.GetByEmail(user.Email);
 
                         if (userExists != null)
                         {
+                            // Update access token
+                            userExists.Properties[AppConstants.PropMemberGoogleAccessToken].Value = info.RefreshToken;
+                            AppHelpers.UmbServices().MemberService.Save(userExists);
+
                             // Users already exists, so log them in
-                            FormsAuthentication.SetAuthCookie(userExists.UserName, true);
+                            FormsAuthentication.SetAuthCookie(userExists.Username, true);
                             resultMessage.Message = Lang("Members.NowLoggedIn");
                             resultMessage.MessageType = GenericMessages.Success;
                         }
