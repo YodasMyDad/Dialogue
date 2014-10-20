@@ -171,10 +171,11 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                             var viewModel = new RegisterViewModel
                             {
                                 Email = user.Email,
-                                IsSocialLogin = true,
+                                LoginType = LoginType.Google,
                                 Password = AppHelpers.RandomString(8),
                                 UserName = user.Name,
-                                SocialProfileImageUrl = user.Picture
+                                SocialProfileImageUrl = user.Picture,
+                                UserAccessToken = info.RefreshToken
                             };
 
                             return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);

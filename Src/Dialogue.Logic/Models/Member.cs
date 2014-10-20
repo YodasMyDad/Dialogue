@@ -55,5 +55,14 @@ namespace Dialogue.Logic.Models
         {
             return AppHelpers.MemberImage(Avatar, Email, Id, size);
         }
+
+        public LoginType LoginType { get; set; }
+    }
+
+    public enum LoginType
+    {
+        Facebook,
+        Google,
+        Standard
     }
 }

@@ -185,9 +185,10 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                 var viewModel = new RegisterViewModel
                                 {
                                     Email = data.Email,
-                                    IsSocialLogin = true,
+                                    LoginType = LoginType.Facebook,
                                     Password = AppHelpers.RandomString(8),
-                                    UserName = data.Name
+                                    UserName = data.Name,
+                                    UserAccessToken = userAccessToken
                                 };
 
                                 // Get the image and save it

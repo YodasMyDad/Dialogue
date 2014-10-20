@@ -29,12 +29,11 @@ namespace Dialogue.Logic.Models.ViewModels
         public string Password { get; set; }
 
         public string SpamAnswer { get; set; }
-
         public int? ForumId { get; set; }
-
         public string ReturnUrl { get; set; }
-        public bool IsSocialLogin { get; set; }
         public string SocialProfileImageUrl { get; set; }
+        public string UserAccessToken { get; set; }
+        public LoginType LoginType { get; set; }
     }
 
     public class PageReportMemberViewModel : MasterModel

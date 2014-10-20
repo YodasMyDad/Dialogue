@@ -256,6 +256,9 @@ namespace Dialogue.Logic.Controllers
                     }
                 }
 
+                // Standard Login
+                userModel.LoginType = LoginType.Standard;
+
                 // Do the register logic
                 return MemberRegisterLogic(userModel);
 
@@ -282,7 +285,7 @@ namespace Dialogue.Logic.Controllers
                 {
                     ModelState.AddModelError(string.Empty, Lang("Error.EmailIsBanned"));
 
-                    if (userModel.IsSocialLogin)
+                    if (userModel.LoginType != LoginType.Standard)
                     {
                         ShowModelErrors();
                         return Redirect(Settings.RegisterUrl);
@@ -340,6 +343,16 @@ namespace Dialogue.Logic.Controllers
                     if (manuallyAuthoriseMembers || memberEmailAuthorisationNeeded)
                     {
                         umbracoMember.IsApproved = false;
+                    }
+
+                    // Store access token for social media account in case we want to do anything with it
+                    if (userModel.LoginType == LoginType.Facebook)
+                    {
+                        umbracoMember.Properties[AppConstants.PropMemberFacebookAccessToken].Value = userModel.UserAccessToken;    
+                    }
+                    if (userModel.LoginType == LoginType.Google)
+                    {
+                        umbracoMember.Properties[AppConstants.PropMemberGoogleAccessToken].Value = userModel.UserAccessToken;
                     }
 
                     // Do a save on the member
@@ -418,7 +431,7 @@ namespace Dialogue.Logic.Controllers
                         ModelState.AddModelError(string.Empty, ex.Message);
                     }
                 }
-                if (userModel.IsSocialLogin)
+                if (userModel.LoginType != LoginType.Standard)
                 {
                     ShowModelErrors();
                     return Redirect(Settings.RegisterUrl);
