@@ -332,7 +332,7 @@ namespace Dialogue.Logic.Controllers
                         // Don't throw error if problem saving avatar, just don't save it.
                         if (uploadResult.UploadSuccessful)
                         {                            
-                            umbracoMember.Properties[AppConstants.PropMemberAvatar].Value = uploadResult.UploadedFileName;
+                            umbracoMember.Properties[AppConstants.PropMemberAvatar].Value = string.Concat(VirtualPathUtility.ToAbsolute(AppConstants.UploadFolderPath), umbracoMember.Id, "/", uploadResult.UploadedFileName);
                         }
                     }
 

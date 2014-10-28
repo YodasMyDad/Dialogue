@@ -163,13 +163,21 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                             Name = me.Name ?? me.UserName,
                             AccessToken = userAccessToken,
                             ExpiresAt = debug.ExpiresAt == null ? default(DateTime) : debug.ExpiresAt.Value,
-                            Scope = debug.Scopes,
-                            Email = obj.GetString("email")
+                            Scope = debug.Scopes
                         };
+
+                        // Try to get the email - Some FB accounts have protected passwords
+                        var email = obj.GetString("email");
+                        if (!string.IsNullOrEmpty(email))
+                        {
+                            data.Email = email;
+                        }
 
                         // First see if this user has registered already - Use email address
                         using (UnitOfWorkManager.NewUnitOfWork())
                         {
+                            // TODO - Ignore if no email - Have to check PropMemberFacebookAccessToken has a value
+                            // TODO - and the me.UserName is there to match existing logged in accounts
                             var userExists = AppHelpers.UmbServices().MemberService.GetByEmail(data.Email);
 
                             if (userExists != null)
@@ -196,8 +204,13 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                 };
 
                                 // Get the image and save it
-                                var getImageUrl = string.Format("http://graph.facebook.com/{0}/picture?type=normal", me.UserName);
+                                var getImageUrl = string.Format("http://graph.facebook.com/{0}/picture?type=square", me.Id);
                                 viewModel.SocialProfileImageUrl = getImageUrl;
+
+                                //Large size photo https://graph.facebook.com/{facebookId}/picture?type=large
+                                //Medium size photo https://graph.facebook.com/{facebookId}/picture?type=normal
+                                //Small size photo https://graph.facebook.com/{facebookId}/picture?type=small
+                                //Square photo https://graph.facebook.com/{facebookId}/picture?type=square
 
                                 return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);
                             }

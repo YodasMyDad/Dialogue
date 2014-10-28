@@ -130,7 +130,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                 };
 
                     // Construct the authorization URL
-                    var url = client.GetAuthorizationUrl(state, String.Join(" ", scope), GoogleAccessType.Offline, GoogleApprovalPrompt.Force);
+                    var url = client.GetAuthorizationUrl(state, scope, GoogleAccessType.Offline, GoogleApprovalPrompt.Force);
 
                     // Redirect the user
                     return Redirect(url);
