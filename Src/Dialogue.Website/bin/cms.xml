@@ -4131,6 +4131,11 @@
             The delete event handler
             </summary>
         </member>
+        <member name="M:umbraco.cms.businesslogic.packager.repositories.Repository.DisposeResources">
+            <summary>
+            Handles the disposal of resources. Derived from abstract class <see cref="T:Umbraco.Core.DisposableObject"/> which handles common required locking logic.
+            </summary>
+        </member>
         <member name="T:umbraco.cms.businesslogic.packager.repositories.RepositoryWebservice">
             <remarks/>
         </member>

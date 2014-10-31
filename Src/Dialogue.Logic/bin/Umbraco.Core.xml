@@ -170,7 +170,7 @@
         </member>
         <member name="M:Umbraco.Core.ApplicationEventHandler.ApplicationStarting(Umbraco.Core.UmbracoApplicationBase,Umbraco.Core.ApplicationContext)">
             <summary>
-            OVerridable method to execute when All resolvers have been initialized but resolution is not frozen so they can be modified in this method
+            Overridable method to execute when All resolvers have been initialized but resolution is not frozen so they can be modified in this method
             </summary>
             <param name="umbracoApplication"></param>
             <param name="applicationContext"></param>
@@ -1356,6 +1356,11 @@
             Application alias for the users section.
             </summary>
         </member>
+        <member name="F:Umbraco.Core.Constants.Applications.Forms">
+            <summary>
+            Application alias for the users section.
+            </summary>
+        </member>
         <member name="T:Umbraco.Core.Constants.Trees">
             <summary>
             Defines the alias identifiers for Umbraco's core trees.
@@ -1379,6 +1384,16 @@
         <member name="F:Umbraco.Core.Constants.Trees.DataTypes">
             <summary>
             alias for the datatype tree.
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Constants.Trees.Dictionary">
+            <summary>
+            alias for the dictionary tree.
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Constants.Trees.Templates">
+            <summary>
+            alias for the media tree.
             </summary>
         </member>
         <member name="T:Umbraco.Core.Constants.Conventions">
@@ -1674,6 +1689,11 @@
         <member name="F:Umbraco.Core.Constants.PropertyEditors.FolderBrowserAlias">
             <summary>
             Alias for the Folder browser datatype.
+            </summary>
+        </member>
+        <member name="F:Umbraco.Core.Constants.PropertyEditors.GridAlias">
+            <summary>
+            Alias for the grid datatype.
             </summary>
         </member>
         <member name="F:Umbraco.Core.Constants.PropertyEditors.ImageCropper">
@@ -2739,6 +2759,11 @@
             Returns all entities that were deleted during the operation
             </summary>
         </member>
+        <member name="P:Umbraco.Core.Events.DeleteEventArgs`1.MediaFilesToDelete">
+            <summary>
+            A list of media files that can be added to during a deleted operation for which Umbraco will ensure are removed
+            </summary>
+        </member>
         <member name="P:Umbraco.Core.Events.DeleteEventArgs.Id">
             <summary>
             Gets the Id of the object being deleted.
@@ -2890,6 +2915,23 @@
             Returns all entities that were published during the operation
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Events.RecycleBinEventArgs.#ctor(System.Guid,System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Property}},System.Collections.Generic.List{System.String},System.Boolean)">
+            <summary>
+            Backwards compatibility constructor
+            </summary>
+            <param name="nodeObjectType"></param>
+            <param name="allPropertyData"></param>
+            <param name="files"></param>
+            <param name="emptiedSuccessfully"></param>
+        </member>
+        <member name="M:Umbraco.Core.Events.RecycleBinEventArgs.#ctor(System.Guid,System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Property}},System.Collections.Generic.List{System.String})">
+            <summary>
+            Backwards compatibility constructor
+            </summary>
+            <param name="nodeObjectType"></param>
+            <param name="allPropertyData"></param>
+            <param name="files"></param>
+        </member>
         <member name="P:Umbraco.Core.Events.RecycleBinEventArgs.NodeObjectType">
             <summary>
             Gets the Id of the node object type of the items 
@@ -2905,6 +2947,14 @@
             <summary>
             Gets the list of Files that should be deleted as part
             of emptying the Recycle Bin.
+            </summary>
+            <remarks>
+            This list can be appended to during an event handling operation, generally this is done based on the property data contained in these event args
+            </remarks>
+        </member>
+        <member name="P:Umbraco.Core.Events.RecycleBinEventArgs.AllPropertyData">
+            <summary>
+            Gets the list of all property data associated with a content id
             </summary>
         </member>
         <member name="P:Umbraco.Core.Events.RecycleBinEventArgs.RecycleBinEmptiedSuccessfully">
@@ -4244,6 +4294,37 @@
             This is helpful for determining if the published event will execute during the saved event for a content item.
             </remarks>
         </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.RequiresSaving(Umbraco.Core.Models.IContent)">
+            <summary>
+            Determines if the item should be persisted at all
+            </summary>
+            <param name="entity"></param>
+            <returns></returns>
+            <remarks>
+            In one particular case, a content item shouldn't be persisted:
+            * The item exists and is published
+            * A call to ContentService.Save is made
+            * The item has not been modified whatsoever apart from changing it's published status from published to saved
+            
+            In this case, there is no reason to make any database changes at all
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.RequiresSaving(Umbraco.Core.Models.IContent,Umbraco.Core.Models.PublishedState)">
+            <summary>
+            Determines if the item should be persisted at all
+            </summary>
+            <param name="entity"></param>
+            <param name="publishedState"></param>
+            <returns></returns>
+            <remarks>
+            In one particular case, a content item shouldn't be persisted:
+            * The item exists and is published
+            * A call to ContentService.Save is made
+            * The item has not been modified whatsoever apart from changing it's published status from published to saved
+            
+            In this case, there is no reason to make any database changes at all
+            </remarks>
+        </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.ShouldCreateNewVersion(Umbraco.Core.Models.IContent)">
             <summary>
             Determines if a new version should be created
@@ -4446,12 +4527,27 @@
             Gets the <see cref="T:Umbraco.Core.Models.Membership.IProfile"/> for the Creator of this media item.
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.GetCreatorProfile(Umbraco.Core.Models.IMedia,Umbraco.Core.Services.IUserService)">
+            <summary>
+            Gets the <see cref="T:Umbraco.Core.Models.Membership.IProfile"/> for the Creator of this media item.
+            </summary>
+        </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.GetCreatorProfile(Umbraco.Core.Models.IContentBase)">
             <summary>
             Gets the <see cref="T:Umbraco.Core.Models.Membership.IProfile"/> for the Creator of this content item.
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.GetCreatorProfile(Umbraco.Core.Models.IContentBase,Umbraco.Core.Services.IUserService)">
+            <summary>
+            Gets the <see cref="T:Umbraco.Core.Models.Membership.IProfile"/> for the Creator of this content item.
+            </summary>
+        </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.GetWriterProfile(Umbraco.Core.Models.IContent)">
+            <summary>
+            Gets the <see cref="T:Umbraco.Core.Models.Membership.IProfile"/> for the Writer of this content.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.GetWriterProfile(Umbraco.Core.Models.IContent,Umbraco.Core.Services.IUserService)">
             <summary>
             Gets the <see cref="T:Umbraco.Core.Models.Membership.IProfile"/> for the Writer of this content.
             </summary>
@@ -4495,11 +4591,12 @@
             <param name="tags"></param>
             <param name="tagGroup">The group/category that the tags are currently assigned to, the default value is "default"</param>
         </member>
-        <member name="M:Umbraco.Core.Models.ContentExtensions.ToDeepXml(Umbraco.Core.Models.IContent)">
+        <member name="M:Umbraco.Core.Models.ContentExtensions.ToDeepXml(Umbraco.Core.Models.IContent,Umbraco.Core.Services.IPackagingService)">
             <summary>
             Creates the full xml representation for the <see cref="T:Umbraco.Core.Models.IContent"/> object and all of it's descendants
             </summary>
             <param name="content"><see cref="T:Umbraco.Core.Models.IContent"/> to generate xml for</param>
+            <param name="packagingService"></param>
             <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
         </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IContent)">
@@ -4509,6 +4606,14 @@
             <param name="content"><see cref="T:Umbraco.Core.Models.IContent"/> to generate xml for</param>
             <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
         </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IContent,Umbraco.Core.Services.IPackagingService)">
+            <summary>
+            Creates the xml representation for the <see cref="T:Umbraco.Core.Models.IContent"/> object
+            </summary>
+            <param name="content"><see cref="T:Umbraco.Core.Models.IContent"/> to generate xml for</param>
+            <param name="packagingService"></param>
+            <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
+        </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IMedia)">
             <summary>
             Creates the xml representation for the <see cref="T:Umbraco.Core.Models.IMedia"/> object
@@ -4516,11 +4621,20 @@
             <param name="media"><see cref="T:Umbraco.Core.Models.IContent"/> to generate xml for</param>
             <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
         </member>
-        <member name="M:Umbraco.Core.Models.ContentExtensions.ToDeepXml(Umbraco.Core.Models.IMedia)">
+        <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IMedia,Umbraco.Core.Services.IPackagingService)">
+            <summary>
+            Creates the xml representation for the <see cref="T:Umbraco.Core.Models.IMedia"/> object
+            </summary>
+            <param name="media"><see cref="T:Umbraco.Core.Models.IContent"/> to generate xml for</param>
+            <param name="packagingService"></param>
+            <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.ToDeepXml(Umbraco.Core.Models.IMedia,Umbraco.Core.Services.IPackagingService)">
             <summary>
             Creates the full xml representation for the <see cref="T:Umbraco.Core.Models.IMedia"/> object and all of it's descendants
             </summary>
             <param name="media"><see cref="T:Umbraco.Core.Models.IMedia"/> to generate xml for</param>
+            <param name="packagingService"></param>
             <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IMedia"/></returns>
         </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IContent,System.Boolean)">
@@ -4531,11 +4645,28 @@
             <param name="isPreview">Boolean indicating whether the xml should be generated for preview</param>
             <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
         </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IContent,Umbraco.Core.Services.IPackagingService,System.Boolean)">
+            <summary>
+            Creates the xml representation for the <see cref="T:Umbraco.Core.Models.IContent"/> object
+            </summary>
+            <param name="content"><see cref="T:Umbraco.Core.Models.IContent"/> to generate xml for</param>
+            <param name="packagingService"></param>
+            <param name="isPreview">Boolean indicating whether the xml should be generated for preview</param>
+            <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
+        </member>
         <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IMember)">
             <summary>
             Creates the xml representation for the <see cref="T:Umbraco.Core.Models.IMember"/> object
             </summary>
             <param name="member"><see cref="T:Umbraco.Core.Models.IMember"/> to generate xml for</param>
+            <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Models.ContentExtensions.ToXml(Umbraco.Core.Models.IMember,Umbraco.Core.Services.IPackagingService)">
+            <summary>
+            Creates the xml representation for the <see cref="T:Umbraco.Core.Models.IMember"/> object
+            </summary>
+            <param name="member"><see cref="T:Umbraco.Core.Models.IMember"/> to generate xml for</param>
+            <param name="packagingService"></param>
             <returns>Xml representation of the passed in <see cref="T:Umbraco.Core.Models.IContent"/></returns>
         </member>
         <member name="T:Umbraco.Core.Enum`1">
@@ -4939,6 +5070,9 @@
             This list aggregates PropertyTypes across the PropertyGroups.
             </summary>
             <remarks>
+            
+            The setter is used purely to set the property types that DO NOT belong to a group!
+            
             Marked as DoNotClone because the result of this property is not the natural result of the data, it is 
             a union of data so when auto-cloning if the setter is used it will be setting the unnatural result of the 
             data. We manually clone this instead. 
@@ -5894,6 +6028,12 @@
             implementation to that of the database's DTO as sql: [tableName].[columnName].
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Persistence.Mappers.TemplateMapper">
+            <summary>
+            Represents a <see cref="T:Umbraco.Core.Models.Template"/> to DTO mapper used to translate the properties of the public api 
+            implementation to that of the database's DTO as sql: [tableName].[columnName].
+            </summary>
+        </member>
         <member name="T:Umbraco.Core.Persistence.Migrations.DataLossException">
             <summary>
             Used if a migration has executed but the whole process has failed and cannot be rolled back
@@ -5903,6 +6043,107 @@
             <summary>
             Marker interface for database migrations
             </summary>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.Repositories.IRepository`2">
+            <summary>
+            Defines the implementation of a Repository
+            </summary>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.Repositories.IRepository">
+            <summary>
+            Defines the base implementation of a Repository
+            </summary>
+            <remarks>
+            Currently this interface is empty but it is useful for flagging a repository without having generic parameters, it also might
+            come in handy if we need to add anything to the base/non-generic repository interface.
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.AddOrUpdate(`1)">
+            <summary>
+            Adds or Updates an Entity
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.Delete(`1)">
+            <summary>
+            Deletes an Entity
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.Get(`0)">
+            <summary>
+            Gets an Entity by Id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.GetAll(`0[])">
+            <summary>
+            Gets all entities of the spefified type
+            </summary>
+            <param name="ids"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.Exists(`0)">
+            <summary>
+            Boolean indicating whether an Entity with the specified Id exists
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IPartialViewMacroRepository.AddOrUpdate(Umbraco.Core.Models.IMacro)">
+            <summary>
+            Adds or Updates an associated macro
+            </summary>
+            <param name="macro"></param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRecycleBinRepository`1.GetEntitiesInRecycleBin">
+            <summary>
+            Gets all entities in recycle bin
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRecycleBinRepository`1.EmptyRecycleBin">
+            <summary>
+            Called to empty the recycle bin
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRecycleBinRepository`1.DeleteFiles(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Called to remove all files associated with entities when recycle bin is emptied
+            </summary>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.UnitOfWork.IUnitOfWorkRepository">
+            <summary>
+            Defines the Unit Of Work-part of a repository
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.FileRepository`2.DisposeResources">
+            <summary>
+            Dispose any disposable properties
+            </summary>
+            <remarks>
+            Dispose the unit of work
+            </remarks>
+        </member>
+        <member name="P:Umbraco.Core.Persistence.Repositories.FileRepository`2.UnitOfWork">
+            <summary>
+            Returns the Unit of Work added to the repository
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.PartialViewMacroRepository.DisposeResources">
+            <summary>
+            Ensure the macro repo is disposed which contains a database UOW
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.PartialViewMacroRepository.AddOrUpdate(Umbraco.Core.Models.IMacro)">
+            <summary>
+            Adds or updates a macro associated with the partial view
+            </summary>
+            <param name="macro"></param>
         </member>
         <member name="T:Umbraco.Core.Persistence.SqlSyntax.MicrosoftSqlSyntaxProviderBase`1">
             <summary>
@@ -5987,53 +6228,6 @@
             <typeparam name="TEntity">Type of <see cref="T:Umbraco.Core.Models.EntityBase.IAggregateRoot"/> entity for which the repository is used</typeparam>
             <typeparam name="TId">Type of the Id used for this entity</typeparam>
         </member>
-        <member name="T:Umbraco.Core.Persistence.Repositories.IRepository`2">
-            <summary>
-            Defines the implementation of a Repository
-            </summary>
-        </member>
-        <member name="T:Umbraco.Core.Persistence.Repositories.IRepository">
-            <summary>
-            Defines the base implementation of a Repository
-            </summary>
-            <remarks>
-            Currently this interface is empty but it is useful for flagging a repository without having generic parameters, it also might
-            come in handy if we need to add anything to the base/non-generic repository interface.
-            </remarks>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.AddOrUpdate(`1)">
-            <summary>
-            Adds or Updates an Entity
-            </summary>
-            <param name="entity"></param>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.Delete(`1)">
-            <summary>
-            Deletes an Entity
-            </summary>
-            <param name="entity"></param>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.Get(`0)">
-            <summary>
-            Gets an Entity by Id
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.GetAll(`0[])">
-            <summary>
-            Gets all entities of the spefified type
-            </summary>
-            <param name="ids"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.IRepository`2.Exists(`0)">
-            <summary>
-            Boolean indicating whether an Entity with the specified Id exists
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.IRepositoryQueryable`2.GetByQuery(Umbraco.Core.Persistence.Querying.IQuery{`1})">
             <summary>
             Gets all entities of the specified type and query
@@ -6047,11 +6241,6 @@
             </summary>
             <param name="query"></param>
             <returns></returns>
-        </member>
-        <member name="T:Umbraco.Core.Persistence.UnitOfWork.IUnitOfWorkRepository">
-            <summary>
-            Defines the Unit Of Work-part of a repository
-            </summary>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.RepositoryBase`2.AddOrUpdate(`1)">
             <summary>
@@ -9606,7 +9795,7 @@
             Updates the data in the changed propertyEditorAlias column after it has been changed by ChangeControlIdColumn
             </summary>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.GetTagsForEntityType(Umbraco.Core.Models.TaggableObjectTypes,System.String)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagRepository.GetTagsForEntityType(Umbraco.Core.Models.TaggableObjectTypes,System.String)">
             <summary>
             Returns all tags for an entity type (content/media/member)
             </summary>
@@ -9614,7 +9803,7 @@
             <param name="group">Optional group</param>
             <returns></returns>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.GetTagsForEntity(System.Int32,System.String)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagRepository.GetTagsForEntity(System.Int32,System.String)">
             <summary>
             Returns all tags that exist on the content item - Content/Media/Member
             </summary>
@@ -9622,7 +9811,7 @@
             <param name="group">Optional group</param>
             <returns></returns>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.GetTagsForProperty(System.Int32,System.String,System.String)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagRepository.GetTagsForProperty(System.Int32,System.String,System.String)">
             <summary>
             Returns all tags that exist on the content item for the property specified - Content/Media/Member
             </summary>
@@ -9631,7 +9820,7 @@
             <param name="group">Optional group</param>
             <returns></returns>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.AssignTagsToProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag},System.Boolean)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagRepository.AssignTagsToProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag},System.Boolean)">
             <summary>
             Assigns the given tags to a content item's property
             </summary>
@@ -9647,7 +9836,7 @@
             This can also be used to remove all tags from a property by specifying replaceTags = true and an empty tag list.
             </remarks>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.RemoveTagsFromProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag})">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagRepository.RemoveTagsFromProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag})">
             <summary>
             Removes any of the given tags from the property association
             </summary>
@@ -9655,20 +9844,20 @@
             <param name="propertyTypeId"></param>
             <param name="tags">The tags to remove from the property</param>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.ClearTagsFromProperty(System.Int32,System.Int32)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagRepository.ClearTagsFromProperty(System.Int32,System.Int32)">
             <summary>
             Removes all tag associations from the property
             </summary>
             <param name="contentId"></param>
             <param name="propertyTypeId"></param>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ITagsRepository.ClearTagsFromEntity(System.Int32)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ITagRepository.ClearTagsFromEntity(System.Int32)">
             <summary>
             Removes all tag associations from the entity
             </summary>
             <param name="contentId"></param>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.TagsRepository.AssignTagsToProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag},System.Boolean)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.TagRepository.AssignTagsToProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag},System.Boolean)">
             <summary>
             Assigns the given tags to a content item's property
             </summary>
@@ -9684,7 +9873,7 @@
             This can also be used to remove all tags from a property by specifying replaceTags = true and an empty tag list.
             </remarks>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.TagsRepository.RemoveTagsFromProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag})">
+        <member name="M:Umbraco.Core.Persistence.Repositories.TagRepository.RemoveTagsFromProperty(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag})">
             <summary>
             Removes any of the given tags from the property association
             </summary>
@@ -9692,7 +9881,7 @@
             <param name="propertyTypeId"></param>
             <param name="tags">The tags to remove from the property</param>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.TagsRepository.GetTagSet(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag})">
+        <member name="M:Umbraco.Core.Persistence.Repositories.TagRepository.GetTagSet(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ITag})">
             <summary>
             This is a clever way to produce an SQL statement like this:
             
@@ -10338,6 +10527,7 @@
             Gets or sets the name of the product, which this migration belongs to.
             </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "P:Umbraco.Core.Persistence.Migrations.MigrationExpressionBase.Name" -->
         <member name="T:Umbraco.Core.Persistence.Migrations.MigrationResolver">
             <summary>
             A resolver to return all IMigrations
@@ -10616,6 +10806,19 @@
             Logic that is shared with the expression helpers
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Persistence.Querying.QueryExtensions">
+            <summary>
+            SD: This is a horrible hack but unless we break compatibility with anyone who's actually implemented IQuery{T} there's not much we can do.
+            The IQuery{T} interface is useless without having a GetWhereClauses method and cannot be used for tests.
+            We have to wait till v8 to make this change I suppose.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Querying.QueryExtensions.GetWhereClauses``1(Umbraco.Core.Persistence.Querying.IQuery{``0})">
+            <summary>
+            Returns all translated where clauses and their sql parameters
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Umbraco.Core.Persistence.Querying.IQuery`1">
             <summary>
             Represents a query for building Linq translatable SQL queries
@@ -10628,12 +10831,6 @@
             </summary>
             <param name="predicate"></param>
             <returns>This instance so calls to this method are chainable</returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Querying.IQuery`1.GetWhereClauses">
-            <summary>
-            Returns all translated where clauses and their sql parameters
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:Umbraco.Core.Persistence.Querying.Query`1">
             <summary>
@@ -10684,31 +10881,67 @@
             <param name="contentTypeAlias"></param>
             <returns></returns>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.ClearEntityTags(Umbraco.Core.Models.IContentBase,Umbraco.Core.Persistence.Repositories.ITagsRepository)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.ClearEntityTags(Umbraco.Core.Models.IContentBase,Umbraco.Core.Persistence.Repositories.ITagRepository)">
             <summary>
             This removes associated tags from the entity - used generally when an entity is recycled
             </summary>
             <param name="entity"></param>
             <param name="tagRepo"></param>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.UpdatePropertyTags(Umbraco.Core.Models.IContentBase,Umbraco.Core.Persistence.Repositories.ITagsRepository)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.UpdatePropertyTags(Umbraco.Core.Models.IContentBase,Umbraco.Core.Persistence.Repositories.ITagRepository)">
             <summary>
             Updates the tag repository with any tag enabled properties and their values
             </summary>
             <param name="entity"></param>
             <param name="tagRepo"></param>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.GetPropertyCollection(System.Int32,System.Guid,Umbraco.Core.Models.IContentTypeComposition,System.DateTime,System.DateTime)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.GetPagedResultsByQuery``2(Umbraco.Core.Persistence.Querying.IQuery{`1},System.Int32,System.Int32,System.Int32@,System.Tuple{System.String,System.String},System.Func{Umbraco.Core.Persistence.Sql,System.Collections.Generic.IEnumerable{`1}},System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.Func{System.Tuple{System.String,System.Object[]}})">
             <summary>
-            This is a fix for U4-1407 - when property types are added to a content type - the property of the entity are not actually created
-            and we get YSODs
+            A helper method for inheritors to get the paged results by query in a way that minimizes queries
             </summary>
-            <param name="id"></param>
-            <param name="versionId"></param>
-            <param name="contentType"></param>
-            <param name="createDate"></param>
-            <param name="updateDate"></param>
+            <typeparam name="TDto">The type of the d.</typeparam>
+            <typeparam name="TContentBase">The 'true' entity type (i.e. Content, Member, etc...)</typeparam>
+            <param name="query">The query.</param>
+            <param name="pageIndex">Index of the page.</param>
+            <param name="pageSize">Size of the page.</param>
+            <param name="totalRecords">The total records.</param>
+            <param name="nodeIdSelect">The tablename + column name for the SELECT statement fragment to return the node id from the query</param>
+            <param name="defaultFilter">A callback to create the default filter to be applied if there is one</param>
+            <param name="processQuery">A callback to process the query result</param>
+            <param name="orderBy">The order by column</param>
+            <param name="orderDirection">The order direction.</param>
             <returns></returns>
+            <exception cref="T:System.ArgumentNullException">orderBy</exception>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.VersionableRepositoryBase`2.DocumentDefinition.#ctor(System.Int32,System.Guid,System.DateTime,System.DateTime,Umbraco.Core.Models.IContentTypeComposition)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Object"/> class.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository`2.EmptyRecycleBin">
+            <summary>
+            Empties the Recycle Bin by running single bulk-Delete queries
+            against the Content- or Media's Recycle Bin.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository`2.DeleteFiles(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Deletes all files passed in.
+            </summary>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository`2.GetFilesInRecycleBinForUploadField">
+            <summary>
+            Gets a list of files, which are referenced on items in the Recycle Bin.
+            The list is generated by the convention that a file is referenced by 
+            the Upload data type or a property type with the alias 'umbracoFile'.
+            </summary>
+            <returns></returns>
+            <remarks>
+            This is purely for backwards compatibility
+            </remarks>
         </member>
         <member name="T:Umbraco.Core.Persistence.Repositories.IRepositoryVersionable`2">
             <summary>
@@ -10716,6 +10949,15 @@
             </summary>
             <typeparam name="TEntity">Type of <see cref="T:Umbraco.Core.Models.EntityBase.IAggregateRoot"/> entity for which the repository is used</typeparam>
             <typeparam name="TId">Type of the Id used for this entity</typeparam>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IRepositoryVersionable`2.RebuildXmlStructures(System.Func{`1,System.Xml.Linq.XElement},System.Int32,System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Rebuilds the xml structures for all TEntity if no content type ids are specified, otherwise rebuilds the xml structures
+            for only the content types specified
+            </summary>
+            <param name="serializer">The serializer to convert TEntity to Xml</param>
+            <param name="groupSize">Structures will be rebuilt in chunks of this size</param>
+            <param name="contentTypeIds"></param>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.IRepositoryVersionable`2.Count(System.String)">
             <summary>
@@ -10750,6 +10992,15 @@
             </summary>
             <param name="id">Id of the <see cref="!:TEntity"/> object to delete versions from</param>
             <param name="versionDate">Latest version date</param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IContentRepository.CountPublished">
+            <summary>
+            Get the count of published items
+            </summary>
+            <returns></returns>
+            <remarks>
+            We require this on the repo because the IQuery{IContent} cannot supply the 'newest' parameter
+            </remarks>
         </member>
         <!-- Badly formed XML comment ignored for member "M:Umbraco.Core.Persistence.Repositories.IContentRepository.ReplaceContentPermissions(Umbraco.Core.Models.Membership.EntityPermissionSet)" -->
         <member name="M:Umbraco.Core.Persistence.Repositories.IContentRepository.GetByLanguage(System.Int32,System.String)">
@@ -10807,7 +11058,7 @@
             Gets paged content results
             </summary>
             <param name="query">Query to excute</param>
-            <param name="pageNumber">Page number</param>
+            <param name="pageIndex">Page number</param>
             <param name="pageSize">Page size</param>
             <param name="totalRecords">Total records query would return without paging</param>
             <param name="orderBy">Field to order by</param>
@@ -10848,7 +11099,7 @@
             Gets paged content results
             </summary>
             <param name="query">Query to excute</param>
-            <param name="pageNumber">Page number</param>
+            <param name="pageIndex">Page number</param>
             <param name="pageSize">Page size</param>
             <param name="totalRecords">Total records query would return without paging</param>
             <param name="orderBy">Field to order by</param>
@@ -10856,23 +11107,40 @@
             <param name="filter">Search text filter</param>
             <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ContentRepository.CreateContentFromDto(Umbraco.Core.Models.Rdbms.DocumentDto,System.Guid)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ContentRepository.CreateContentFromDto(Umbraco.Core.Models.Rdbms.DocumentDto,Umbraco.Core.Models.IContentType,Umbraco.Core.Models.ITemplate,Umbraco.Core.Models.PropertyCollection)">
             <summary>
             Private method to create a content object from a DocumentDto, which is used by Get and GetByVersion.
             </summary>
-            <param name="dto"></param>
-            <param name="versionId"></param>
+            <param name="d"></param>
+            <param name="contentType"></param>
+            <param name="template"></param>
+            <param name="propCollection"></param>
             <returns></returns>
         </member>
-        <member name="T:Umbraco.Core.Persistence.Repositories.ContentTypeBaseRepository`2">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ContentRepository.CreateContentFromDto(Umbraco.Core.Models.Rdbms.DocumentDto,System.Guid,Umbraco.Core.Persistence.Sql)">
+            <summary>
+            Private method to create a content object from a DocumentDto, which is used by Get and GetByVersion.
+            </summary>
+            <param name="d"></param>
+            <param name="versionId"></param>
+            <param name="docSql"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Umbraco.Core.Persistence.Repositories.ContentTypeBaseRepository`1">
             <summary>
             Represent an abstract Repository for ContentType based repositories
             </summary>
             <remarks>Exposes shared functionality</remarks>
-            <typeparam name="TId"></typeparam>
             <typeparam name="TEntity"></typeparam>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.ContentTypeBaseRepository`2.AssignDataTypeFromPropertyEditor(Umbraco.Core.Models.PropertyType)">
+        <member name="M:Umbraco.Core.Persistence.Repositories.ContentTypeBaseRepository`1.PerformGetByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.PropertyType})">
+            <summary>
+            Returns the content type ids that match the query
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.ContentTypeBaseRepository`1.AssignDataTypeFromPropertyEditor(Umbraco.Core.Models.PropertyType)">
             <summary>
             Try to set the data type id based on its ControlId
             </summary>
@@ -10889,6 +11157,25 @@
             </summary>
             <param name="query"></param>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.IContentType"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IContentTypeRepository.GetAllPropertyTypeAliases">
+            <summary>
+            Gets all property type aliases.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.ContentTypeRepository.GetByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.PropertyType})">
+            <summary>
+            Gets all entities of the specified <see cref="T:Umbraco.Core.Models.PropertyType"/> query
+            </summary>
+            <param name="query"></param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.IContentType"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.ContentTypeRepository.GetAllPropertyTypeAliases">
+            <summary>
+            Gets all property type aliases.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.ContentTypeRepository.PersistDeletedItem(Umbraco.Core.Models.IContentType)">
             <summary>
@@ -10973,19 +11260,6 @@
                 defined on the entity so we can them to additional data
             </remarks>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.FileRepository`2.DisposeResources">
-            <summary>
-            Dispose any disposable properties
-            </summary>
-            <remarks>
-            Dispose the unit of work
-            </remarks>
-        </member>
-        <member name="P:Umbraco.Core.Persistence.Repositories.FileRepository`2.UnitOfWork">
-            <summary>
-            Returns the Unit of Work added to the repository
-            </summary>
-        </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.IMediaRepository.AddOrUpdateContentXml(Umbraco.Core.Models.IMedia,System.Func{Umbraco.Core.Models.IMedia,System.Xml.Linq.XElement})">
             <summary>
             Used to add/update published xml for the media item
@@ -10999,6 +11273,19 @@
             </summary>
             <param name="content"></param>
             <param name="xml"></param>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.IMediaRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IMedia},System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets paged media results
+            </summary>
+            <param name="query">Query to excute</param>
+            <param name="pageIndex">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IMedia"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.IMediaTypeRepository.GetByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.PropertyType})">
             <summary>
@@ -11037,7 +11324,7 @@
             <param name="query"></param>
             <returns></returns>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.IMemberRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IMember},System.Int32,System.Int32,System.Int32@,System.Linq.Expressions.Expression{System.Func{Umbraco.Core.Models.IMember,System.String}})">
+        <member name="M:Umbraco.Core.Persistence.Repositories.IMemberRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IMember},System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
             <summary>
             Gets paged member results
             </summary>
@@ -11046,6 +11333,8 @@
             <param name="pageSize"></param>
             <param name="totalRecords"></param>
             <param name="orderBy"></param>
+            <param name="orderDirection"></param>
+            <param name="filter"></param>
             <returns></returns>
         </member>
         <member name="M:Umbraco.Core.Persistence.Repositories.IMemberRepository.AddOrUpdateContentXml(Umbraco.Core.Models.IMember,System.Func{Umbraco.Core.Models.IMember,System.Xml.Linq.XElement})">
@@ -11134,6 +11423,37 @@
             Represents a repository for doing CRUD operations for <see cref="T:Umbraco.Core.Models.IMedia"/>
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.MediaRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IMedia},System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets paged media results
+            </summary>
+            <param name="query">Query to excute</param>
+            <param name="pageIndex">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IMedia"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.MediaRepository.CreateMediaFromDto(Umbraco.Core.Models.Rdbms.ContentVersionDto,Umbraco.Core.Models.IMediaType,Umbraco.Core.Models.PropertyCollection)">
+            <summary>
+            Private method to create a media object from a ContentDto
+            </summary>
+            <param name="d"></param>
+            <param name="contentType"></param>
+            <param name="propCollection"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.MediaRepository.CreateMediaFromDto(Umbraco.Core.Models.Rdbms.ContentVersionDto,System.Guid,Umbraco.Core.Persistence.Sql)">
+            <summary>
+            Private method to create a media object from a ContentDto
+            </summary>
+            <param name="d"></param>
+            <param name="versionId"></param>
+            <param name="docSql"></param>
+            <returns></returns>
+        </member>
         <member name="T:Umbraco.Core.Persistence.Repositories.MediaTypeRepository">
             <summary>
             Represents a repository for doing CRUD operations for <see cref="T:Umbraco.Core.Models.IMediaType"/>
@@ -11161,7 +11481,7 @@
             <param name="groupName"></param>
             <returns></returns>
         </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.MemberRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IMember},System.Int32,System.Int32,System.Int32@,System.Linq.Expressions.Expression{System.Func{Umbraco.Core.Models.IMember,System.String}})">
+        <member name="M:Umbraco.Core.Persistence.Repositories.MemberRepository.GetPagedResultsByQuery(Umbraco.Core.Persistence.Querying.IQuery{Umbraco.Core.Models.IMember},System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
             <summary>
             Gets paged member results
             </summary>
@@ -11172,10 +11492,30 @@
             <param name="pageSize"></param>
             <param name="totalRecords"></param>
             <param name="orderBy"></param>
+            <param name="orderDirection"></param>
+            <param name="filter"></param>
             <returns></returns>
             <remarks>
             The query supplied will ONLY work with data specifically on the cmsMember table because we are using PetaPoco paging (SQL paging)
             </remarks>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.MemberRepository.CreateMemberFromDto(Umbraco.Core.Models.Rdbms.MemberDto,Umbraco.Core.Models.IMemberType,Umbraco.Core.Models.PropertyCollection)">
+            <summary>
+            Private method to create a member object from a MemberDto
+            </summary>
+            <param name="dto"></param>
+            <param name="contentType"></param>
+            <param name="propCollection"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Repositories.MemberRepository.CreateMemberFromDto(Umbraco.Core.Models.Rdbms.MemberDto,System.Guid,Umbraco.Core.Persistence.Sql)">
+            <summary>
+            Private method to create a member object from a MemberDto
+            </summary>
+            <param name="dto"></param>
+            <param name="versionId"></param>
+            <param name="docSql"></param>
+            <returns></returns>
         </member>
         <member name="T:Umbraco.Core.Persistence.Repositories.MemberTypeRepository">
             <summary>
@@ -11276,51 +11616,6 @@
             </param>
             <remarks>
             This will first clear the permissions for this entity then re-create them
-            </remarks>
-        </member>
-        <member name="T:Umbraco.Core.Persistence.Repositories.RecycleBinRepository">
-            <summary>
-            Represents a repository specific to the Recycle Bins
-            available for Content and Media.
-            </summary>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository.GetFilesInRecycleBin(System.Guid)">
-            <summary>
-            Gets a list of files, which are referenced on items in the Recycle Bin.
-            The list is generated by the convention that a file is referenced by 
-            the Upload data type or a property type with the alias 'umbracoFile'.
-            </summary>
-            <param name="nodeObjectType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository.GetIdsOfItemsInRecycleBin(System.Guid)">
-            <summary>
-            Gets a list of Ids for each of the items in the Recycle Bin.
-            </summary>
-            <param name="nodeObjectType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository.EmptyRecycleBin(System.Guid)">
-            <summary>
-            Empties the Recycle Bin by running single bulk-Delete queries
-            against the Content- or Media's Recycle Bin.
-            </summary>
-            <param name="nodeObjectType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository.DeleteFiles(System.Collections.Generic.IEnumerable{System.String})">
-            <summary>
-            Deletes all files passed in.
-            </summary>
-            <param name="files"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Repositories.RecycleBinRepository.DisposeResources">
-            <summary>
-            Dispose disposable properties
-            </summary>
-            <remarks>
-            Ensure the unit of work is disposed
             </remarks>
         </member>
         <member name="T:Umbraco.Core.Persistence.Repositories.RelationRepository">
@@ -11468,6 +11763,13 @@
             Represents an SqlSyntaxProvider for Sql Server
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Persistence.SqlSyntax.SqlServerSyntaxProvider.GetDefaultConstraintsPerColumn(Umbraco.Core.Persistence.Database)">
+            <summary>
+            SQL Server stores default values assigned to columns as constraints, it also stores them with named values, this is the only
+            server type that does this, therefore this method doesn't exist on any other syntax provider
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:Umbraco.Core.Persistence.SqlSyntax.SqlServerSyntaxProvider.VersionName">
             <summary>
             Gets/sets the version of the current SQL server instance
@@ -11525,24 +11827,6 @@
             can then override any additional execution (such as additional loggging, functionality, etc...) that we need to without breaking compatibility since we'll always be exposing
             this object instead of the base PetaPoco database object.	
             </remarks>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Database.MultiPocoFactory.CallDelegate(System.Int32,System.Data.IDataReader)">
-            <summary>
-            Calls the delegate at the specified index and returns its values
-            </summary>
-            <param name="index"></param>
-            <param name="reader"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Core.Persistence.Database.MultiPocoFactory.CallCallback``1(System.Delegate,System.Data.IDataReader,System.Int32)">
-            <summary>
-            Calls the callback delegate and passes in the output of all delegates as the parameters
-            </summary>
-            <typeparam name="TRet"></typeparam>
-            <param name="callback"></param>
-            <param name="dr"></param>
-            <param name="count"></param>
-            <returns></returns>
         </member>
         <member name="T:Umbraco.Core.Persistence.Database.ManagedCache">
             <summary>
@@ -11605,12 +11889,6 @@
             Gets or sets the entity.
             </summary>
             <value>The entity.</value>
-        </member>
-        <member name="P:Umbraco.Core.Persistence.UnitOfWork.FileUnitOfWork.Operation.ProcessDate">
-            <summary>
-            Gets or sets the process date.
-            </summary>
-            <value>The process date.</value>
         </member>
         <member name="P:Umbraco.Core.Persistence.UnitOfWork.FileUnitOfWork.Operation.Repository">
             <summary>
@@ -11720,12 +11998,6 @@
             Gets or sets the entity.
             </summary>
             <value>The entity.</value>
-        </member>
-        <member name="P:Umbraco.Core.Persistence.UnitOfWork.PetaPocoUnitOfWork.Operation.ProcessDate">
-            <summary>
-            Gets or sets the process date.
-            </summary>
-            <value>The process date.</value>
         </member>
         <member name="P:Umbraco.Core.Persistence.UnitOfWork.PetaPocoUnitOfWork.Operation.Repository">
             <summary>
@@ -12971,6 +13243,12 @@
         <member name="M:Umbraco.Core.Models.Content.IsAnyUserPropertyDirty">
             <summary>
             Returns true if any of the properties are dirty
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Models.Content.GetDirtyUserProperties">
+            <summary>
+            Returns a list of all dirty user defined properties
             </summary>
             <returns></returns>
         </member>
@@ -15623,6 +15901,15 @@
             Marker interface for services, which is used to store difference services in a list or dictionary
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Services.IContentService.RebuildXmlStructures(System.Int32[])">
+            <summary>
+            Rebuilds all xml content in the cmsContentXml table for all documents
+            </summary>
+            <param name="contentTypeIds">
+            Only rebuild the xml structures for the content type ids passed in, if none then rebuilds the structures
+            for all content
+            </param>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:Umbraco.Core.Services.IContentService.ReplaceContentPermissions(Umbraco.Core.Models.Membership.EntityPermissionSet)" -->
         <member name="M:Umbraco.Core.Services.IContentService.AssignContentPermission(Umbraco.Core.Models.IContent,System.Char,System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
@@ -15711,11 +15998,24 @@
             Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
             </summary>
             <param name="id">Id of the Parent to retrieve Children from</param>
-            <param name="pageNumber">Page number</param>
+            <param name="pageIndex">Page number</param>
             <param name="pageSize">Page size</param>
             <param name="totalRecords">Total records query would return without paging</param>
             <param name="orderBy">Field to order by</param>
-            <param name="orderDirections">Direction to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IContentService.GetPagedDescendants(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Descendants from</param>
+            <param name="pageIndex">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
             <param name="filter">Search text filter</param>
             <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
@@ -16192,11 +16492,24 @@
             Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
             </summary>
             <param name="id">Id of the Parent to retrieve Children from</param>
-            <param name="pageNumber">Page number</param>
+            <param name="pageIndex">Page index (zero based)</param>
             <param name="pageSize">Page size</param>
-            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="totalChildren">Total records query would return without paging</param>
             <param name="orderBy">Field to order by</param>
-            <param name="orderDirections">Direction to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ContentService.GetPagedDescendants(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Descendants from</param>
+            <param name="pageIndex">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalChildren">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
             <param name="filter">Search text filter</param>
             <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
@@ -16504,13 +16817,6 @@
             <param name="raiseEvents"></param>
             <returns>True if sorting succeeded, otherwise False</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.ContentService.GetPublishedDescendants(Umbraco.Core.Models.IContent)">
-            <summary>
-            Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> descendants by the first Parent.
-            </summary>
-            <param name="content"><see cref="T:Umbraco.Core.Models.IContent"/> item to retrieve Descendants from</param>
-            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
-        </member>
         <member name="M:Umbraco.Core.Services.ContentService.RebuildXmlStructures(System.Int32[])">
             <summary>
             Rebuilds all xml content in the cmsContentXml table for all documents
@@ -16519,7 +16825,13 @@
             Only rebuild the xml structures for the content type ids passed in, if none then rebuilds the structures
             for all content
             </param>
-            <returns>True if publishing succeeded, otherwise False</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ContentService.GetPublishedDescendants(Umbraco.Core.Models.IContent)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> descendants by the first Parent.
+            </summary>
+            <param name="content"><see cref="T:Umbraco.Core.Models.IContent"/> item to retrieve Descendants from</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Services.ContentService.PublishWithChildrenDo(Umbraco.Core.Models.IContent,System.Int32,System.Boolean)">
             <summary>
@@ -16732,6 +17044,12 @@
             Defines the ContentTypeService, which is an easy access to operations involving <see cref="T:Umbraco.Core.Models.IContentType"/>
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Services.IContentTypeService.GetAllPropertyTypeAliases">
+            <summary>
+            Gets all property type aliases.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Umbraco.Core.Services.IContentTypeService.Copy(Umbraco.Core.Models.IContentType,System.String,System.String,System.Int32)">
             <summary>
             Copies a content type as a child under the specified parent if specified (otherwise to the root)
@@ -16909,6 +17227,12 @@
             </summary>
             <param name="id">Id of the <see cref="T:Umbraco.Core.Models.IMediaType"/></param>
             <returns>True if the media type has any children otherwise False</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ContentTypeService.GetAllPropertyTypeAliases">
+            <summary>
+            Gets all property type aliases.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Umbraco.Core.Services.ContentTypeService.Copy(Umbraco.Core.Models.IContentType,System.String,System.String,System.Int32)">
             <summary>
@@ -17139,13 +17463,20 @@
         </member>
         <member name="T:Umbraco.Core.Services.DataTypeService">
             <summary>
-            Represents the DataType Service, which is an easy access to operations involving <see cref="T:umbraco.interfaces.IDataType"/> and <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
+            Represents the DataType Service, which is an easy access to operations involving <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
             </summary>
         </member>
         <member name="T:Umbraco.Core.Services.IDataTypeService">
             <summary>
-            Defines the DataType Service, which is an easy access to operations involving <see cref="T:umbraco.interfaces.IDataType"/> and <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
+            Defines the DataType Service, which is an easy access to operations involving <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> 
             </summary>
+        </member>
+        <member name="M:Umbraco.Core.Services.IDataTypeService.GetDataTypeDefinitionByName(System.String)">
+            <summary>
+            Gets a <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> by its Name
+            </summary>
+            <param name="name">Name of the <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/></param>
+            <returns><see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IDataTypeService.GetDataTypeDefinitionById(System.Int32)">
             <summary>
@@ -17269,6 +17600,13 @@
             </summary>
             <param name="id">Id of the PreValue to retrieve the value from</param>
             <returns>PreValue as a string</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.DataTypeService.GetDataTypeDefinitionByName(System.String)">
+            <summary>
+            Gets a <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> by its Name
+            </summary>
+            <param name="name">Name of the <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/></param>
+            <returns><see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.DataTypeService.GetDataTypeDefinitionById(System.Int32)">
             <summary>
@@ -17543,25 +17881,35 @@
             <param name="umbracoObjectType">UmbracoObjectType of the root entities to retrieve</param>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.IEntityService.GetAll``1">
+        <member name="M:Umbraco.Core.Services.IEntityService.GetAll``1(System.Int32[])">
             <summary>
             Gets a collection of all <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> of a given type.
             </summary>
             <typeparam name="T">Type of the entities to retrieve</typeparam>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.IEntityService.GetAll(Umbraco.Core.Models.UmbracoObjectTypes)">
+        <member name="M:Umbraco.Core.Services.IEntityService.GetAll(Umbraco.Core.Models.UmbracoObjectTypes,System.Int32[])">
             <summary>
             Gets a collection of all <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> of a given type.
             </summary>
             <param name="umbracoObjectType">UmbracoObjectType of the entities to return</param>
+            <param name="ids"></param>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.IEntityService.GetAll(System.Guid)">
+        <member name="M:Umbraco.Core.Services.IEntityService.GetAll(Umbraco.Core.Models.UmbracoObjectTypes,System.Guid[])">
+            <summary>
+            Gets a collection of all <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> of a given type.
+            </summary>
+            <param name="umbracoObjectType">UmbracoObjectType of the entities to return</param>
+            <param name="keys"></param>
+            <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IEntityService.GetAll(System.Guid,System.Int32[])">
             <summary>
             Gets a collection of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/>
             </summary>
             <param name="objectTypeId">Guid id of the UmbracoObjectType</param>
+            <param name="ids"></param>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Services.IEntityService.GetObjectType(System.Int32)">
@@ -17679,25 +18027,27 @@
             <param name="umbracoObjectType">UmbracoObjectType of the root entities to retrieve</param>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.EntityService.GetAll``1">
+        <member name="M:Umbraco.Core.Services.EntityService.GetAll``1(System.Int32[])">
             <summary>
             Gets a collection of all <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> of a given type.
             </summary>
             <typeparam name="T">Type of the entities to retrieve</typeparam>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.EntityService.GetAll(Umbraco.Core.Models.UmbracoObjectTypes)">
+        <member name="M:Umbraco.Core.Services.EntityService.GetAll(Umbraco.Core.Models.UmbracoObjectTypes,System.Int32[])">
             <summary>
             Gets a collection of all <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> of a given type.
             </summary>
             <param name="umbracoObjectType">UmbracoObjectType of the entities to return</param>
+            <param name="ids"></param>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.EntityService.GetAll(System.Guid)">
+        <member name="M:Umbraco.Core.Services.EntityService.GetAll(System.Guid,System.Int32[])">
             <summary>
             Gets a collection of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/>
             </summary>
             <param name="objectTypeId">Guid id of the UmbracoObjectType</param>
+            <param name="ids"></param>
             <returns>An enumerable list of <see cref="T:Umbraco.Core.Models.EntityBase.IUmbracoEntity"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Services.EntityService.GetObjectType(System.Int32)">
@@ -17740,29 +18090,31 @@
             A helper class to serialize entities to XML
             </summary>
         </member>
-        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.Serialize(Umbraco.Core.Services.IContentService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IContent,System.Boolean)">
+        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.Serialize(Umbraco.Core.Services.IContentService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Services.IUserService,Umbraco.Core.Models.IContent,System.Boolean)">
             <summary>
             Exports an <see cref="T:Umbraco.Core.Models.IContent"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
             </summary>
             <param name="contentService"></param>
             <param name="dataTypeService"></param>
+            <param name="userService"></param>
             <param name="content">Content to export</param>
             <param name="deep">Optional parameter indicating whether to include descendents</param>
             <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Content object</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.Serialize(Umbraco.Core.Services.IMediaService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IMedia,System.Boolean)">
+        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.Serialize(Umbraco.Core.Services.IMediaService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Services.IUserService,Umbraco.Core.Models.IMedia,System.Boolean)">
             <summary>
             Exports an <see cref="T:Umbraco.Core.Models.IMedia"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
             </summary>
             <param name="mediaService"></param>
             <param name="dataTypeService"></param>
+            <param name="userService"></param>
             <param name="media">Media to export</param>
             <param name="deep">Optional parameter indicating whether to include descendents</param>
             <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the Media object</returns>
         </member>
         <member name="M:Umbraco.Core.Services.EntityXmlSerializer.Serialize(Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IMember)">
             <summary>
-            Exports an <see cref="T:Umbraco.Core.Models.IMedia"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
+            Exports an <see cref="T:Umbraco.Core.Models.IMember"/> item to xml as an <see cref="T:System.Xml.Linq.XElement"/>
             </summary>
             <param name="dataTypeService"></param>
             <param name="member">Member to export</param>
@@ -17784,12 +18136,13 @@
             <param name="contentType">Content type to export</param>
             <returns><see cref="T:System.Xml.Linq.XElement"/> containing the xml representation of the IContentType object</returns>
         </member>
-        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.AddChildXml(Umbraco.Core.Services.IMediaService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IMedia[],System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IMedia},System.Xml.Linq.XElement)">
+        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.AddChildXml(Umbraco.Core.Services.IMediaService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Services.IUserService,Umbraco.Core.Models.IMedia[],System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IMedia},System.Xml.Linq.XElement)">
             <summary>
             Used by Media Export to recursively add children
             </summary>
             <param name="mediaService"></param>
             <param name="dataTypeService"></param>
+            <param name="userService"></param>
             <param name="originalDescendants"></param>
             <param name="currentChildren"></param>
             <param name="currentXml"></param>
@@ -17803,12 +18156,13 @@
             <param name="nodeName">Name of the node</param>
             <returns><see cref="T:System.Xml.Linq.XElement"/></returns>
         </member>
-        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.AddChildXml(Umbraco.Core.Services.IContentService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Models.IContent[],System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IContent},System.Xml.Linq.XElement)">
+        <member name="M:Umbraco.Core.Services.EntityXmlSerializer.AddChildXml(Umbraco.Core.Services.IContentService,Umbraco.Core.Services.IDataTypeService,Umbraco.Core.Services.IUserService,Umbraco.Core.Models.IContent[],System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IContent},System.Xml.Linq.XElement)">
             <summary>
             Used by Content Export to recursively add children
             </summary>
             <param name="contentService"></param>
             <param name="dataTypeService"></param>
+            <param name="userService"></param>
             <param name="originalDescendants"></param>
             <param name="currentChildren"></param>
             <param name="currentXml"></param>
@@ -17847,7 +18201,7 @@
             <summary>
             Deletes a stylesheet by its name
             </summary>
-            <param name="name">Name incl. extension of the Stylesheet to delete</param>
+            <param name="path">Name incl. extension of the Stylesheet to delete</param>
             <param name="userId">Optional id of the user deleting the stylesheet</param>
         </member>
         <member name="M:Umbraco.Core.Services.IFileService.ValidateStylesheet(Umbraco.Core.Models.Stylesheet)">
@@ -17881,7 +18235,7 @@
             <summary>
             Deletes a script by its name
             </summary>
-            <param name="name">Name incl. extension of the Script to delete</param>
+            <param name="path">Name incl. extension of the Script to delete</param>
             <param name="userId">Optional id of the user deleting the script</param>
         </member>
         <member name="M:Umbraco.Core.Services.IFileService.ValidateScript(Umbraco.Core.Models.Script)">
@@ -17991,7 +18345,7 @@
             <summary>
             Deletes a stylesheet by its name
             </summary>
-            <param name="name">Name incl. extension of the Stylesheet to delete</param>
+            <param name="path">Name incl. extension of the Stylesheet to delete</param>
             <param name="userId"></param>
         </member>
         <member name="M:Umbraco.Core.Services.FileService.ValidateStylesheet(Umbraco.Core.Models.Stylesheet)">
@@ -18025,7 +18379,7 @@
             <summary>
             Deletes a script by its name
             </summary>
-            <param name="name">Name incl. extension of the Script to delete</param>
+            <param name="path">Name incl. extension of the Script to delete</param>
             <param name="userId"></param>
         </member>
         <member name="M:Umbraco.Core.Services.FileService.ValidateScript(Umbraco.Core.Models.Script)">
@@ -18372,6 +18726,15 @@
             Defines the Media Service, which is an easy access to operations involving <see cref="T:Umbraco.Core.Models.IMedia"/>
             </summary>
         </member>
+        <member name="M:Umbraco.Core.Services.IMediaService.RebuildXmlStructures(System.Int32[])">
+            <summary>
+            Rebuilds all xml content in the cmsContentXml table for all media
+            </summary>
+            <param name="contentTypeIds">
+            Only rebuild the xml structures for the content type ids passed in, if none then rebuilds the structures
+            for all media
+            </param>
+        </member>
         <member name="M:Umbraco.Core.Services.IMediaService.CreateMedia(System.String,System.Int32,System.String,System.Int32)">
             <summary>
             Creates an <see cref="T:Umbraco.Core.Models.IMedia"/> object using the alias of the <see cref="T:Umbraco.Core.Models.IMediaType"/>
@@ -18417,6 +18780,32 @@
             </summary>
             <param name="id">Id of the Parent to retrieve Children from</param>
             <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IMedia"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMediaService.GetPagedChildren(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IMedia"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Children from</param>
+            <param name="pageIndex">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMediaService.GetPagedDescendants(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IMedia"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Descendants from</param>
+            <param name="pageIndex">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalRecords">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMediaService.GetDescendants(System.Int32)">
             <summary>
@@ -18785,6 +19174,29 @@
             <param name="email">Email of the Member to create</param>
             <param name="memberType"><see cref="T:Umbraco.Core.Models.IMemberType"/> which the Member should be based on</param>
             <returns><see cref="T:Umbraco.Core.Models.IMember"/></returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMemberService.RebuildXmlStructures(System.Int32[])">
+            <summary>
+            Rebuilds all xml content in the cmsContentXml table for all documents
+            </summary>
+            <param name="contentTypeIds">
+            Only rebuild the xml structures for the content type ids passed in, if none then rebuilds the structures
+            for all content
+            </param>
+        </member>
+        <member name="M:Umbraco.Core.Services.IMemberService.GetAll(System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String,System.String)">
+            <summary>
+            Gets a list of paged <see cref="T:Umbraco.Core.Models.IMember"/> objects
+            </summary>
+            <remarks>An <see cref="T:Umbraco.Core.Models.IMember"/> can be of type <see cref="T:Umbraco.Core.Models.IMember"/> </remarks>
+            <param name="pageIndex">Current page index</param>
+            <param name="pageSize">Size of the page</param>
+            <param name="totalRecords">Total number of records found (out)</param>
+            <param name="orderBy"></param>
+            <param name="orderDirection"></param>
+            <param name="memberTypeAlias"></param>
+            <param name="filter"></param>
+            <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
         <member name="M:Umbraco.Core.Services.IMemberService.CreateMember(System.String,System.String,System.String,System.String)">
             <summary>
@@ -20128,6 +20540,32 @@
             <param name="id">Id of the Parent to retrieve Children from</param>
             <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IMedia"/> objects</returns>
         </member>
+        <member name="M:Umbraco.Core.Services.MediaService.GetPagedChildren(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IMedia"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Children from</param>
+            <param name="pageIndex">Page index (zero based)</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalChildren">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.MediaService.GetPagedDescendants(System.Int32,System.Int32,System.Int32,System.Int32@,System.String,Umbraco.Core.Persistence.DatabaseModelDefinitions.Direction,System.String)">
+            <summary>
+            Gets a collection of <see cref="T:Umbraco.Core.Models.IContent"/> objects by Parent Id
+            </summary>
+            <param name="id">Id of the Parent to retrieve Descendants from</param>
+            <param name="pageIndex">Page number</param>
+            <param name="pageSize">Page size</param>
+            <param name="totalChildren">Total records query would return without paging</param>
+            <param name="orderBy">Field to order by</param>
+            <param name="orderDirection">Direction to order by</param>
+            <param name="filter">Search text filter</param>
+            <returns>An Enumerable list of <see cref="T:Umbraco.Core.Models.IContent"/> objects</returns>
+        </member>
         <member name="M:Umbraco.Core.Services.MediaService.GetDescendants(System.Int32)">
             <summary>
             Gets descendants of a <see cref="T:Umbraco.Core.Models.IMedia"/> object by its Id
@@ -20281,7 +20719,6 @@
             Only rebuild the xml structures for the content type ids passed in, if none then rebuilds the structures
             for all media
             </param>
-            <returns>True if publishing succeeded, otherwise False</returns>
         </member>
         <member name="M:Umbraco.Core.Services.MediaService.UpdatePropertiesOnChildren(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IMedia},System.String,System.Int32,System.Boolean,System.Collections.Generic.ICollection{Umbraco.Core.Events.MoveEventInfo{Umbraco.Core.Models.IMedia}})">
             <summary>
@@ -20555,6 +20992,16 @@
             <param name="matchType">The type of match to make as <see cref="T:Umbraco.Core.Persistence.Querying.StringPropertyMatchType"/>. Default is <see cref="F:Umbraco.Core.Persistence.Querying.StringPropertyMatchType.Exact"/></param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/></returns>
         </member>
+        <member name="M:Umbraco.Core.Services.MemberService.RebuildXmlStructures(System.Int32[])">
+            <summary>
+            Rebuilds all xml content in the cmsContentXml table for all members
+            </summary>
+            <param name="memberTypeIds">
+            Only rebuild the xml structures for the content type ids passed in, if none then rebuilds the structures
+            for all members = USE WITH CARE!
+            </param>
+            <returns>True if publishing succeeded, otherwise False</returns>
+        </member>
         <member name="M:Umbraco.Core.Services.MemberService.GetCount(Umbraco.Core.Models.Membership.MemberCountType)">
             <summary>
             Gets the total number of Members based on the count type
@@ -20711,16 +21158,6 @@
             <param name="entities"><see cref="T:System.Collections.Generic.IEnumerable`1"/> to save</param>
             <param name="raiseEvents">Optional parameter to raise events. 
             Default is <c>True</c> otherwise set to <c>False</c> to not raise events</param>
-        </member>
-        <member name="M:Umbraco.Core.Services.MemberService.RebuildXmlStructures(System.Int32[])">
-            <summary>
-            Rebuilds all xml content in the cmsContentXml table for all members
-            </summary>
-            <param name="memberTypeIds">
-            Only rebuild the xml structures for the content type ids passed in, if none then rebuilds the structures
-            for all members = USE WITH CARE!
-            </param>
-            <returns>True if publishing succeeded, otherwise False</returns>
         </member>
         <member name="M:Umbraco.Core.Services.MemberService.CreateGenericMembershipProviderMember(System.String,System.String,System.String,System.String)">
             <summary>
@@ -25485,14 +25922,35 @@
             <returns>A value indicating whether it has been possible to create the element.</returns>
             <remarks>The value can be anything... Performance-wise, this is bad.</remarks>
         </member>
-        <member name="M:Umbraco.Core.XmlHelper.SortNodes(System.Xml.XmlNode,System.String,System.Func{System.Xml.Linq.XElement,System.Boolean},System.Func{System.Xml.Linq.XElement,System.Object})">
+        <member name="M:Umbraco.Core.XmlHelper.SortNodes(System.Xml.XmlNode,System.String,System.Func{System.Xml.XmlNode,System.Int32})">
             <summary>
-            Sorts the children of the parentNode that match the xpath selector 
+            Sorts the children of a parentNode.
             </summary>
-            <param name="parentNode"></param>
-            <param name="childXPathSelector">An xpath expression used to select child nodes of the XmlElement</param>
-            <param name="childSelector">An expression that returns true if the XElement passed in is a valid child node to be sorted</param>
-            <param name="orderByValue">The value to order the results by</param>
+            <param name="parentNode">The parent node.</param>
+            <param name="childNodesXPath">An XPath expression to select children of <paramref name="parentNode"/> to sort.</param>
+            <param name="orderBy">A function returning the value to order the nodes by.</param>
+        </member>
+        <member name="M:Umbraco.Core.XmlHelper.SortNodesIfNeeded(System.Xml.XmlNode,System.String,System.Func{System.Xml.XmlNode,System.Int32})">
+            <summary>
+            Sorts the children of a parentNode if needed.
+            </summary>
+            <param name="parentNode">The parent node.</param>
+            <param name="childNodesXPath">An XPath expression to select children of <paramref name="parentNode"/> to sort.</param>
+            <param name="orderBy">A function returning the value to order the nodes by.</param>
+            <returns>A value indicating whether sorting was needed.</returns>
+            <remarks>same as SortNodes but will do nothing if nodes are already sorted - should improve performances.</remarks>
+        </member>
+        <member name="M:Umbraco.Core.XmlHelper.SortNode(System.Xml.XmlNode,System.String,System.Xml.XmlNode,System.Func{System.Xml.XmlNode,System.Int32})">
+            <summary>
+            Sorts a single child node of a parentNode.
+            </summary>
+            <param name="parentNode">The parent node.</param>
+            <param name="childNodesXPath">An XPath expression to select children of <paramref name="parentNode"/> to sort.</param>
+            <param name="node">The child node to sort.</param>
+            <param name="orderBy">A function returning the value to order the nodes by.</param>
+            <returns>A value indicating whether sorting was needed.</returns>
+            <remarks>Assuming all nodes but <paramref name="node"/> are sorted, this will move the node to 
+            the right position without moving all the nodes (as SortNodes would do) - should improve perfs.</remarks>
         </member>
         <member name="M:Umbraco.Core.XmlHelper.ImportXmlNodeFromText(System.String,System.Xml.XmlDocument@)">
             <summary>

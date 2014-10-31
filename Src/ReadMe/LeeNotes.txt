@@ -1,8 +1,7 @@
-New Features
+TODO
 --------------------------
 
-1) Import Dashboard
-Allow users to import members, and also import posts & topics. Posts will fail if members not imported. Use XML structure for posts and members.
-Add to installer.
-
-2) Add message is user posts no content
+Facebook Login
+	- Sort issue with protected emails out
+	- Facebook member path - Check it saves correctly and shows up in the backoffice
+	- Upgrade to 7.2 and use the Prepare method (Look into Articulate)
