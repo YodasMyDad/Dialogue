@@ -64,6 +64,9 @@ namespace Dialogue.Logic.Routes
  
             foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropMemberUrlName)))
             {
+                if (string.IsNullOrWhiteSpace(nodeSearch.Key))
+                    continue;
+                    
                 var routeHash = nodeSearch.Key.GetHashCode();
 
                 //Create the route for the /search/{term} results
@@ -91,6 +94,9 @@ namespace Dialogue.Logic.Routes
         {
             foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropTopicUrlName)))
             {
+                if (string.IsNullOrWhiteSpace(nodeSearch.Key))
+                    continue;
+                    
                 var routeHash = nodeSearch.Key.GetHashCode();
 
                 //Create the route for the /search/{term} results
@@ -118,6 +124,9 @@ namespace Dialogue.Logic.Routes
 
             foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropDialogueUrlName)))
             {
+                if (string.IsNullOrWhiteSpace(nodeSearch.Key))
+                    continue;
+                    
                 var routeHash = nodeSearch.Key.GetHashCode();
 
                 routes.MapUmbracoRoute(
