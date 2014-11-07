@@ -62,6 +62,9 @@ namespace Dialogue.Logic.Services
 
         public void Delete(MemberPoints item)
         {
+            if (item == null)
+                return;
+                
             ContextPerRequest.Db.MemberPoints.Remove(item);
         }
 
