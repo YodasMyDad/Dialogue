@@ -22,16 +22,23 @@
     </div>
 </div>
 
-@foreach (var topic in Model.Topics)
+@if (Model.Topics.TotalCount > 0)
 {
-    // Get the permissions for this topic via its parent category
-    var permissions = Model.AllPermissionSets[topic.Category];
+    foreach (var topic in Model.Topics)
+    {
+        // Get the permissions for this topic via its parent category
+        var permissions = Model.AllPermissionSets[topic.Category];
 
-    var viewModel = new ViewTopicViewModel { Permissions = permissions, Topic = topic, User = Model.User, ShowCategoryName = true };
-    Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("TopicRow"), viewModel);
+        var viewModel = new ViewTopicViewModel { Permissions = permissions, Topic = topic, User = Model.User, ShowCategoryName = true };
+        Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("TopicRow"), viewModel);
+    }
+
+    if (Model.Topics.TotalPages > 1)
+    {
+        @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().TopicsPerPage, totalCount, null)
+    }
 }
-
-@if (Model.Topics.TotalPages > 1)
+else
 {
-    @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().TopicsPerPage, totalCount, null)
+    <p>@Html.Lang("Home.NoLatestDiscussions")</p>
 }
