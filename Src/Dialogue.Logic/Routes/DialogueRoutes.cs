@@ -11,14 +11,14 @@ using Umbraco.Web.PublishedCache;
 namespace Dialogue.Logic.Routes
 {
     public static class DialogueRoutes
-    {
+    {        
         public const string TopicRouteName = "dialogue_topic_{0}";
         public const string MemberRouteName = "dialogue_member_{0}";
         public const string DialoguePageRouteName = "dialogue_page_{0}";
 
         public static void MapRoutes(RouteCollection routes, ContextualPublishedCache umbracoCache)
         {
-            //find all Dialogue forum root nodes
+            //find all Dialogue forum root nodes - Testing adding new line
             var dialogueNodes = umbracoCache.GetByXPath(string.Concat("//", AppConstants.DocTypeForumRoot)).ToArray();
            
 
