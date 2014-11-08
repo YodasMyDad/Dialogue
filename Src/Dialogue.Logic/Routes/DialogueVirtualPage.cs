@@ -27,9 +27,9 @@ namespace Dialogue.Logic.Routes
             {
                 _urlPath = urlPath.SafeEncodeUrlSegments();
             }
-
+            
         }
-
+        
         public override string Url
         {
             get { return base.Url.EnsureEndsWith('/') + (_urlPath ?? UrlName); }

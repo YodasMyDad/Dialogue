@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -42,6 +43,37 @@ namespace Dialogue.Logic.Routes
             requestContext.RouteData.DataTokens.Add("umbraco-doc-request", umbracoContext.PublishedContentRequest);
             requestContext.RouteData.DataTokens.Add("umbraco-context", umbracoContext);
 
+            //Here we need to detect if a SurfaceController has posted
+            var formInfo = GetFormInfo(requestContext);
+            if (formInfo != null)
+            {
+                //TODO: We are using reflection for this but with the issue http://issues.umbraco.org/issue/U4-5710 fixed we 
+                // probably won't need to use our own custom router
+
+                //in order to allow a SurfaceController to work properly, the correct data token needs to be set, so we need to 
+                // add a custom RouteDefinition to the collection
+                var handle = Activator.CreateInstance("umbraco", "Umbraco.Web.Mvc.RouteDefinition", false, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, null, null, null);
+                var def = handle.Unwrap();
+
+                def.SetPropertyValue("PublishedContentRequest", umbracoContext.PublishedContentRequest);
+                def.SetPropertyValue("ControllerName", requestContext.RouteData.GetRequiredString("controller"));
+                def.SetPropertyValue("ActionName", requestContext.RouteData.GetRequiredString("action"));
+
+                requestContext.RouteData.DataTokens["umbraco-route-def"] = def;
+
+                try
+                {
+                    //First try to call this method as a static method (since it is a static method in umbraco 7.2)
+                    // if that fails then we will call it with a non static instance since that is how it was pre-7.2)
+                    return (IHttpHandler)typeof(RenderRouteHandler).CallStaticMethod("HandlePostedValues", requestContext, (object)formInfo);
+                }
+                catch (System.Reflection.TargetException)
+                {
+                    var rrh = new RenderRouteHandler(ControllerBuilder.Current.GetControllerFactory());
+                    return (IHttpHandler)rrh.CallMethod("HandlePostedValues", requestContext, (object)formInfo);
+                }
+            }
+
             return new MvcHandler(requestContext);
         }
 
@@ -58,16 +90,26 @@ namespace Dialogue.Logic.Routes
             // to find the domain.
 
             var engine = publishedContentRequest.GetPropertyValue("Engine");
-
-            var findDomainMethod = engine.GetType().GetMethod("FindDomain", BindingFlags.Instance |
-                                                                            BindingFlags.NonPublic |
-                                                                            BindingFlags.Public);
-            findDomainMethod.Invoke(engine, null);
-
+            engine.CallMethod("FindDomain");
 
             //NOTE: In Umbraco 7.2, when this is fixed: http://issues.umbraco.org/issue/U4-5628, we don't need to do this and 
             // we can just call Prepare(). Currently we cannot use reflection to call Prepare() because it will still launch
             // the content finders even though a content item is already assigned. in 7.2 this is also fixed.
+        }
+
+        /// <summary>
+        /// Check the request to see if a SurfaceController has posted any data via a SurfaceController
+        /// </summary>
+        /// <param name="requestContext"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This uses reflection to call the underlying logic that is done in the Umbraco core, this won't be necessary when this
+        /// issue is fixed: http://issues.umbraco.org/issue/U4-5710 since we don't have to use our own route handlers.
+        /// </remarks>
+        private dynamic GetFormInfo(RequestContext requestContext)
+        {
+            var result = typeof(RenderRouteHandler).CallStaticMethod("GetFormInfo", requestContext);
+            return result;
         }
     }
 }

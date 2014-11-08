@@ -19,10 +19,7 @@
             //remove the last element
             subPath.pop();
             //add the new element
-            var parts = filePath.split("/");
-            //remove the first bit which will either be "Partials" or "MacroPartials"
-            parts.shift();
-            subPath.push(parts.join("/"));
+            subPath.push(filePath.split("/")[1]);
             this._opts.treeSyncPath = subPath.join();
         },
 
@@ -72,33 +69,6 @@
             });
         },
 
-
-        openQueryModal: function () {
-            /// <summary>callback used to display the modal dialog to insert a macro with parameters</summary>
-
-            var self = this;
-
-            UmbClientMgr.openAngularModalWindow({
-                template: "views/common/dialogs/template/queryBuilder.html",
-                callback: function (data) {
-
-                    //var dataFormatted = data.replace(new RegExp('[' + "." + ']', 'g'), "\n\t\t\t\t\t.");
-
-                    var code = "\n@{\n" + "\tvar selection = " + data + ";\n}\n";
-                    code += "<ul>\n" +
-                                "\t@foreach(var item in selection){\n" +
-                                    "\t\t<li>\n" +
-                                        "\t\t\t<a href=\"@item.Url\">@item.Name</a>\n" +
-                                    "\t\t</li>\n" +
-                                "\t}\n" +
-                            "</ul>\n\n";
-
-                    UmbEditor.Insert(code, '', self._opts.codeEditorElementId);
-                }
-            });
-        },
-
-
         doSubmit: function () {
             /// <summary>Submits the data to the server for saving</summary>
             var codeVal = UmbClientMgr.contentFrame().UmbEditor.GetCode();
@@ -125,9 +95,8 @@
             }
             else {
                 //saving a partial view    
-                var actionName = this._opts.editorType === "PartialViewMacro" ? "SavePartialViewMacro" : "SavePartialView";
 
-                $.post(self._opts.restServiceLocation + actionName,
+                $.post(self._opts.restServiceLocation + "SavePartialView",
                     JSON.stringify({
                         filename: this._opts.nameTxtBox.val(),
                         oldName: this._opts.originalFileName,

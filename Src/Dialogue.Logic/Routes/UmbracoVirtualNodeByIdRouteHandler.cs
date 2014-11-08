@@ -30,7 +30,7 @@ namespace Dialogue.Logic.Routes
                 }
                 else
                 {
-                    _hostsAndIds.Add(new Tuple<string, int>(string.Empty, publishedContent.Id));       
+                    _hostsAndIds.Add(new Tuple<string, int>(string.Empty, publishedContent.Id));
                 }
             }
         }
@@ -82,9 +82,9 @@ namespace Dialogue.Logic.Routes
             //    var domain = Domain.GetDomain(hostAndId.Item1);
             //    publishedContentRequest.Culture = new CultureInfo(domain.Language.CultureAlias);
             //}
-            
-            base.PreparePublishedContentRequest(publishedContentRequest);          
-            
+
+            base.PreparePublishedContentRequest(publishedContentRequest);
+
         }
     }
 }

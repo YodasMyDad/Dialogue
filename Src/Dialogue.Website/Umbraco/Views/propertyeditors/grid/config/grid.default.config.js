@@ -1,33 +1,29 @@
 var uSkyGridConfig = [
 {
-    layouts: [
+    columns: [
     {
         grid: 12,
         percentage: 100,
-        
-        
-        rows: [
+
+        cellModels: [
         {
             name: "Single column",
-                columns: [{
-                    grid: 12,
-                    percentage: 100
-                }]
-        }, 
-
-        {
+            models: [{
+                grid: 12,
+                percentage: 100
+            }]
+        }, {
             name: "Article",
-                models: [{
-                    grid: 4,
-                    percentage: 33.3,
-                    allowed: ["media","quote"]
-                }, {
-                    grid: 8,
-                    percentage: 66.6,
-                    allowed: ["rte"]
-                }]
+            models: [{
+                grid: 4,
+                percentage: 33.3,
+                allowed: ["media","quote"]
+            }, {
+                grid: 8,
+                percentage: 66.6,
+                allowed: ["rte"]
+            }]
         },
-
         {
          name: "Article, reverse",
          models: [
@@ -96,7 +92,6 @@ var uSkyGridConfig = [
     {
         grid: 9,
         percentage: 70,
-        
         cellModels: [
         {
             models: [{

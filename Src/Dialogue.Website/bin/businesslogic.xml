@@ -852,12 +852,6 @@
             </summary>
             <value>The current user.</value>
         </member>
-        <member name="T:umbraco.BasePages.UmbracoEnsuredPage.WebformsPageTreeAuthorizeAttribute">
-            <summary>
-            Used to assign a webforms page's security to a specific tree which will in turn check to see
-            if the current user has access to the specified tree's registered section
-            </summary>
-        </member>
         <member name="T:umbraco.businesslogic.Exceptions.UserAuthorizationException">
             <summary>
             Exception class when an Umbraco user either has wrong credentials or insufficient permissions

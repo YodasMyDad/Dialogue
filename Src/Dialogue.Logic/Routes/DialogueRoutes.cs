@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Dialogue.Logic.Constants;
@@ -25,6 +26,9 @@ namespace Dialogue.Logic.Routes
             // any articulate nodes are updated with new values
             using (routes.GetWriteLock())
             {
+                //clear the existing articulate routes (if any)
+                RemoveExisting(routes);
+
                 // For each articulate root, we need to create some custom route, BUT routes can overlap
                 // based on multi-tenency so we need to deal with that. 
                 // For example a root articulate node might yield a route like:
@@ -39,14 +43,6 @@ namespace Dialogue.Logic.Routes
                 var groups = dialogueNodes.GroupBy(x => RouteCollectionExtensions.RoutePathFromNodeUrl(x.Url));
                 foreach (var grouping in groups)
                 {
-                    var groupHash = grouping.Key.GetHashCode();
-
-                    RemoveExisting(routes,
-                        string.Format(TopicRouteName, groupHash),
-                        string.Format(MemberRouteName, groupHash),
-                        string.Format(DialoguePageRouteName, groupHash)
-                    );
-
                     var nodesAsArray = grouping.ToArray();
 
                     MapTopicRoute(routes, grouping.Key, nodesAsArray);
@@ -137,15 +133,23 @@ namespace Dialogue.Logic.Routes
             }
         }
 
-        private static void RemoveExisting(RouteCollection routes, params string[] names)
+        /// <summary>
+        /// Removes existing articulate custom routes
+        /// </summary>
+        /// <param name="routes"></param>
+        private static void RemoveExisting(ICollection<RouteBase> routes)
         {
-            foreach (var name in names)
+            var articulateRoutes = routes
+                .OfType<Route>()
+                .Where(x =>
+                    x.DataTokens != null
+                    && x.DataTokens.ContainsKey("__RouteName")
+                    && ((string)x.DataTokens["__RouteName"]).InvariantStartsWith("dialogue_"))
+                .ToArray();
+
+            foreach (var route in articulateRoutes)
             {
-                var r = routes[name];
-                if (r != null)
-                {
-                    routes.Remove(r);
-                }
+                routes.Remove(route);
             }
         }
     }

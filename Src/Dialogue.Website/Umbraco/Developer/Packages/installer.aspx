@@ -74,10 +74,8 @@
             <cc1:PropertyPanel runat="server" Text="&nbsp;">
                 <asp:Button ID="ButtonLoadPackage" runat="server" Enabled="false" Text="Load Package"
                     OnClick="uploadFile"></asp:Button>
-                <div id="loadingbar" style="display: none;">
-                    <div class="umb-loader-wrapper">
-                        <cc1:ProgressBar ID="progbar1" runat="server" Title="Please wait..." />
-                    </div>
+                <div id="loadingbar" style="display: none; overflow: hidden; margin-left: -100%; margin-right: -20px;">
+                    <cc1:ProgressBar ID="progbar1" runat="server" Title="Please wait..." />
                 </div>
             </cc1:PropertyPanel>
         </cc1:Pane>
@@ -254,12 +252,10 @@
 
                 <cc1:PropertyPanel runat="server" Text=" ">
                     <br />
-                    <div id="installingMessage" style="display: none;">
-                        <div class="umb-loader-wrapper">
-                            <cc1:ProgressBar runat="server" ID="_progbar1" />
-                        </div>
+                    <div id="installingMessage" style="display: none; overflow: hidden; margin-left: -100%; margin-right: -20px;">
+                        <cc1:ProgressBar runat="server" ID="_progbar1" />
                         <br />
-                        <em>Installing package, please wait...</em><br /><br />
+                        <em>&nbsp; &nbsp;Installing package, please wait...</em><br />
                     </div>
                     <asp:Button ID="ButtonInstall" runat="server" Text="Install Package" CssClass="btn btn-primary" Enabled="False"
                         OnClick="startInstall"></asp:Button>

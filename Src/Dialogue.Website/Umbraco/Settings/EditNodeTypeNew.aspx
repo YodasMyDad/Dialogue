@@ -6,14 +6,12 @@
 
 <asp:Content ContentPlaceHolderID="head" runat="server">
     <script type="text/javascript">
-        $(document).ready(function () {
-
-            UmbClientMgr.appActions().bindSaveShortCut();
+        jQuery(document).ready(function () {
 
             // Auto selection/de-selection of default template based on allow templates
-            $("#<%= templateList.ClientID %> input[type='checkbox']").on("change", function() {
-                var checkbox = $(this);
-                var ddl = $("#<%= ddlTemplates.ClientID %>");
+            jQuery("#<%= templateList.ClientID %> input[type='checkbox']").on("change", function() {
+                var checkbox = jQuery(this);
+                var ddl = jQuery("#<%= ddlTemplates.ClientID %>");
                 // If default template is not set, and an allowed template is selected, auto-select the default template
                 if (checkbox.is(":checked")) {
                     if (ddl.val() == "0") {
@@ -29,10 +27,10 @@
             });
 
             // Auto selection allowed template based on default template
-            $("#<%= ddlTemplates.ClientID %>").on("change", function () {
-                var ddl = $(this);
+            jQuery("#<%= ddlTemplates.ClientID %>").on("change", function () {
+                var ddl = jQuery(this);
                 if (ddl.val() != "0") {
-                    $("#<%= templateList.ClientID %> input[type='checkbox'][value='" + ddl.val() + "']").prop("checked", true);
+                    jQuery("#<%= templateList.ClientID %> input[type='checkbox'][value='" + ddl.val() + "']").prop("checked", true);
                 }
             });
         });
@@ -54,4 +52,9 @@
                 runat="server" />
         </cc1:PropertyPanel>
     </cc1:Pane>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            UmbClientMgr.appActions().bindSaveShortCut();
+        });
+    </script>
 </asp:Content>

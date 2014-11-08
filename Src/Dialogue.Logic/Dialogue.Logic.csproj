@@ -283,6 +283,7 @@
     <Compile Include="Routes\RouteCollectionExtensions.cs" />
     <Compile Include="Routes\UmbracoVirtualNodeByIdRouteHandler.cs" />
     <Compile Include="Routes\UmbracoVirtualNodeRouteHandler.cs" />
+    <Compile Include="Routes\VirtualNodeUrlProvider.cs" />
     <Compile Include="Services\ActivityService.cs" />
     <Compile Include="Services\BadgeService.cs" />
     <Compile Include="Services\BannedEmailService.cs" />

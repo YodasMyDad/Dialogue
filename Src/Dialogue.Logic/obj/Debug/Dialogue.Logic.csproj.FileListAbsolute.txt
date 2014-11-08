@@ -13,6 +13,7 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Skybrud.Social.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Extensions.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Primitives.dll
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Mvc.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Umbraco.Core.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.DataLayer.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.dll
@@ -26,7 +27,6 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Microsoft.Web.Mvc.FixedDispl
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\CookComputing.XmlRpcV2.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Examine.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Lucene.Net.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\dotless.Core.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\UmbracoExamine.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\log4net.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MySql.Data.dll
@@ -42,6 +42,7 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\interfaces.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Newtonsoft.Json.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Extensions.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Net.Http.Primitives.xml
+D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\System.Web.Mvc.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Umbraco.Core.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.DataLayer.xml
@@ -51,6 +52,5 @@ D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\Lucene.Net.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\UmbracoExamine.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\MiniProfiler.xml
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\bin\umbraco.XmlSerializers.dll
-D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.csprojResolveAssemblyReference.cache
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.dll
 D:\Dropbox\Projects\Dialogue\Src\Dialogue.Logic\obj\Debug\Dialogue.Logic.pdb
