@@ -65,7 +65,7 @@ namespace Dialogue.Logic.Services
         public IEnumerable<Category> GetAllMainCategories()
         {
             return CategoryMapper.MapCategory(_forumRootNode.Descendants(AppConstants.DocTypeForumCategory)
-                                                .Where(x => !x.Children.Any()).ToList());
+                                                .Where(x => x.Parent.DocumentTypeAlias != AppConstants.DocTypeForumCategory).ToList());
 
 
         }

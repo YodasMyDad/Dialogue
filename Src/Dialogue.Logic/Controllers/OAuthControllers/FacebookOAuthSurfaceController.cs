@@ -154,7 +154,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                         var me = service.Methods.Me();
 
                         // Get debug information about the access token
-                        var debug = service.Methods.DebugToken(userAccessToken);
+                        //var debug = service.Methods.DebugToken(userAccessToken);
 
                         // Set the callback data
                         var data = new FacebookOAuthData
@@ -162,8 +162,8 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                             Id = me.Id,
                             Name = me.Name ?? me.UserName,
                             AccessToken = userAccessToken,
-                            ExpiresAt = debug.ExpiresAt == null ? default(DateTime) : debug.ExpiresAt.Value,
-                            Scope = debug.Scopes
+                            //ExpiresAt = debug.ExpiresAt == null ? default(DateTime) : debug.ExpiresAt.Value,
+                            //Scope = debug.Scopes
                         };
 
                         // Try to get the email - Some FB accounts have protected passwords
