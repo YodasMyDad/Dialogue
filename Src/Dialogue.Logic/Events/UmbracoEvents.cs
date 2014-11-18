@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Routing;
+using System.Web.UI;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Data.Context;
@@ -45,6 +46,8 @@ namespace Dialogue.Logic.Events
 
             MemberService.Saved += MemberServiceSaved;
             MemberService.Deleting += MemberServiceOnDeleting;
+            ContentService.Trashing +=ContentService_Trashing;
+
             PageCacheRefresher.CacheUpdated += PageCacheRefresher_CacheUpdated;
 
             // Sync the badges
@@ -65,12 +68,20 @@ namespace Dialogue.Logic.Events
 
         }
 
+        private static void ContentService_Trashing(IContentService sender, MoveEventArgs<IContent> e)
+        {
+            //TODO - Stop Categories being deleted if they have topics still using them
+            //e.Cancel = true;
+            //AppHelpers.UmbServices().NotificationService.CreateNotification();
+        }
+
+
         /// <summary>
         /// Bind to the PostRequestHandlerExecute event of the HttpApplication
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void UmbracoApplicationBase_ApplicationInit(object sender, EventArgs e)
+        private static void UmbracoApplicationBase_ApplicationInit(object sender, EventArgs e)
         {
             var app = (UmbracoApplicationBase)sender;
             app.PostRequestHandlerExecute += UmbracoApplication_PostRequestHandlerExecute;
@@ -85,7 +96,7 @@ namespace Dialogue.Logic.Events
         /// In some cases many articulate roots might be published at one time but we only want to rebuild the routes once so we'll do it once
         /// at the end of the request.
         /// </remarks>
-        void UmbracoApplication_PostRequestHandlerExecute(object sender, EventArgs e)
+        private static void UmbracoApplication_PostRequestHandlerExecute(object sender, EventArgs e)
         {
             if (ApplicationContext.Current == null) return;
             if (ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem("dialogue-refresh-routes") == null) return;
@@ -102,7 +113,7 @@ namespace Dialogue.Logic.Events
         /// <remarks>
         /// This will also work for load balanced scenarios since this event executes on all servers
         /// </remarks>
-        void PageCacheRefresher_CacheUpdated(PageCacheRefresher sender, Umbraco.Core.Cache.CacheRefresherEventArgs e)
+        private static void PageCacheRefresher_CacheUpdated(PageCacheRefresher sender, Umbraco.Core.Cache.CacheRefresherEventArgs e)
         {
             if (UmbracoContext.Current == null) return;
 
@@ -130,7 +141,7 @@ namespace Dialogue.Logic.Events
             }
         }
 
-        private void MemberServiceOnDeleting(IMemberService sender, DeleteEventArgs<IMember> deleteEventArgs)
+        private static void MemberServiceOnDeleting(IMemberService sender, DeleteEventArgs<IMember> deleteEventArgs)
         {
 
             var memberService = new Services.MemberService();
@@ -145,10 +156,10 @@ namespace Dialogue.Logic.Events
                         if (!canDelete)
                         {
                             deleteEventArgs.Cancel = true;
-                            //TODO - Check this notification works - It doesn't!! Need to sort
-                            //DialogueService??
-                            var basePage = ((BasePage)HttpContext.Current.Handler);
-                            basePage.ClientTools.ShowSpeechBubble(SpeechBubbleIcon.Error, "Error", "Unable to delete member. Check logfile for further information");
+                            //TODO - THIS DOESN'T WORK
+                            var clientTool = new ClientTools((Page)HttpContext.Current.CurrentHandler);
+                            clientTool.ShowSpeechBubble(SpeechBubbleIcon.Error, "Error", "Unable to delete member. Check logfile for further information");
+
                             break;
 
                         }
@@ -163,7 +174,7 @@ namespace Dialogue.Logic.Events
 
         }
 
-        static void MemberServiceSaved(IMemberService sender, SaveEventArgs<IMember> e)
+        private static void MemberServiceSaved(IMemberService sender, SaveEventArgs<IMember> e)
         {
             var mService = new Services.MemberService();
             foreach (var entity in e.SavedEntities)

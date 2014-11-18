@@ -36,6 +36,7 @@ namespace Dialogue.Logic.Controllers
                                 var categoryNotification = new CategoryNotification
                                 {
                                     Category = cat,
+                                    CategoryId = cat.Id,
                                     Member = CurrentMember,
                                     MemberId = CurrentMember.Id
                                 };
