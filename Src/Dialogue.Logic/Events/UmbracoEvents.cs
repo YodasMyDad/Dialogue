@@ -1,6 +1,5 @@
-﻿using System.Web;
+﻿using System.Linq;
 using System.Web.Routing;
-using System.Web.UI;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Data.Context;
@@ -15,8 +14,6 @@ using Umbraco.Core.Sync;
 using Umbraco.Web;
 using Umbraco.Web.Cache;
 using Umbraco.Web.Routing;
-using Umbraco.Web.UI;
-using Umbraco.Web.UI.Pages;
 using MemberService = Umbraco.Core.Services.MemberService;
 using System;
 
@@ -70,9 +67,25 @@ namespace Dialogue.Logic.Events
 
         private static void ContentService_Trashing(IContentService sender, MoveEventArgs<IContent> e)
         {
-            //TODO - Stop Categories being deleted if they have topics still using them
-            //e.Cancel = true;
-            //AppHelpers.UmbServices().NotificationService.CreateNotification();
+            // TODO - Stop Categories being deleted if they have topics still using them
+            // TODO - Log it, notifications don't work
+            foreach (var item in e.MoveInfoCollection)
+            {
+                if (item.Entity.ContentType.Alias == AppConstants.DocTypeForumCategory)
+                {
+                    // This is a category attempting to be moved to the Recycle bin
+                    // See if any topics are currently using the category
+                    var topics = ServiceFactory.TopicService.GetPagedTopicsByCategory(1, Int32.MaxValue, Int32.MaxValue, item.Entity.Id);
+                    if (topics.Any())
+                    {
+                        // We have topics using it, so stop the move
+                        e.Cancel = true;
+
+                        //TODO - Still can't create a notification so just log it
+                        AppHelpers.LogError(string.Format("Unable to delete Category, it's currently being used by {0} topic(s)", topics.Count));
+                    }
+                }
+            }
         }
 
 
@@ -156,9 +169,10 @@ namespace Dialogue.Logic.Events
                         if (!canDelete)
                         {
                             deleteEventArgs.Cancel = true;
-                            //TODO - THIS DOESN'T WORK
-                            var clientTool = new ClientTools((Page)HttpContext.Current.CurrentHandler);
-                            clientTool.ShowSpeechBubble(SpeechBubbleIcon.Error, "Error", "Unable to delete member. Check logfile for further information");
+                            //TODO - THIS DOESN'T WORK - JUST LOG IT
+                            //var clientTool = new ClientTools((Page)HttpContext.Current.CurrentHandler);
+                            //clientTool.ShowSpeechBubble(SpeechBubbleIcon.Error, "Error", "Unable to delete member. Check logfile for further information");
+                            AppHelpers.LogError(string.Format("There was an error attemping to delete member {0} and all of their associated data (Posts, Topics etc...)", member.Name));
 
                             break;
 

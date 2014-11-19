@@ -131,7 +131,7 @@ p.postlastedited { font-size: 10px; font-style: italic; color: #777; }
 
 /*--- Uploaded Files on posts ---*/
 .postuploadedfilesholder { }
-.postuploadedfilesholder .pills { float: left; }
+.postuploadedfilesholder .pills { float: left;margin-bottom: 3px;}
 .postuploadedfilesholder .pills .glyphicon-remove { font-size: 16px; padding-left: 8px; }
 p.uploadfileheading { margin: 0 0 0 0; padding: 6px 0 4px 0; font-size: 13px; font-style: italic; color: #ccc; }
 
