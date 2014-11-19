@@ -16,7 +16,7 @@ Cached/
 **/App_Data/umbraco.config
 
 # Ignore logic files
-**/Dialogue.Logic/bin/
+#**/Dialogue.Logic/bin/
 
 
 # =========================
@@ -67,5 +67,5 @@ $RECYCLE.BIN/
 Src/Dialogue.Logic/bin/
 Src/Dialogue.Logic/obj/
 Src/Dialogue.Website/App_Data/cache/
-Src/Dialogue.Website/App_Plugins/Dialogue/Content/MemberUploads/1144/6aeebd68-b30e-44cf-af90-a38d0079eb93_445561-81682221.jpg
+Src/Dialogue.Website/App_Plugins/Dialogue/Content/MemberUploads/
 /Src/Dialogue.Website/Media
