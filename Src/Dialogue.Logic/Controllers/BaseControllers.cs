@@ -15,7 +15,7 @@ namespace Dialogue.Logic.Controllers
     // TODO - This is duplicated code! Refactor
 
     #region Render Controller
-    public class BaseRenderController : RenderMvcController
+    public partial class BaseRenderController : RenderMvcController
     {
         protected readonly UnitOfWorkManager UnitOfWorkManager;
 
@@ -116,7 +116,7 @@ namespace Dialogue.Logic.Controllers
     #endregion
 
     #region Surface Controller
-    public class BaseSurfaceController : SurfaceController
+    public partial class BaseSurfaceController : SurfaceController
     {
         protected readonly UnitOfWorkManager UnitOfWorkManager;
 

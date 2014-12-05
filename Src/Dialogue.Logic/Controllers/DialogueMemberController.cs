@@ -18,7 +18,7 @@ namespace Dialogue.Logic.Controllers
 {
     #region Render Controllers
 
-    public class DialogueMemberController : BaseRenderController
+    public partial class DialogueMemberController : BaseRenderController
     {
         private readonly IMemberGroup _membersGroup;
 

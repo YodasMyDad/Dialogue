@@ -11,7 +11,7 @@ using Umbraco.Core.Models;
 
 namespace Dialogue.Logic.Controllers
 {
-    public class DialogueUploadSurfaceController : BaseSurfaceController
+    public partial class DialogueUploadSurfaceController : BaseSurfaceController
     {
         private readonly IMemberGroup _membersGroup;
 

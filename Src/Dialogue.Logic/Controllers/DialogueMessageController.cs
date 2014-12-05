@@ -9,7 +9,7 @@ using Dialogue.Logic.Services;
 namespace Dialogue.Logic.Controllers
 {
     #region Base Controllers
-    public class DialogueMessageSurfaceController : BaseSurfaceController
+    public partial class DialogueMessageSurfaceController : BaseSurfaceController
     {
         [Authorize]
         [HttpPost]

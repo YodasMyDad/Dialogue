@@ -7,7 +7,7 @@ using Dialogue.Logic.Services;
 
 namespace Dialogue.Logic.Controllers
 {
-    public class DialogueVoteSurfaceController : BaseSurfaceController
+    public partial class DialogueVoteSurfaceController : BaseSurfaceController
     {
         [HttpPost]
         [Authorize]

@@ -15,7 +15,7 @@ using Umbraco.Core.Models;
 namespace Dialogue.Logic.Controllers
 {
     #region MVC Controllers
-    public class DialoguePostSurfaceController : BaseSurfaceController
+    public partial class DialoguePostSurfaceController : BaseSurfaceController
     {
         private readonly IMemberGroup _membersGroup;
 

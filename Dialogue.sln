@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dialogue.Logic", "Src\Dialogue.Logic\Dialogue.Logic.csproj", "{DD101876-52AC-494C-B1FB-78A205C05AB3}"
 EndProject
@@ -28,9 +28,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Dialogue.Website", "http://
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{389FF9D0-561B-4C10-8F2F-F30212BFBE8A}"
-	ProjectSection(SolutionItems) = preProject
-		Src\Database\dialogueforumbraco.zip = Src\Database\dialogueforumbraco.zip
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Badges", "Badges", "{4F21FD6C-D6AD-428E-8AE0-537F771769AE}"
 EndProject

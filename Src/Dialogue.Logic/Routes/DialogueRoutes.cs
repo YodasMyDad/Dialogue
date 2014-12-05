@@ -99,7 +99,7 @@ namespace Dialogue.Logic.Routes
                     
                 var routeHash = nodeSearch.Key.GetHashCode();
 
-                //Create the route for the /search/{term} results
+                //Create the route for the /topic/{topic-name-here}
                 routes.MapUmbracoRoute(
                     string.Format(TopicRouteName, routeHash),
                     (nodeRoutePath.EnsureEndsWith('/') + nodeSearch.Key + "/{topicname}").TrimStart('/'),

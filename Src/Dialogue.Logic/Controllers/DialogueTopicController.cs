@@ -17,7 +17,7 @@ using System.Text;
 namespace Dialogue.Logic.Controllers
 {
     #region Render Controllers
-    public class DialogueTopicController : BaseRenderController
+    public partial class DialogueTopicController : BaseRenderController
     {
         private readonly IMemberGroup _membersGroup;
 

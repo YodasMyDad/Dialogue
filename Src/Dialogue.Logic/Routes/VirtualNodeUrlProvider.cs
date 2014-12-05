@@ -5,6 +5,10 @@ using Umbraco.Web.Routing;
 
 namespace Dialogue.Logic.Routes
 {
+    /// <summary>
+    /// This is used purely so that RedirectToCurrentUmbracoPage works in SurfaceControllers with virtual nodes / custom routes.
+    /// There may be more benefits to this but I'm not sure yet.
+    /// </summary>
     internal class VirtualNodeUrlProvider : IUrlProvider
     {
         /// <summary>

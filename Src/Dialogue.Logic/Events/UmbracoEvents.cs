@@ -65,6 +65,7 @@ namespace Dialogue.Logic.Events
 
         }
 
+
         private static void ContentService_Trashing(IContentService sender, MoveEventArgs<IContent> e)
         {
             // TODO - Stop Categories being deleted if they have topics still using them

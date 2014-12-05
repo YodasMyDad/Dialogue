@@ -50,8 +50,9 @@
     <Reference Include="controls">
       <HintPath>..\Dialogue.Website\bin\controls.dll</HintPath>
     </Reference>
-    <Reference Include="EFCache">
-      <HintPath>..\..\packages\EntityFramework.Cache.1.0.0-beta\lib\net45\EFCache.dll</HintPath>
+    <Reference Include="EFCache, Version=1.0.0.0, Culture=neutral, PublicKeyToken=46c4868af4307d2c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.Cache.1.0.0\lib\net45\EFCache.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -163,7 +164,6 @@
     <Compile Include="Controllers\DialoguePollController.cs" />
     <Compile Include="Controllers\DialoguePostController.cs" />
     <Compile Include="Controllers\DialogueTopicController.cs" />
-    <Compile Include="Controllers\DialogueTreeController.cs" />
     <Compile Include="Controllers\DialogueMemberController.cs" />
     <Compile Include="Controllers\ApiControllers\CssPickerController.cs" />
     <Compile Include="Controllers\DialogueUploadController.cs" />

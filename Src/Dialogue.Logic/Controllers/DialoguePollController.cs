@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
@@ -9,7 +7,7 @@ using Dialogue.Logic.Services;
 
 namespace Dialogue.Logic.Controllers
 {
-    public class DialoguePollSurfaceController : BaseSurfaceController
+    public partial class DialoguePollSurfaceController : BaseSurfaceController
     {
         [HttpPost]
         public PartialViewResult UpdatePoll(UpdatePollViewModel updatePollViewModel)

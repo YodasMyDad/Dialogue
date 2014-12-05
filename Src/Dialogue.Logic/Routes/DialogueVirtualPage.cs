@@ -15,8 +15,8 @@ namespace Dialogue.Logic.Routes
         private readonly string _pageTypeAlias;
         private readonly string _urlPath;
 
-        public DialogueVirtualPage(IPublishedContent rootBlogPage, string pageName, string pageTypeAlias, string urlPath = null)
-            : base(rootBlogPage)
+        public DialogueVirtualPage(IPublishedContent rootForumPage, string pageName, string pageTypeAlias, string urlPath = null)
+            : base(rootForumPage)
         {
             if (pageName == null) throw new ArgumentNullException("pageName");
             if (pageTypeAlias == null) throw new ArgumentNullException("pageTypeAlias");
@@ -35,11 +35,9 @@ namespace Dialogue.Logic.Routes
             get { return base.Url.EnsureEndsWith('/') + (_urlPath ?? UrlName); }
         }
 
-        public override PublishedContentType ContentType
-        {
-            get { return null; }
-        }
-
+        /// <summary>
+        /// Returns the content that was used to create this virtual node - we'll assume this virtual node's parent is based on the real node that created it
+        /// </summary>
         public override IPublishedContent Parent
         {
             get { return Content; }
