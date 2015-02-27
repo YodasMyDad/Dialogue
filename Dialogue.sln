@@ -28,6 +28,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Dialogue.Website", "http://
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{389FF9D0-561B-4C10-8F2F-F30212BFBE8A}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Database\dialogueforumbraco.zip = Src\Database\dialogueforumbraco.zip
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Badges", "Badges", "{4F21FD6C-D6AD-428E-8AE0-537F771769AE}"
 EndProject
@@ -52,13 +55,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Externals", "Externals", "{9EF25FB9-B4FA-46F5-BF0C-41408E26B3C1}"
 	ProjectSection(SolutionItems) = preProject
 		Src\Externals\PackageActionsContrib.dll = Src\Externals\PackageActionsContrib.dll
-		Src\Externals\Skybrud.Social.dll = Src\Externals\Skybrud.Social.dll
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{17339EAC-97E8-4EA2-B055-59834026F20D}"
 	ProjectSection(SolutionItems) = preProject
 		Src\ReadMe\LeeNotes.txt = Src\ReadMe\LeeNotes.txt
 		ReadMe.md = ReadMe.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7B0FC57C-DE50-46C4-A328-3A0432482AA2}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
 Global

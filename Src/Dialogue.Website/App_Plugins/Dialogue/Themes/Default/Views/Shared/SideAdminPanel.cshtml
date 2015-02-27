@@ -13,12 +13,12 @@
     <li>
         <a href="@Urls.GenerateUrl(Urls.UrlType.MessageInbox)">
             @Html.Lang("PM.PrivateMessages")
-        @if (Model.NewPrivateMessageCount > 0)
-        {
-            <span class="badge">@Model.NewPrivateMessageCount</span>
-        }
-    </a>
-</li>
+            @if (Model.NewPrivateMessageCount > 0)
+            {
+                <span class="badge">@Model.NewPrivateMessageCount</span>
+            }
+        </a>
+    </li>
 }
 
 <li><a href="@Urls.GenerateUrl(Urls.UrlType.Favourites)">@Html.Lang("Members.Favourites")</a></li>

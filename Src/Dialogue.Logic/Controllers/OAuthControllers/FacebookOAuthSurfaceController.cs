@@ -1,19 +1,12 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Security;
 using Dialogue.Logic.Application;
 using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.OAuth;
 using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
 using Skybrud.Social.Facebook;
 using Skybrud.Social.Facebook.OAuth;
-using Skybrud.Social.Json;
 
 namespace Dialogue.Logic.Controllers.OAuthControllers
 {
@@ -144,41 +137,20 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                         // Initialize the Facebook service (no calls are made here)
                         var service = FacebookService.CreateFromAccessToken(userAccessToken);
 
-                        // Hack to get email
-                        // Get the raw string and parse it
-                        // we use this to get items manually including the email
-                        var response = service.Methods.Raw.Me();
-                        var obj = JsonObject.ParseJson(response);
+                        var user = service.Users.GetUser();
 
-                        // Make a call to the Facebook API to get information about the user
-                        var me = service.Methods.Me();
-
-                        // Get debug information about the access token
-                        //var debug = service.Methods.DebugToken(userAccessToken);
-
-                        // Set the callback data
-                        var data = new FacebookOAuthData
-                        {
-                            Id = me.Id,
-                            Name = me.Name ?? me.UserName,
-                            AccessToken = userAccessToken,
-                            //ExpiresAt = debug.ExpiresAt == null ? default(DateTime) : debug.ExpiresAt.Value,
-                            //Scope = debug.Scopes
-                        };
 
                         // Try to get the email - Some FB accounts have protected passwords
-                        var email = obj.GetString("email");
-                        if (!string.IsNullOrEmpty(email))
-                        {
-                            data.Email = email;
-                        }
-
+                        var email = user.Body.Email;
+                        // TODO - Ignore if no email - Have to check PropMemberFacebookAccessToken has a value
+                        // TODO - and the me.UserName is there to match existing logged in accounts
+                        
+     
                         // First see if this user has registered already - Use email address
                         using (UnitOfWorkManager.NewUnitOfWork())
                         {
-                            // TODO - Ignore if no email - Have to check PropMemberFacebookAccessToken has a value
-                            // TODO - and the me.UserName is there to match existing logged in accounts
-                            var userExists = AppHelpers.UmbServices().MemberService.GetByEmail(data.Email);
+
+                            var userExists = AppHelpers.UmbServices().MemberService.GetByEmail(email);
 
                             if (userExists != null)
                             {
@@ -196,15 +168,15 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                 // Not registered already so register them
                                 var viewModel = new RegisterViewModel
                                 {
-                                    Email = data.Email,
+                                    Email = email,
                                     LoginType = LoginType.Facebook,
                                     Password = AppHelpers.RandomString(8),
-                                    UserName = data.Name,
+                                    UserName = user.Body.Name,
                                     UserAccessToken = userAccessToken
                                 };
 
                                 // Get the image and save it
-                                var getImageUrl = string.Format("http://graph.facebook.com/{0}/picture?type=square", me.Id);
+                                var getImageUrl = string.Format("http://graph.facebook.com/{0}/picture?type=square", user.Body.Id);
                                 viewModel.SocialProfileImageUrl = getImageUrl;
 
                                 //Large size photo https://graph.facebook.com/{facebookId}/picture?type=large
