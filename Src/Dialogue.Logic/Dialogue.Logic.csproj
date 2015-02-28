@@ -52,8 +52,7 @@
     <Reference Include="controls">
       <HintPath>..\Dialogue.Website\bin\controls.dll</HintPath>
     </Reference>
-    <Reference Include="EFCache, Version=1.0.0.0, Culture=neutral, PublicKeyToken=46c4868af4307d2c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EFCache">
       <HintPath>..\..\packages\EntityFramework.Cache.1.0.0\lib\net45\EFCache.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -76,9 +75,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dialogue.Website\bin\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Skybrud.Social, Version=0.9.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Skybrud.Social.0.9.1.1\lib\Skybrud.Social.dll</HintPath>
+    <Reference Include="Skybrud.Social">
+      <HintPath>..\..\packages\Skybrud.Social.0.9.0\lib\Skybrud.Social.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
