@@ -445,7 +445,7 @@ namespace Dialogue.Logic.Controllers
         private void SendEmailConfirmationEmail(IMember userToSave)
         {
             var manuallyAuthoriseMembers = Settings.ManuallyAuthoriseNewMembers;
-            var memberEmailAuthorisationNeeded = Settings.ManuallyAuthoriseNewMembers;
+            var memberEmailAuthorisationNeeded = Settings.NewMembersMustConfirmAccountsViaEmail;
             if (manuallyAuthoriseMembers == false && memberEmailAuthorisationNeeded)
             {
                 if (!string.IsNullOrEmpty(userToSave.Email))
