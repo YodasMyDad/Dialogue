@@ -141,7 +141,7 @@ namespace Dialogue.Logic.Controllers
                     }
                     else
                     {
-                        if (user.IsApproved)
+                        if (!user.IsApproved)
                         {
                             ModelState.AddModelError(string.Empty, Lang("Members.Errors.NotApproved"));
                         }
@@ -429,7 +429,7 @@ namespace Dialogue.Logic.Controllers
                         LogError("Eror during member registering", ex);
                         FormsAuthentication.SignOut();
                         ModelState.AddModelError(string.Empty, ex.Message);
-                    }
+                    }l
                 }
                 if (userModel.LoginType != LoginType.Standard)
                 {
