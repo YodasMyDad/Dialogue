@@ -6,7 +6,9 @@ using Dialogue.Logic.Constants;
 using Dialogue.Logic.Models;
 using Dialogue.Logic.Models.ViewModels;
 using Skybrud.Social.Facebook;
+using Skybrud.Social.Facebook.Fields;
 using Skybrud.Social.Facebook.OAuth;
+using Skybrud.Social.Facebook.Options.User;
 
 namespace Dialogue.Logic.Controllers.OAuthControllers
 {
@@ -137,8 +139,10 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                         // Initialize the Facebook service (no calls are made here)
                         var service = FacebookService.CreateFromAccessToken(userAccessToken);
 
-                        var user = service.Users.GetUser();
-
+                        var fbOptions = new FacebookGetUserOptions("me");
+                        fbOptions.Fields.Add(new FacebookField("email"));
+                        fbOptions.Fields.Add(new FacebookField("name"));
+                        var user = service.Users.GetUser(fbOptions);
 
                         // Try to get the email - Some FB accounts have protected passwords
                         var email = user.Body.Email;
