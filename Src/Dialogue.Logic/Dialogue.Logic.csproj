@@ -22,6 +22,7 @@
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -75,8 +76,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dialogue.Website\bin\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Skybrud.Social">
-      <HintPath>..\..\packages\Skybrud.Social.0.9.0\lib\Skybrud.Social.dll</HintPath>
+    <Reference Include="Skybrud.Social, Version=0.9.4.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Skybrud.Social.0.9.4.1\lib\net40\Skybrud.Social.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
