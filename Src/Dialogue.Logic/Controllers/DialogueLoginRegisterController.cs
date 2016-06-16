@@ -429,7 +429,7 @@ namespace Dialogue.Logic.Controllers
                         LogError("Eror during member registering", ex);
                         FormsAuthentication.SignOut();
                         ModelState.AddModelError(string.Empty, ex.Message);
-                    }l
+                    }
                 }
                 if (userModel.LoginType != LoginType.Standard)
                 {
