@@ -12,6 +12,7 @@ using Dialogue.Logic.Services;
 using Umbraco.Core.Models;
 using Umbraco.Web.Models;
 using Member = Dialogue.Logic.Models.Member;
+using Dialogue.Logic.Helpers;
 
 namespace Dialogue.Logic.Controllers
 {
@@ -243,8 +244,20 @@ namespace Dialogue.Logic.Controllers
                     return CurrentUmbracoPage();
                 }
 
-                // First see if there is a spam question and if so, the answer matches
-                if (!string.IsNullOrEmpty(Settings.SpamQuestion))
+                // If we're using Google reCAPTCHA, validate that
+                if (Settings.UseGoogleRecaptcha)
+                {
+                    string encodedResponse = Request.Form["g-Recaptcha-Response"];
+                    if (!ReCaptchaHelper.Validate(encodedResponse, Settings.GoogleRecaptchaSecretKey))
+                    {
+                        // Error validating repcatcha
+                        ModelState.AddModelError(string.Empty, Lang("Error.InvalidGoogleRecaptchaResponse"));
+                        return CurrentUmbracoPage();
+                    }
+                }
+
+                // See if there is a spam question and if so, the answer matches
+                else if (!string.IsNullOrEmpty(Settings.SpamQuestion))
                 {
                     // There is a spam question, if answer is wrong return with error
                     if (userModel.SpamAnswer == null || userModel.SpamAnswer.ToLower().Trim() != Settings.SpamAnswer.ToLower())

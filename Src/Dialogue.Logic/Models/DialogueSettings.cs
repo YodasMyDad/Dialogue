@@ -65,6 +65,9 @@ namespace Dialogue.Logic.Models
         public string AkismetKey { get; set; }
         public string SpamQuestion { get; set; }
         public string SpamAnswer { get; set; }
+        public bool UseGoogleRecaptcha { get; set; }
+        public string GoogleRecaptchaSiteKey { get; set; }
+        public string GoogleRecaptchaSecretKey { get; set; }
 
         // Social
         public string FacebookAppId { get; set; }

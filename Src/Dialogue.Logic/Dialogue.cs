@@ -108,13 +108,15 @@ namespace Dialogue.Logic
                 settings.AkismetKey = forumRootNode.GetPropertyValue<string>("enterYourAkismetKeyHere");
                 settings.SpamQuestion = forumRootNode.GetPropertyValue<string>("enterASpamRegistrationPreventionQuestion");
                 settings.SpamAnswer = forumRootNode.GetPropertyValue<string>("enterTheAnswerToYourSpamQuestion");
+                settings.UseGoogleRecaptcha = forumRootNode.GetPropertyValue<bool>("useGoogleRecaptcha");
+                settings.GoogleRecaptchaSiteKey = forumRootNode.GetPropertyValue<string>("googleRecaptchaSiteKey");
+                settings.GoogleRecaptchaSecretKey = forumRootNode.GetPropertyValue<string>("googleRecaptchaSecretKey");
 
                 // Social
                 settings.FacebookAppId = forumRootNode.GetPropertyValue<string>("FacebookAppId");
                 settings.FacebookAppSecret = forumRootNode.GetPropertyValue<string>("FacebookAppSecret");
                 settings.GoogleClientId = forumRootNode.GetPropertyValue<string>("googleClientId");
                 settings.GoogleClientSecret = forumRootNode.GetPropertyValue<string>("googleClientSecret");
-                
 
                 // Meta
                 settings.PageTitle = forumRootNode.GetPropertyValue<string>("pageTitle");

@@ -2256,6 +2256,11 @@
             Boolean indicating whether the database has been configured
             </summary>
         </member>
+        <member name="P:Umbraco.Core.DatabaseContext.CanConnect">
+            <summary>
+            Determines if the db can be connected to
+            </summary>
+        </member>
         <member name="P:Umbraco.Core.DatabaseContext.ConnectionString">
             <summary>
             Gets the configured umbraco db connection string.
@@ -6044,6 +6049,13 @@
             Marker interface for database migrations
             </summary>
         </member>
+        <member name="T:Umbraco.Core.Persistence.Migrations.Upgrades.TargetVersionSeven.AssignMissingKeysAndIndexes">
+            <summary>
+            I'm not actually sure how this is possible but I've come across one install that was missing these PKs
+            and it wasn't a MySQL install. 
+            see: http://issues.umbraco.org/issue/U4-5707
+            </summary>
+        </member>
         <member name="T:Umbraco.Core.Persistence.Repositories.IRepository`2">
             <summary>
             Defines the implementation of a Repository
@@ -8273,7 +8285,7 @@
             <summary>
             Constuctor for creating a MediaType with the parent's id.
             </summary>
-            <remarks>You usually only want to use this for creating MediaTypes at the root.</remarks>
+            <remarks>Only use this for creating MediaTypes at the root (with ParentId -1).</remarks>
             <param name="parentId"></param>
         </member>
         <member name="M:Umbraco.Core.Models.MediaType.#ctor(Umbraco.Core.Models.IMediaType)">
@@ -8282,6 +8294,14 @@
             </summary>
             <remarks>Use this to ensure inheritance from parent.</remarks>
             <param name="parent"></param>
+        </member>
+        <member name="M:Umbraco.Core.Models.MediaType.#ctor(Umbraco.Core.Models.IMediaType,System.String)">
+            <summary>
+            Constuctor for creating a MediaType with the parent as an inherited type.
+            </summary>
+            <remarks>Use this to ensure inheritance from parent.</remarks>
+            <param name="parent"></param>
+            <param name="alias"></param>
         </member>
         <member name="M:Umbraco.Core.Models.MediaType.AddingEntity">
             <summary>
@@ -11828,6 +11848,24 @@
             this object instead of the base PetaPoco database object.	
             </remarks>
         </member>
+        <member name="M:Umbraco.Core.Persistence.Database.MultiPocoFactory.CallDelegate(System.Int32,System.Data.IDataReader)">
+            <summary>
+            Calls the delegate at the specified index and returns its values
+            </summary>
+            <param name="index"></param>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Core.Persistence.Database.MultiPocoFactory.CallCallback``1(System.Delegate,System.Data.IDataReader,System.Int32)">
+            <summary>
+            Calls the callback delegate and passes in the output of all delegates as the parameters
+            </summary>
+            <typeparam name="TRet"></typeparam>
+            <param name="callback"></param>
+            <param name="dr"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="T:Umbraco.Core.Persistence.Database.ManagedCache">
             <summary>
             Container for a Memory cache object
@@ -13399,7 +13437,7 @@
             <summary>
             Constuctor for creating a ContentType with the parent's id.
             </summary>
-            <remarks>You usually only want to use this for creating ContentTypes at the root.</remarks>
+            <remarks>Only use this for creating ContentTypes at the root (with ParentId -1).</remarks>
             <param name="parentId"></param>
         </member>
         <member name="M:Umbraco.Core.Models.ContentType.#ctor(Umbraco.Core.Models.IContentType)">
@@ -13408,6 +13446,14 @@
             </summary>
             <remarks>Use this to ensure inheritance from parent.</remarks>
             <param name="parent"></param>
+        </member>
+        <member name="M:Umbraco.Core.Models.ContentType.#ctor(Umbraco.Core.Models.IContentType,System.String)">
+            <summary>
+            Constuctor for creating a ContentType with the parent as an inherited type.
+            </summary>
+            <remarks>Use this to ensure inheritance from parent.</remarks>
+            <param name="parent"></param>
+            <param name="alias"></param>
         </member>
         <member name="M:Umbraco.Core.Models.ContentType.SetDefaultTemplate(Umbraco.Core.Models.ITemplate)">
             <summary>
@@ -17513,6 +17559,14 @@
             <param name="dataTypeDefinitions"><see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> to save</param>
             <param name="userId">Id of the user issueing the save</param>
         </member>
+        <member name="M:Umbraco.Core.Services.IDataTypeService.Save(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IDataTypeDefinition},System.Int32,System.Boolean)">
+            <summary>
+            Saves a collection of <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
+            </summary>
+            <param name="dataTypeDefinitions"><see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> to save</param>
+            <param name="userId">Id of the user issueing the save</param>
+            <param name="raiseEvents">Boolean indicating whether or not to raise events</param>
+        </member>
         <member name="M:Umbraco.Core.Services.IDataTypeService.Delete(Umbraco.Core.Models.IDataTypeDefinition,System.Int32)">
             <summary>
             Deletes an <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
@@ -17677,6 +17731,14 @@
             </summary>
             <param name="dataTypeDefinitions"><see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> to save</param>
             <param name="userId">Id of the user issueing the save</param>
+        </member>
+        <member name="M:Umbraco.Core.Services.DataTypeService.Save(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IDataTypeDefinition},System.Int32,System.Boolean)">
+            <summary>
+            Saves a collection of <see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/>
+            </summary>
+            <param name="dataTypeDefinitions"><see cref="T:Umbraco.Core.Models.IDataTypeDefinition"/> to save</param>
+            <param name="userId">Id of the user issueing the save</param>
+            <param name="raiseEvents">Boolean indicating whether or not to raise events</param>
         </member>
         <member name="M:Umbraco.Core.Services.DataTypeService.SavePreValues(System.Int32,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
@@ -18541,6 +18603,18 @@
             <summary>
             Occurs after Delete
             </summary>
+        </member>
+        <member name="M:Umbraco.Core.Services.IApplicationTreeService.Intitialize(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ApplicationTree})">
+            <summary>
+            Initializes the service with any trees found in plugins
+            </summary>
+            <param name="allAvailableTrees">
+            A collection of all available tree found in assemblies in the application
+            </param>
+            <remarks>
+            This will update the trees.config with the found tree plugins that are not currently listed in the file when the first
+            access is made to resolve the tree collection
+            </remarks>
         </member>
         <member name="M:Umbraco.Core.Services.IApplicationTreeService.MakeNew(System.Boolean,System.Byte,System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
@@ -19773,9 +19847,14 @@
         </member>
         <member name="M:Umbraco.Core.Services.ISectionService.Initialize(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Section})">
             <summary>
-            Ensures all available sections exist in the storage medium
+            Initializes the service with all available application plugins
             </summary>
-            <param name="existingSections"></param>
+            <param name="allAvailableSections">
+            All application plugins found in assemblies
+            </param>
+            <remarks>
+            This is used to populate the app.config file with any applications declared in plugins that don't exist in the file
+            </remarks>
         </member>
         <member name="M:Umbraco.Core.Services.ISectionService.GetSections">
             <summary>
@@ -21650,9 +21729,14 @@
         </member>
         <member name="M:Umbraco.Core.Services.SectionService.Initialize(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Section})">
             <summary>
-            Ensures all available sections exist in the storage medium
+            Initializes the service with all available application plugins
             </summary>
-            <param name="existingSections"></param>
+            <param name="allAvailableSections">
+            All application plugins found in assemblies
+            </param>
+            <remarks>
+            This is used to populate the app.config file with any applications declared in plugins that don't exist in the file
+            </remarks>
         </member>
         <member name="M:Umbraco.Core.Services.SectionService.GetSections">
             <summary>
@@ -22996,15 +23080,16 @@
             A helper used to determine the current server environment status
             </summary>
         </member>
-        <member name="M:Umbraco.Core.Sync.ServerEnvironmentHelper.GetCurrentServerUmbracoBaseUrl">
+        <member name="M:Umbraco.Core.Sync.ServerEnvironmentHelper.GetCurrentServerUmbracoBaseUrl(Umbraco.Core.ApplicationContext,Umbraco.Core.Configuration.UmbracoSettings.IUmbracoSettingsSection)">
             <summary>
             Returns the current umbraco base url for the current server depending on it's environment 
             status. This will attempt to determine the internal umbraco base url that can be used by the current
             server to send a request to itself if it is in a load balanced environment.
             </summary>
-            <returns>The full base url including schema (i.e. http://myserver:80/umbraco )</returns>
+            <returns>The full base url including schema (i.e. http://myserver:80/umbraco ) - or <c>null</c> if the url
+            cannot be determined at the moment (usually because the first request has not properly completed yet).</returns>
         </member>
-        <member name="M:Umbraco.Core.Sync.ServerEnvironmentHelper.GetStatus">
+        <member name="M:Umbraco.Core.Sync.ServerEnvironmentHelper.GetStatus(Umbraco.Core.Configuration.UmbracoSettings.IUmbracoSettingsSection)">
             <summary>
             Returns the current environment status for the current server
             </summary>
@@ -24045,8 +24130,24 @@
         </member>
         <member name="M:Umbraco.Core.Services.ApplicationTreeService.GetAppTrees">
             <summary>
-            The cache storage for all application trees
+            The main entry point to get application trees
             </summary>
+            <remarks>
+            This lazily on first access will scan for plugin trees and ensure the trees.config is up-to-date with the plugins. If plugins
+            haven't changed on disk then the file will not be saved. The trees are all then loaded from this config file into cache and returned.
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Core.Services.ApplicationTreeService.Intitialize(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.ApplicationTree})">
+            <summary>
+            Initializes the service with any trees found in plugins
+            </summary>
+            <param name="allAvailableTrees">
+            A collection of all available tree found in assemblies in the application
+            </param>
+            <remarks>
+            This will update the trees.config with the found tree plugins that are not currently listed in the file when the first
+            access is made to resolve the tree collection
+            </remarks>
         </member>
         <member name="M:Umbraco.Core.Services.ApplicationTreeService.MakeNew(System.Boolean,System.Byte,System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
@@ -24098,6 +24199,14 @@
             <param name="applicationAlias">The application alias.</param>
             <param name="onlyInitialized"></param>
             <returns>Returns a ApplicationTree Array</returns>
+        </member>
+        <member name="M:Umbraco.Core.Services.ApplicationTreeService.LoadXml(System.Func{System.Xml.Linq.XDocument,System.Boolean},System.Boolean)">
+            <summary>
+            Loads in the xml structure from disk if one is found, otherwise loads in an empty xml structure, calls the 
+            callback with the xml document and saves the structure back to disk if saveAfterCallback is true.
+            </summary>
+            <param name="callback"></param>
+            <param name="saveAfterCallbackIfChanges"></param>
         </member>
         <member name="P:Umbraco.Core.Services.ApplicationTreeService.TreeConfigFilePath">
             <summary>
