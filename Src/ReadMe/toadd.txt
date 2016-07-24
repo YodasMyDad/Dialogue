@@ -1,0 +1,8 @@
+// language
+Error.InvalidGoogleRecaptchaResponse: "Invalid reCAPTCHA"
+
+// document types
+Dialogue -> Add under spam tab:
+- Use Google reCAPTCHA (useGoogleRecaptcha), Type: True/false
+- Google reCAPTCHA Site Key (googleRecaptchaSiteKey), Type: Textstring
+- Google reCAPTCHA Secret Key (googleRecaptchaSecretKey), Type: Textstring
