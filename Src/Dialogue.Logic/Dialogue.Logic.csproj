@@ -192,6 +192,7 @@
     <Compile Include="Data\Mapping\TopicNotificationMapping.cs" />
     <Compile Include="Data\Mapping\UploadedFileMapping.cs" />
     <Compile Include="Data\Mapping\VoteMapping.cs" />
+    <Compile Include="Helpers\ReCaptchaHelper.cs" />
     <Compile Include="Installation\InstallHelpers.cs" />
     <Compile Include="Installation\UnInstallHelpers.cs" />
     <Compile Include="Interfaces\Badges\IBadge.cs" />
