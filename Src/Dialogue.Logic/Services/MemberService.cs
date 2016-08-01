@@ -492,8 +492,56 @@ namespace Dialogue.Logic.Services
                 AppHelpers.LogError("ResetPassword()", ex);
                 return false;
             }
-
         }
+
+        public string ResetPasswordWithToken(int memberId)
+        {
+            IMember member = _memberService.GetById(memberId);
+
+            // Set expiry date 
+            DateTime expiryTime = DateTime.UtcNow.AddMinutes(30);
+
+            // Update resetToken property
+            string token = expiryTime.ToString("ddMMyyyyHHmmssFFFF");
+            member.SetValue("resetToken", token);
+
+            // Save
+            _memberService.Save(member);
+
+            return token;
+        }
+
+        public bool ProcessResetPasswordWithToken(int memberId, string resetToken, string newPassword)
+        {
+            bool success = false;
+            IMember resetMember = _memberService.GetById(memberId);
+
+            // See if the QS matches the value on the member property
+            if (resetMember.GetValue<string>("resetToken") == resetToken)
+            {
+                // Got a match, now check to see if the time window hasnt expired
+                DateTime expiryTime = DateTime.ParseExact(resetToken, "ddMMyyyyHHmmssFFFF", null);
+
+                // Check the current time is less than the expiry time
+                DateTime currentTime = DateTime.UtcNow;
+
+                // Check if date has NOT expired (been and gone)
+                if (currentTime.CompareTo(expiryTime) < 0)
+                {
+                    // Got a match, we can allow user to update password
+                    _memberService.SavePassword(resetMember, newPassword);
+
+                    // Remove the resetToken value
+                    resetMember.SetValue("resetToken", string.Empty);
+                    _memberService.Save(resetMember);
+
+                    success = true;
+                }
+            }
+
+            return success;
+        }
+
         #endregion
 
         #region Member Groups

@@ -29,9 +29,14 @@ namespace Dialogue.Logic.Controllers
 
             // See if a return url is present or not and add it
             var forgotPassword = Request["forgot"];
+            var resetPassword = Request["reset"];
             if (!string.IsNullOrEmpty(forgotPassword))
             {
                 pageModel.ShowForgotPassword = true;
+            }
+            else if (!string.IsNullOrEmpty(resetPassword))
+            {
+                pageModel.ShowResetPassword = true;
             }
 
             // Return the model to the current template
@@ -178,8 +183,7 @@ namespace Dialogue.Logic.Controllers
         {
             var changePasswordSucceeded = true;
             var currentUser = new Member();
-            var newPassword = AppHelpers.RandomString(8);
-
+            string token = string.Empty;
             try
             {
                 if (ModelState.IsValid)
@@ -187,11 +191,7 @@ namespace Dialogue.Logic.Controllers
                     currentUser = ServiceFactory.MemberService.GetByEmail(model.EmailAddress);
                     if (currentUser != null)
                     {
-                        changePasswordSucceeded = ServiceFactory.MemberService.ResetPassword(currentUser, newPassword);
-                    }
-                    else
-                    {
-                        changePasswordSucceeded = false;
+                        token = ServiceFactory.MemberService.ResetPasswordWithToken(currentUser.Id);
                     }
                 }
             }
@@ -205,7 +205,7 @@ namespace Dialogue.Logic.Controllers
             {
                 var sb = new StringBuilder();
                 sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.ForgotPassword.Email"), Settings.ForumName));
-                sb.AppendFormat("<p><b>{0}</b></p>", newPassword);
+                sb.AppendFormat("<p><b>{0}</b></p>", token);
                 var email = new Email
                 {
                     EmailFrom = Settings.NotificationReplyEmailAddress,
@@ -530,6 +530,42 @@ namespace Dialogue.Logic.Controllers
             }
 
             return RedirectToUmbracoPage(Settings.ForumId);
+        }
+
+        [ChildActionOnly]
+        public ActionResult ResetPasswordForm()
+        {
+            return PartialView(PathHelper.GetThemePartialViewPath("ResetPasswordForm"), new ResetPasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult HandleResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return PartialView(PathHelper.GetThemePartialViewPath("ResetPassword"), model);
+            }
+
+            bool success = false;
+
+            // Get member from email
+            var resetMember = ServiceFactory.MemberService.GetByEmail(model.EmailAddress);
+
+            // Ensure we have that member
+            if (resetMember != null)
+            {
+                // Get the querystring GUID
+                var resetToken = Request.QueryString["resetToken"];
+
+                // Ensure we have a reset token value
+                if (!string.IsNullOrEmpty(resetToken))
+                {
+                    success = ServiceFactory.MemberService.ProcessResetPasswordWithToken(resetMember.Id, resetToken, model.NewPassword);
+                }
+            }
+
+            return Redirect(Settings.LoginUrl);
         }
     }
 

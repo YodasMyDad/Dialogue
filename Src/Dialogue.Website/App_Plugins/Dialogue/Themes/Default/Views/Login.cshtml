@@ -13,13 +13,17 @@
     @Model.MetaDesc
 }
 
-@if (!Model.ShowForgotPassword)
+@if (Model.ShowForgotPassword)
 {
-    @Html.Action("LogOnForm", "DialogueLoginRegisterSurface")
+    @Html.Action("ForgotPasswordForm", "DialogueLoginRegisterSurface")
+}
+else if (Model.ShowResetPassword)
+{
+    @Html.Action("ResetPasswordForm", "DialogueLoginRegisterSurface")
 }
 else
 {
-    @Html.Action("ForgotPasswordForm", "DialogueLoginRegisterSurface")
+    @Html.Action("LogOnForm", "DialogueLoginRegisterSurface")
 }
 
 @*@Html.Partial("_SocialLoginButtons")*@

@@ -9,5 +9,7 @@ namespace Dialogue.Logic.Models
         }
 
         public bool ShowForgotPassword { get; set; }
+
+        public bool ShowResetPassword { get; set; }
     }
 }
