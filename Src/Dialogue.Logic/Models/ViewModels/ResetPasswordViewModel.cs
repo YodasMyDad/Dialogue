@@ -9,20 +9,18 @@ namespace Dialogue.Logic.Models.ViewModels
 {
     public class ResetPasswordViewModel
     {
-        [DialogueDisplayName("Email address")]
-        [Required(ErrorMessage = "Please enter your email address")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        [Required]
+        [EmailAddress]
+        [DialogueDisplayName("Members.Label.EmailAddress")]
         public string EmailAddress { get; set; }
 
         [Required]
         [StringLength(100, MinimumLength = 6)]
-        [DataType(DataType.Password)]
         [DialogueDisplayName("Members.Label.NewPassword")]
         public string NewPassword { get; set; }
 
-        [DataType(DataType.Password)]
         [DialogueDisplayName("Members.Label.ConfirmNewPassword")]
-        [System.ComponentModel.DataAnnotations.Compare("NewPassword")]
+        [Compare("NewPassword")]
         public string ConfirmPassword { get; set; }
     }
 }

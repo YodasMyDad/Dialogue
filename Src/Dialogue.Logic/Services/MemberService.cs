@@ -16,6 +16,8 @@ using Umbraco.Core.Persistence.Querying;
 using Umbraco.Core.Services;
 using Umbraco.Web.Security;
 using Member = Dialogue.Logic.Models.Member;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Dialogue.Logic.Services
 {
@@ -498,12 +500,15 @@ namespace Dialogue.Logic.Services
         {
             IMember member = _memberService.GetById(memberId);
 
-            // Set expiry date 
-            DateTime expiryTime = DateTime.UtcNow.AddMinutes(30);
-
             // Update resetToken property
-            string token = expiryTime.ToString("ddMMyyyyHHmmssFFFF");
-            member.SetValue("resetToken", token);
+            string token = Guid.NewGuid().ToString().Replace("-", "");
+            string hashedToken = this.HashToken(token);
+            member.SetValue("resettoken", hashedToken);
+
+            // Update expiry date
+            DateTime expiryTime = DateTime.UtcNow.AddMinutes(30);
+            string expiryTimeString = expiryTime.ToString("ddMMyyyyHHmmssFFFF");
+            member.SetValue("resettokenexpiry", expiryTimeString);
 
             // Save
             _memberService.Save(member);
@@ -515,12 +520,15 @@ namespace Dialogue.Logic.Services
         {
             bool success = false;
             IMember resetMember = _memberService.GetById(memberId);
+            string memberToken = resetMember.GetValue<string>("resettoken");
+            string hashedToken = this.HashToken(resetToken);
 
-            // See if the QS matches the value on the member property
-            if (resetMember.GetValue<string>("resetToken") == resetToken)
+            // See if the reset token matches the value on the member property
+            if (memberToken == hashedToken)
             {
                 // Got a match, now check to see if the time window hasnt expired
-                DateTime expiryTime = DateTime.ParseExact(resetToken, "ddMMyyyyHHmmssFFFF", null);
+                string resetTokenExpiry = resetMember.GetValue<string>("resettokenexpiry");
+                DateTime expiryTime = DateTime.ParseExact(resetTokenExpiry, "ddMMyyyyHHmmssFFFF", null);
 
                 // Check the current time is less than the expiry time
                 DateTime currentTime = DateTime.UtcNow;
@@ -532,7 +540,8 @@ namespace Dialogue.Logic.Services
                     _memberService.SavePassword(resetMember, newPassword);
 
                     // Remove the resetToken value
-                    resetMember.SetValue("resetToken", string.Empty);
+                    resetMember.SetValue("resettoken", string.Empty);
+                    resetMember.SetValue("resettokenexpiry", string.Empty);
                     _memberService.Save(resetMember);
 
                     success = true;
@@ -540,6 +549,14 @@ namespace Dialogue.Logic.Services
             }
 
             return success;
+        }
+
+        private string HashToken(string token)
+        {
+            SHA256 sha = SHA256Cng.Create();
+            byte[] hash = sha.ComputeHash(Convert.FromBase64String(token));
+            string hashedToken = Convert.ToBase64String(hash);
+            return hashedToken;
         }
 
         #endregion

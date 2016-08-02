@@ -1,0 +1,8 @@
+Members -> Member Types -> Dialogue Member -> Add: 
+ - ResetToken, Label
+ - ResetTokenExpiry, Label
+ 
+ Update:
+    Buttons.ForgotPassword -> "Reset Password"
+	Members.ForgotPassword.Email -> "You have requested a password reset for your account on {0}"
+	Members.Errors.ResetPasswordInvalid -> "Invalid or expired reset token"

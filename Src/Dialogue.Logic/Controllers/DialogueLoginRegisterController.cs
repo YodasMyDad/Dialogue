@@ -29,7 +29,7 @@ namespace Dialogue.Logic.Controllers
 
             // See if a return url is present or not and add it
             var forgotPassword = Request["forgot"];
-            var resetPassword = Request["reset"];
+            var resetPassword = Request["resettoken"];
             if (!string.IsNullOrEmpty(forgotPassword))
             {
                 pageModel.ShowForgotPassword = true;
@@ -181,8 +181,7 @@ namespace Dialogue.Logic.Controllers
         [ModelStateToTempData]
         public ActionResult ForgotPassword(ForgotPasswordViewModel model)
         {
-            var changePasswordSucceeded = true;
-            var currentUser = new Member();
+            Member currentUser = new Member();
             string token = string.Empty;
             try
             {
@@ -198,14 +197,14 @@ namespace Dialogue.Logic.Controllers
             catch (Exception ex)
             {
                 LogError(string.Format("Error resetting password for {0}", model.EmailAddress), ex);
-                changePasswordSucceeded = false;
             }
 
-            if (changePasswordSucceeded)
+            if (!string.IsNullOrEmpty(token))
             {
                 var sb = new StringBuilder();
                 sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.ForgotPassword.Email"), Settings.ForumName));
-                sb.AppendFormat("<p><b>{0}</b></p>", token);
+                string url = string.Format("http://{0}{1}{2}{3}", HttpContext.Request.Url.Authority, Settings.LoginUrl, "?resettoken=", token);
+                sb.Append(string.Format("<p><a href='{0}'>{0}</b></p>", url, Lang("Members.ResetPassword.Link")));
                 var email = new Email
                 {
                     EmailFrom = Settings.NotificationReplyEmailAddress,
@@ -222,10 +221,11 @@ namespace Dialogue.Logic.Controllers
                     Message = Lang("Members.ForgotPassword.SuccessMessage"),
                     MessageType = GenericMessages.Success
                 });
-                return CurrentUmbracoPage();
+                return Redirect(Settings.LoginUrl);
             }
 
             ModelState.AddModelError("", Lang("Members.ForgotPassword.ErrorMessage"));
+            
             // Hack to show form validation
             ShowModelErrors();
             return CurrentUmbracoPage();
@@ -563,6 +563,12 @@ namespace Dialogue.Logic.Controllers
                 {
                     success = ServiceFactory.MemberService.ProcessResetPasswordWithToken(resetMember.Id, resetToken, model.NewPassword);
                 }
+            }
+
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, Lang("Members.Errors.ResetPasswordInvalid"));
+                ShowModelErrors();
             }
 
             return Redirect(Settings.LoginUrl);
