@@ -3,7 +3,8 @@ Members -> Member Types -> Dialogue Member -> Add:
  - ResetTokenExpiry, Label
  
  Add:
-    Member.ResetPassword.Title -> "Reset Your Password
+    Member.ResetPassword.Title -> "Reset Your Password"
+	Buttons.ResetPassword -> "Reset Password"
  
  Update:
     Buttons.ForgotPassword -> "Reset Password"
