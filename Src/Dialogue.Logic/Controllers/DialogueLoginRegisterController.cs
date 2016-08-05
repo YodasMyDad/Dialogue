@@ -12,6 +12,8 @@ using Dialogue.Logic.Services;
 using Umbraco.Core.Models;
 using Umbraco.Web.Models;
 using Member = Dialogue.Logic.Models.Member;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Dialogue.Logic.Controllers
 {
@@ -544,7 +546,15 @@ namespace Dialogue.Logic.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return PartialView(PathHelper.GetThemePartialViewPath("ResetPassword"), model);
+                List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors).Where(y => y.Count > 0).ToList();
+                foreach (ModelErrorCollection error in errors)
+                {
+                    IEnumerable<ModelError> modelStateErrors = this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors);
+                    string errorMessages = string.Join(", ", modelStateErrors.Select(x => x.ErrorMessage).ToList());
+                    ModelState.AddModelError(string.Empty, errorMessages);
+                }
+
+                return CurrentUmbracoPage();
             }
 
             bool success = false;

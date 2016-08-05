@@ -19,6 +19,7 @@ namespace Dialogue.Logic.Models.ViewModels
         [DialogueDisplayName("Members.Label.NewPassword")]
         public string NewPassword { get; set; }
 
+        [Required]
         [DialogueDisplayName("Members.Label.ConfirmNewPassword")]
         [Compare("NewPassword")]
         public string ConfirmPassword { get; set; }
