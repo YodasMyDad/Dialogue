@@ -2,6 +2,9 @@ Members -> Member Types -> Dialogue Member -> Add:
  - ResetToken, Label
  - ResetTokenExpiry, Label
  
+ Add:
+    Member.ResetPassword.Title -> "Reset Your Password
+ 
  Update:
     Buttons.ForgotPassword -> "Reset Password"
 	Members.ForgotPassword.Email -> "You have requested a password reset for your account on {0}"
