@@ -267,6 +267,7 @@
     <Compile Include="Models\ViewModels\EmailViewModels.cs" />
     <Compile Include="Models\ViewModels\PostViewModels.cs" />
     <Compile Include="Models\ViewModels\PrivateMessageViewModels.cs" />
+    <Compile Include="Models\ViewModels\ResetPasswordViewModel.cs" />
     <Compile Include="Models\ViewModels\TopicViewModels.cs" />
     <Compile Include="Models\ViewModels\ViewAdminSidePanelViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewCategoryViewModel.cs" />

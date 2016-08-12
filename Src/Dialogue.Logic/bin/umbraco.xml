@@ -11,6 +11,45 @@
             <param name="appContext"> </param>
             <param name="http"></param>
         </member>
+        <member name="T:Umbraco.Web.Scheduling.BackgroundTaskRunner`1">
+            <summary>
+            This is used to create a background task runner which will stay alive in the background of and complete
+            any tasks that are queued. It is web aware and will ensure that it is shutdown correctly when the app domain
+            is shutdown.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Umbraco.Web.Scheduling.BackgroundTaskRunner`1.GetAwaiter">
+            <summary>
+            Returns the task awaiter so that consumers of the BackgroundTaskManager can await
+            the threading operation.
+            </summary>
+            <returns></returns>
+            <remarks>
+            This is just the coolest thing ever, check this article out:
+            http://blogs.msdn.com/b/pfxteam/archive/2011/01/13/10115642.aspx
+            
+            So long as we have a method called GetAwaiter() that returns an instance of INotifyCompletion 
+            we can await anything! :)
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Web.Scheduling.BackgroundTaskRunner`1.StartConsumer">
+            <summary>
+            Starts the consumer task
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.Scheduling.BackgroundTaskRunner`1.StartThread(System.Threading.CancellationToken)">
+            <summary>
+            Invokes a new worker thread to consume tasks
+            </summary>
+            <param name="token"></param>
+        </member>
+        <member name="M:Umbraco.Web.Scheduling.BackgroundTaskRunner`1.TakeAndConsumeTask(System.Threading.CancellationToken)">
+            <summary>
+            Trys to get a task from the queue, if there isn't one it will wait a second and try again
+            </summary>
+            <param name="token"></param>
+        </member>
         <member name="M:Umbraco.Web.BatchedServerMessenger.MessageSeversForIdsOrJson(System.Collections.Generic.IEnumerable{Umbraco.Core.Sync.IServerAddress},umbraco.interfaces.ICacheRefresher,Umbraco.Core.Sync.MessageType,System.Collections.Generic.IEnumerable{System.Object},System.String)">
             <summary>
             We need to check if distributed calls are enabled, if they are we also want to make sure 
@@ -1533,20 +1572,6 @@
             <param name="suffix"></param>
             <returns></returns>
         </member>
-        <member name="M:Umbraco.Web.Editors.TemplateController.GetById(System.Int32)">
-            <summary>
-            Gets the content json for the content id
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Umbraco.Web.Editors.TemplateController.DeleteById(System.Int32)">
-            <summary>
-            Deletes a data type wth a given ID
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="M:Umbraco.Web.Editors.UserController.#ctor">
             <summary>
             Constructor
@@ -2092,12 +2117,12 @@
         </member>
         <member name="T:Umbraco.Web.Mvc.RedirectToUmbracoUrlResult">
             <summary>
-            Redirects to the current URL rendering an Umbraco page
+            Redirects to the current URL rendering an Umbraco page including it's query strings
             </summary>
             <remarks>
-            this is useful if you need to redirect 
+            This is useful if you need to redirect 
             to the current page but the current page is actually a rewritten URL normally done with something like 
-            Server.Transfer.
+            Server.Transfer. It is also handy if you want to persist the query strings.
             </remarks>
         </member>
         <member name="M:Umbraco.Web.Mvc.RedirectToUmbracoUrlResult.#ctor(Umbraco.Web.UmbracoContext)">
@@ -2949,6 +2974,12 @@
             </param>
             <returns></returns>
         </member>
+        <member name="M:Umbraco.Web.PropertyEditors.MacroContainerPropertyEditor.CreatePreValueEditor">
+            <summary>
+            Creates a pre value editor instance
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Umbraco.Web.PropertyEditors.MultiNodeTreePickerPropertyEditor.MultiNodePickerPreValueEditor.ConvertDbToEditor(System.Collections.Generic.IDictionary{System.String,System.Object},Umbraco.Core.Models.PreValueCollection)">
             <summary>
             This ensures the multiPicker pre-val is set based on the maxNumber of nodes set
@@ -3774,6 +3805,66 @@
             <returns>
             The <see cref="T:System.String"/>.
             </returns>
+        </member>
+        <member name="T:Umbraco.Web.Routing.CustomRouteUrlProvider">
+            <summary>
+            This url provider is used purely to deal with umbraco custom routes that utilize UmbracoVirtualNodeRouteHandler and will return
+            the URL returned from the current PublishedContentRequest.PublishedContent (virtual node) if the request is in fact a virtual route and 
+            the id that is being requested matches the id of the current PublishedContentRequest.PublishedContent.
+            </summary>
+        </member>
+        <member name="T:Umbraco.Web.Routing.IUrlProvider">
+            <summary>
+            Provides urls.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.Routing.IUrlProvider.GetUrl(Umbraco.Web.UmbracoContext,System.Int32,System.Uri,Umbraco.Web.Routing.UrlProviderMode)">
+            <summary>
+            Gets the nice url of a published content.
+            </summary>
+            <param name="umbracoContext">The Umbraco context.</param>
+            <param name="id">The published content id.</param>
+            <param name="current">The current absolute url.</param>
+            <param name="mode">The url mode.</param>
+            <returns>The url for the published content.</returns>
+            <remarks>
+            <para>The url is absolute or relative depending on <c>mode</c> and on <c>current</c>.</para>
+            <para>If the provider is unable to provide a url, it should return <c>null</c>.</para>
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Web.Routing.IUrlProvider.GetOtherUrls(Umbraco.Web.UmbracoContext,System.Int32,System.Uri)">
+            <summary>
+            Gets the other urls of a published content.
+            </summary>
+            <param name="umbracoContext">The Umbraco context.</param>
+            <param name="id">The published content id.</param>
+            <param name="current">The current absolute url.</param>
+            <returns>The other urls for the published content.</returns>
+            <remarks>
+            <para>Other urls are those that <c>GetUrl</c> would not return in the current context, but would be valid
+            urls for the node in other contexts (different domain for current request, umbracoUrlAlias...).</para>
+            </remarks>
+        </member>
+        <member name="M:Umbraco.Web.Routing.CustomRouteUrlProvider.GetUrl(Umbraco.Web.UmbracoContext,System.Int32,System.Uri,Umbraco.Web.Routing.UrlProviderMode)">
+            <summary>
+            This will simply return the URL that is returned by the assigned IPublishedContent if this is a custom route
+            </summary>
+            <param name="umbracoContext"></param>
+            <param name="id"></param>
+            <param name="current"></param>
+            <param name="mode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.Routing.CustomRouteUrlProvider.GetOtherUrls(Umbraco.Web.UmbracoContext,System.Int32,System.Uri)">
+            <summary>
+            This always returns null because this url provider is used purely to deal with Umbraco custom routes with 
+            UmbracoVirtualNodeRouteHandler, we really only care about the normal URL so that RedirectToCurrentUmbracoPage() works 
+            with SurfaceControllers
+            </summary>
+            <param name="umbracoContext"></param>
+            <param name="id"></param>
+            <param name="current"></param>
+            <returns></returns>
         </member>
         <member name="M:Umbraco.Web.Routing.UrlProviderExtensions.GetContentUrls(Umbraco.Core.Models.IContent)">
             <summary>
@@ -6454,6 +6545,21 @@
             </summary>
             <param name="contentId"></param>
         </member>
+        <member name="M:Umbraco.Web.Scheduling.LogScrubber.DisposeResources">
+            <summary>
+            Handles the disposal of resources. Derived from abstract class <see cref="T:Umbraco.Core.DisposableObject"/> which handles common required locking logic.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.Scheduling.ScheduledPublishing.DisposeResources">
+            <summary>
+            Handles the disposal of resources. Derived from abstract class <see cref="T:Umbraco.Core.DisposableObject"/> which handles common required locking logic.
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.Scheduling.ScheduledTasks.DisposeResources">
+            <summary>
+            Handles the disposal of resources. Derived from abstract class <see cref="T:Umbraco.Core.DisposableObject"/> which handles common required locking logic.
+            </summary>
+        </member>
         <member name="T:Umbraco.Web.Security.MembershipHelper">
             <summary>
             A helper class for handling Members
@@ -7088,11 +7194,31 @@
             <summary>
             A startup handler for putting the tree config in the config file based on attributes found
             </summary>
+            <remarks>
+            TODO: This is really not a very ideal process but the code is found here because tree plugins are in the Web project or the legacy business logic project.
+            Moving forward we can put the base tree plugin classes in the core and then this can all just be taken care of normally within the service.
+            </remarks>
         </member>
-        <member name="M:Umbraco.Web.Trees.ApplicationTreeRegistrar.ScanTrees(Umbraco.Core.ApplicationContext)">
+        <member name="T:Umbraco.Web.Trees.ApplicationTreeRegistrar.LazyEnumerableTrees">
             <summary>
-            Scans for all attributed trees and ensures they exist in the tree xml
+            This class is here so that we can provide lazy access to tree scanning for when it is needed
             </summary>
+        </member>
+        <member name="M:Umbraco.Web.Trees.ApplicationTreeRegistrar.LazyEnumerableTrees.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Umbraco.Web.Trees.ApplicationTreeRegistrar.LazyEnumerableTrees.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+            </returns>
         </member>
         <member name="T:Umbraco.Web.Trees.LegacyTreeController">
             <summary>
@@ -8832,10 +8958,11 @@
             and that navigator is a <c>NavigableNavigator</c>.
             </summary>
         </member>
-        <member name="M:Umbraco.Web.PublishedCache.XmlPublishedCache.PublishedMediaCache.#ctor(Examine.Providers.BaseSearchProvider,Examine.Providers.BaseIndexProvider)">
+        <member name="M:Umbraco.Web.PublishedCache.XmlPublishedCache.PublishedMediaCache.#ctor(Umbraco.Core.ApplicationContext,Examine.Providers.BaseSearchProvider,Examine.Providers.BaseIndexProvider)">
             <summary>
             Generally used for unit testing to use an explicit examine searcher
             </summary>
+            <param name="applicationContext"></param>
             <param name="searchProvider"></param>
             <param name="indexProvider"></param>
         </member>
@@ -12039,6 +12166,198 @@
             <param name="recursive">When true, recurses up the content type tree to check inheritance; when false just calls IsDocumentType(this IPublishedContent content, string docTypeAlias).</param>
             <returns>True if the content is of the specified content type or a derived content type; otherwise false.</returns>
         </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestors(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the ancestors of the content.
+            </summary>
+            <param name="content">The content.</param>
+            <returns>The ancestors of the content, in down-top order.</returns>
+            <remarks>Does not consider the content itself.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestors(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the ancestors of the content, at a level lesser or equal to a specified level.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns>The ancestors of the content, at a level lesser or equal to the specified level, in down-top order.</returns>
+            <remarks>Does not consider the content itself. Only content that are "high enough" in the tree are returned.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestors(Umbraco.Core.Models.IPublishedContent,System.String)">
+            <summary>
+            Gets the ancestors of the content, of a specified content type.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="contentTypeAlias">The content type.</param>
+            <returns>The ancestors of the content, of the specified content type, in down-top order.</returns>
+            <remarks>Does not consider the content itself. Returns all ancestors, of the specified content type.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestors``1(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the ancestors of the content, of a specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <returns>The ancestors of the content, of the specified content type, in down-top order.</returns>
+            <remarks>Does not consider the content itself. Returns all ancestors, of the specified content type.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestors``1(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the ancestors of the content, at a level lesser or equal to a specified level, and of a specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns>The ancestors of the content, at a level lesser or equal to the specified level, and of the specified
+            content type, in down-top order.</returns>
+            <remarks>Does not consider the content itself. Only content that are "high enough" in the trees, and of the
+            specified content type, are returned.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorsOrSelf(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the content and its ancestors.
+            </summary>
+            <param name="content">The content.</param>
+            <returns>The content and its ancestors, in down-top order.</returns>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorsOrSelf(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the content and its ancestors, at a level lesser or equal to a specified level.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns>The content and its ancestors, at a level lesser or equal to the specified level,
+            in down-top order.</returns>
+            <remarks>Only content that are "high enough" in the tree are returned. So it may or may not begin
+            with the content itself, depending on its level.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorsOrSelf(Umbraco.Core.Models.IPublishedContent,System.String)">
+            <summary>
+            Gets the content and its ancestors, of a specified content type.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="contentTypeAlias">The content type.</param>
+            <returns>The content and its ancestors, of the specified content type, in down-top order.</returns>
+            <remarks>May or may not begin with the content itself, depending on its content type.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorsOrSelf``1(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the content and its ancestors, of a specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <returns>The content and its ancestors, of the specified content type, in down-top order.</returns>
+            <remarks>May or may not begin with the content itself, depending on its content type.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorsOrSelf``1(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the content and its ancestor, at a lever lesser or equal to a specified level, and of a specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns>The content and its ancestors, at a level lesser or equal to the specified level, and of the specified
+            content type, in down-top order.</returns>
+            <remarks>May or may not begin with the content itself, depending on its level and content type.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestor(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the ancestor of the content, ie its parent.
+            </summary>
+            <param name="content">The content.</param>
+            <returns>The ancestor of the content.</returns>
+            <remarks>This method is here for consistency purposes but does not make much sense.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestor(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the nearest ancestor of the content, at a lever lesser or equal to a specified level.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns>The nearest (in down-top order) ancestor of the content, at a level lesser or equal to the specified level.</returns>
+            <remarks>Does not consider the content itself. May return <c>null</c>.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestor(Umbraco.Core.Models.IPublishedContent,System.String)">
+            <summary>
+            Gets the nearest ancestor of the content, of a specified content type.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="contentTypeAlias">The content type alias.</param>
+            <returns>The nearest (in down-top order) ancestor of the content, of the specified content type.</returns>
+            <remarks>Does not consider the content itself. May return <c>null</c>.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestor``1(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the nearest ancestor of the content, of a specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <returns>The nearest (in down-top order) ancestor of the content, of the specified content type.</returns>
+            <remarks>Does not consider the content itself. May return <c>null</c>.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.Ancestor``1(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the nearest ancestor of the content, at the specified level and of the specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns>The ancestor of the content, at the specified level and of the specified content type.</returns>
+            <remarks>Does not consider the content itself. If the ancestor at the specified level is
+            not of the specified type, returns <c>null</c>.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorOrSelf(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the content or its nearest ancestor.
+            </summary>
+            <param name="content">The content.</param>
+            <returns>The content.</returns>
+            <remarks>This method is here for consistency purposes but does not make much sense.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorOrSelf(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the content or its nearest ancestor, at a lever lesser or equal to a specified level.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns>The content or its nearest (in down-top order) ancestor, at a level lesser or equal to the specified level.</returns>
+            <remarks>May or may not return the content itself depending on its level. May return <c>null</c>.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorOrSelf(Umbraco.Core.Models.IPublishedContent,System.String)">
+            <summary>
+            Gets the content or its nearest ancestor, of a specified content type.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="contentTypeAlias">The content type.</param>
+            <returns>The content or its nearest (in down-top order) ancestor, of the specified content type.</returns>
+            <remarks>May or may not return the content itself depending on its content type. May return <c>null</c>.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorOrSelf``1(Umbraco.Core.Models.IPublishedContent)">
+            <summary>
+            Gets the content or its nearest ancestor, of a specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <returns>The content or its nearest (in down-top order) ancestor, of the specified content type.</returns>
+            <remarks>May or may not return the content itself depending on its content type. May return <c>null</c>.</remarks>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.AncestorOrSelf``1(Umbraco.Core.Models.IPublishedContent,System.Int32)">
+            <summary>
+            Gets the content or its nearest ancestor, at a lever lesser or equal to a specified level, and of a specified content type.
+            </summary>
+            <typeparam name="T">The content type.</typeparam>
+            <param name="content">The content.</param>
+            <param name="maxLevel">The level.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.PublishedContentExtensions.EnumerateAncestors(Umbraco.Core.Models.IPublishedContent,System.Boolean)">
+            <summary>
+            Enumerates ancestors of the content, bottom-up.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="orSelf">Indicates whether the content should be included.</param>
+            <returns>Enumerates bottom-up ie walking up the tree (parent, grand-parent, etc).</returns>
+        </member>
         <member name="M:Umbraco.Web.PublishedContentExtensions.DescendantsOrSelf(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IPublishedContent},System.String)">
             <summary>
             Returns all DescendantsOrSelf of all content referenced
@@ -12546,21 +12865,16 @@
             Used to do the scheduling for tasks, publishing, etc...
             </summary>
             <remarks>
-            
-            TODO: Much of this code is legacy and needs to be updated, there are a few new/better ways to do scheduling
-            in a web project nowadays. 
-            
-            //TODO: We need a much more robust way of handing scheduled tasks and also need to take into account app shutdowns during 
-            a scheduled tasks operation
-            http://haacked.com/archive/2011/10/16/the-dangers-of-implementing-recurring-background-tasks-in-asp-net.aspx/
-            
+            All tasks are run in a background task runner which is web aware and will wind down the task correctly instead of killing it completely when
+            the app domain shuts down.
             </remarks>
         </member>
-        <member name="M:Umbraco.Web.Scheduling.Scheduler.PerformScheduling(System.Object)">
+        <member name="M:Umbraco.Web.Scheduling.Scheduler.PerformScheduling(Umbraco.Core.ApplicationContext,Umbraco.Core.Configuration.UmbracoSettings.IUmbracoSettingsSection)">
             <summary>
             This performs all of the scheduling on the one timer
             </summary>
-            <param name="sender"></param>
+            <param name="appContext"></param>
+            <param name="settings"></param>
             <remarks>
             No processing will be done if this server is a slave
             </remarks>
@@ -12891,38 +13205,6 @@
             <summary>
             Provides urls using the <c>umbracoUrlAlias</c> property.
             </summary>
-        </member>
-        <member name="T:Umbraco.Web.Routing.IUrlProvider">
-            <summary>
-            Provides urls.
-            </summary>
-        </member>
-        <member name="M:Umbraco.Web.Routing.IUrlProvider.GetUrl(Umbraco.Web.UmbracoContext,System.Int32,System.Uri,Umbraco.Web.Routing.UrlProviderMode)">
-            <summary>
-            Gets the nice url of a published content.
-            </summary>
-            <param name="umbracoContext">The Umbraco context.</param>
-            <param name="id">The published content id.</param>
-            <param name="current">The current absolute url.</param>
-            <param name="mode">The url mode.</param>
-            <returns>The url for the published content.</returns>
-            <remarks>
-            <para>The url is absolute or relative depending on <c>mode</c> and on <c>current</c>.</para>
-            <para>If the provider is unable to provide a url, it should return <c>null</c>.</para>
-            </remarks>
-        </member>
-        <member name="M:Umbraco.Web.Routing.IUrlProvider.GetOtherUrls(Umbraco.Web.UmbracoContext,System.Int32,System.Uri)">
-            <summary>
-            Gets the other urls of a published content.
-            </summary>
-            <param name="umbracoContext">The Umbraco context.</param>
-            <param name="id">The published content id.</param>
-            <param name="current">The current absolute url.</param>
-            <returns>The other urls for the published content.</returns>
-            <remarks>
-            <para>Other urls are those that <c>GetUrl</c> would not return in the current context, but would be valid
-            urls for the node in other contexts (different domain for current request, umbracoUrlAlias...).</para>
-            </remarks>
         </member>
         <member name="M:Umbraco.Web.Routing.AliasUrlProvider.GetUrl(Umbraco.Web.UmbracoContext,System.Int32,System.Uri,Umbraco.Web.Routing.UrlProviderMode)">
             <summary>
@@ -21631,6 +21913,26 @@
             	Summary description for nodeType.
             </summary>
         </member>
+        <member name="M:umbraco.cms.presentation.create.controls.nodeType.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            The page_load.
+            </summary>
+            <param name="sender">
+            The sender.
+            </param>
+            <param name="e">
+            The e.
+            </param>
+        </member>
+        <member name="F:umbraco.cms.presentation.create.controls.nodeType.pp_MasterDocumentType">
+            <summary>
+            pp_MasterDocumentType control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
         <member name="F:umbraco.cms.presentation.create.controls.nodeType.masterType">
             <summary>
             masterType control.
@@ -27033,7 +27335,7 @@
             <param name="appAlias"></param>
             <returns></returns>
         </member>
-        <member name="M:umbraco.cms.presentation.Trees.TreeDefinitionCollection.EnsureTreesRegistered(System.Boolean)">
+        <member name="M:umbraco.cms.presentation.Trees.TreeDefinitionCollection.EnsureTreesRegistered">
             <summary>
             Finds all instances of ITree in loaded assemblies, then finds their associated ApplicationTree and Application objects
             and stores them together in a TreeDefinition class and adds the definition to our list.

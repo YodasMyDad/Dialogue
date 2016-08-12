@@ -12,6 +12,8 @@ using Dialogue.Logic.Services;
 using Umbraco.Core.Models;
 using Umbraco.Web.Models;
 using Member = Dialogue.Logic.Models.Member;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Dialogue.Logic.Controllers
 {
@@ -29,9 +31,14 @@ namespace Dialogue.Logic.Controllers
 
             // See if a return url is present or not and add it
             var forgotPassword = Request["forgot"];
+            var resetPassword = Request["resettoken"];
             if (!string.IsNullOrEmpty(forgotPassword))
             {
                 pageModel.ShowForgotPassword = true;
+            }
+            else if (!string.IsNullOrEmpty(resetPassword))
+            {
+                pageModel.ShowResetPassword = true;
             }
 
             // Return the model to the current template
@@ -176,10 +183,8 @@ namespace Dialogue.Logic.Controllers
         [ModelStateToTempData]
         public ActionResult ForgotPassword(ForgotPasswordViewModel model)
         {
-            var changePasswordSucceeded = true;
-            var currentUser = new Member();
-            var newPassword = AppHelpers.RandomString(8);
-
+            Member currentUser = new Member();
+            string token = string.Empty;
             try
             {
                 if (ModelState.IsValid)
@@ -187,25 +192,21 @@ namespace Dialogue.Logic.Controllers
                     currentUser = ServiceFactory.MemberService.GetByEmail(model.EmailAddress);
                     if (currentUser != null)
                     {
-                        changePasswordSucceeded = ServiceFactory.MemberService.ResetPassword(currentUser, newPassword);
-                    }
-                    else
-                    {
-                        changePasswordSucceeded = false;
+                        token = ServiceFactory.MemberService.ResetPasswordWithToken(currentUser.Id);
                     }
                 }
             }
             catch (Exception ex)
             {
                 LogError(string.Format("Error resetting password for {0}", model.EmailAddress), ex);
-                changePasswordSucceeded = false;
             }
 
-            if (changePasswordSucceeded)
+            if (!string.IsNullOrEmpty(token))
             {
                 var sb = new StringBuilder();
                 sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Members.ForgotPassword.Email"), Settings.ForumName));
-                sb.AppendFormat("<p><b>{0}</b></p>", newPassword);
+                string url = string.Format("http://{0}{1}{2}{3}", HttpContext.Request.Url.Authority, Settings.LoginUrl, "?resettoken=", token);
+                sb.Append(string.Format("<p><a href='{0}'>{0}</b></p>", url, Lang("Members.ResetPassword.Link")));
                 var email = new Email
                 {
                     EmailFrom = Settings.NotificationReplyEmailAddress,
@@ -222,10 +223,11 @@ namespace Dialogue.Logic.Controllers
                     Message = Lang("Members.ForgotPassword.SuccessMessage"),
                     MessageType = GenericMessages.Success
                 });
-                return CurrentUmbracoPage();
+                return Redirect(Settings.LoginUrl);
             }
 
             ModelState.AddModelError("", Lang("Members.ForgotPassword.ErrorMessage"));
+            
             // Hack to show form validation
             ShowModelErrors();
             return CurrentUmbracoPage();
@@ -530,6 +532,56 @@ namespace Dialogue.Logic.Controllers
             }
 
             return RedirectToUmbracoPage(Settings.ForumId);
+        }
+
+        [ChildActionOnly]
+        public ActionResult ResetPasswordForm()
+        {
+            return PartialView(PathHelper.GetThemePartialViewPath("ResetPasswordForm"), new ResetPasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult HandleResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors).Where(y => y.Count > 0).ToList();
+                foreach (ModelErrorCollection error in errors)
+                {
+                    IEnumerable<ModelError> modelStateErrors = this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors);
+                    string errorMessages = string.Join(", ", modelStateErrors.Select(x => x.ErrorMessage).ToList());
+                    ModelState.AddModelError(string.Empty, errorMessages);
+                }
+
+                return CurrentUmbracoPage();
+            }
+
+            bool success = false;
+
+            // Get member from email
+            var resetMember = ServiceFactory.MemberService.GetByEmail(model.EmailAddress);
+
+            // Ensure we have that member
+            if (resetMember != null)
+            {
+                // Get the querystring GUID
+                var resetToken = Request.QueryString["resetToken"];
+
+                // Ensure we have a reset token value
+                if (!string.IsNullOrEmpty(resetToken))
+                {
+                    success = ServiceFactory.MemberService.ProcessResetPasswordWithToken(resetMember.Id, resetToken, model.NewPassword);
+                }
+            }
+
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, Lang("Members.Errors.ResetPasswordInvalid"));
+                ShowModelErrors();
+            }
+
+            return Redirect(Settings.LoginUrl);
         }
     }
 
