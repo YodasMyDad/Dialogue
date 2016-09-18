@@ -10,17 +10,22 @@ using Umbraco.Web.PublishedCache;
 
 namespace Dialogue.Logic.Routes
 {
+    using Umbraco.Core.Logging;
+    using Umbraco.Web.Routing;
+
     public static class DialogueRoutes
     {        
         public const string TopicRouteName = "dialogue_topic_{0}";
         public const string MemberRouteName = "dialogue_member_{0}";
         public const string DialoguePageRouteName = "dialogue_page_{0}";
 
-        public static void MapRoutes(RouteCollection routes, ContextualPublishedCache umbracoCache)
+
+        public static void MapRoutes(RouteCollection routes, ContextualPublishedCache umbracoCache, UrlProvider umbracoUrlProvider)
         {
-            //find all Dialogue forum root nodes - Testing adding new line
+            //find all dialogue root nodes
             var dialogueNodes = umbracoCache.GetByXPath(string.Concat("//", AppConstants.DocTypeForumRoot)).ToArray();
-           
+
+            LogHelper.Info(typeof(DialogueRoutes), () => $"Mapping routes for {dialogueNodes.Length} Dialogue root nodes");
 
             //NOTE: need to write lock because this might need to be remapped while the app is running if
             // any articulate nodes are updated with new values
@@ -40,14 +45,19 @@ namespace Dialogue.Logic.Routes
                 // which already exists and is already assigned to a specific node ID.
                 // So what we need to do in these cases is use a special route handler that takes
                 // into account the domain assigned to the route.
-                var groups = dialogueNodes.GroupBy(x => RouteCollectionExtensions.RoutePathFromNodeUrl(x.Url));
+                var groups = dialogueNodes
+                    .GroupBy(x => RouteCollectionExtensions.RoutePathFromNodeUrl(x.Url))
+                    //This is required to ensure that we create routes that are more specific first
+                    // before creating routes that are less specific
+                    .OrderByDescending(x => x.Key.Split('/').Length);
                 foreach (var grouping in groups)
                 {
                     var nodesAsArray = grouping.ToArray();
 
-                    MapTopicRoute(routes, grouping.Key, nodesAsArray);
-                    MapDialoguePages(routes, grouping.Key, nodesAsArray);
-                    MapMemberRoute(routes, grouping.Key, nodesAsArray);
+                    MapTopicRoute(routes, umbracoUrlProvider, grouping.Key, nodesAsArray);
+                    MapDialoguePages(routes, umbracoUrlProvider, grouping.Key, nodesAsArray);
+                    MapMemberRoute(routes, umbracoUrlProvider, grouping.Key, nodesAsArray);
+
                 }
             }
 
@@ -57,9 +67,10 @@ namespace Dialogue.Logic.Routes
         /// Create the member profile route - It's a fake page
         /// </summary>
         /// <param name="routes"></param>
+        /// <param name="umbracoUrlProvider"></param>
         /// <param name="nodeRoutePath"></param>
         /// <param name="nodesWithPath"></param>
-        private static void MapMemberRoute(RouteCollection routes, string nodeRoutePath, IPublishedContent[] nodesWithPath)
+        private static void MapMemberRoute(RouteCollection routes, UrlProvider umbracoUrlProvider, string nodeRoutePath, IPublishedContent[] nodesWithPath)
         {
  
             foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropMemberUrlName)))
@@ -79,7 +90,7 @@ namespace Dialogue.Logic.Routes
                         action = "Show",
                         topicname = UrlParameter.Optional
                     },
-                    new DialogueMemberRouteHandler(nodesWithPath));
+                    new DialogueMemberRouteHandler(umbracoUrlProvider, nodesWithPath));
             }
 
         }
@@ -88,9 +99,10 @@ namespace Dialogue.Logic.Routes
         /// Create the Topic route - It's a fake page
         /// </summary>
         /// <param name="routes"></param>
+        /// <param name="umbracoUrlProvider"></param>
         /// <param name="nodeRoutePath"></param>
         /// <param name="nodesWithPath"></param>
-        private static void MapTopicRoute(RouteCollection routes, string nodeRoutePath, IPublishedContent[] nodesWithPath)
+        private static void MapTopicRoute(RouteCollection routes, UrlProvider umbracoUrlProvider, string nodeRoutePath, IPublishedContent[] nodesWithPath)
         {
             foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropTopicUrlName)))
             {
@@ -109,7 +121,7 @@ namespace Dialogue.Logic.Routes
                         action = "Show",
                         topicname = UrlParameter.Optional
                     },
-                    new DialogueTopicRouteHandler(nodesWithPath));
+                    new DialogueTopicRouteHandler(umbracoUrlProvider, nodesWithPath));
             }
         }
 
@@ -117,9 +129,10 @@ namespace Dialogue.Logic.Routes
         /// Create the dialogue page route - It's a fake page
         /// </summary>
         /// <param name="routes"></param>
+        /// <param name="umbracoUrlProvider"></param>
         /// <param name="nodeRoutePath"></param>
         /// <param name="nodesWithPath"></param>
-        private static void MapDialoguePages(RouteCollection routes, string nodeRoutePath, IPublishedContent[] nodesWithPath)
+        private static void MapDialoguePages(RouteCollection routes, UrlProvider umbracoUrlProvider, string nodeRoutePath, IPublishedContent[] nodesWithPath)
         {
 
             foreach (var nodeSearch in nodesWithPath.GroupBy(x => x.GetPropertyValue<string>(AppConstants.PropDialogueUrlName)))
@@ -138,8 +151,36 @@ namespace Dialogue.Logic.Routes
                         action = "Show",
                         topicname = UrlParameter.Optional
                     },
-                    new DialoguePageRouteHandler(nodesWithPath));
+                    new DialoguePageRouteHandler(umbracoUrlProvider, nodesWithPath));
             }
+        }
+
+        /// <summary>
+        /// Returns the content item URLs taking into account any domains assigned
+        /// </summary>
+        /// <param name="umbracoUrlProvider"></param>
+        /// <param name="publishedContent"></param>
+        /// <returns></returns>
+        internal static HashSet<string> GetContentUrls(UrlProvider umbracoUrlProvider, IPublishedContent publishedContent)
+        {
+            HashSet<string> allUrls;
+            var other = umbracoUrlProvider.GetOtherUrls(publishedContent.Id).ToArray();
+            if (other.Length > 0)
+            {
+                //this means there are domains assigned
+                allUrls = new HashSet<string>(other)
+                    {
+                        umbracoUrlProvider.GetUrl(publishedContent.Id, UrlProviderMode.Absolute)
+                    };
+            }
+            else
+            {
+                allUrls = new HashSet<string>()
+                    {
+                        publishedContent.Url
+                    };
+            }
+            return allUrls;
         }
 
         /// <summary>

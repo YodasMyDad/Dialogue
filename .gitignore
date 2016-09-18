@@ -69,3 +69,9 @@ Src/Dialogue.Logic/obj/
 Src/Dialogue.Website/App_Data/cache/
 Src/Dialogue.Website/App_Plugins/Dialogue/Content/MemberUploads/
 /Src/Dialogue.Website/Media
+.vs/Dialogue/v14/.suo
+.vs/config/applicationhost.config
+packages/*
+Src/Dialogue.Logic/App_Data/NuGetBackup/*
+Src/Dialogue.Logic/bin/*
+Src/Dialogue.Ui/Bin/*

@@ -19,6 +19,7 @@ namespace Dialogue.Logic.Models
         {
             get
             {
+                //TODO - Cache Per Request
                 var root = Content.AncestorOrSelf(AppConstants.DocTypeForumRoot);
                 if (root == null)
                 {
@@ -31,6 +32,7 @@ namespace Dialogue.Logic.Models
 
         public DialogueSettings Settings
         {
+            // Cache Per Request
             get { return Dialogue.Settings(DialogueRoot.Id); }
         }
 

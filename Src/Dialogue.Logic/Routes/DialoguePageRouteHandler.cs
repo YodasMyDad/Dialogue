@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Routing;
-using Dialogue.Logic.Constants;
-using Umbraco.Core;
-using Umbraco.Core.Models;
-using Umbraco.Web;
-
-namespace Dialogue.Logic.Routes
+﻿namespace Dialogue.Logic.Routes
 {
+    using System.ComponentModel;
+    using Umbraco.Web.Routing;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Web.Routing;
+    using Constants;
+    using Umbraco.Core;
+    using Umbraco.Core.Models;
+    using Umbraco.Web;
+
     public class DialoguePageRouteHandler : UmbracoVirtualNodeByIdRouteHandler
     {
-        
-       private struct UrlNames
+
+        private struct UrlNames
         {
             public int NodeId { get; set; }
             public string SearchUrlName { get; set; }
@@ -21,8 +23,8 @@ namespace Dialogue.Logic.Routes
         private readonly List<UrlNames> _urlNames = new List<UrlNames>();
 
         
-        public DialoguePageRouteHandler(IEnumerable<IPublishedContent> itemsForRoute)
-            : base(itemsForRoute)
+        public DialoguePageRouteHandler(UrlProvider umbracoUrlProvider, IEnumerable<IPublishedContent> itemsForRoute)
+            : base(umbracoUrlProvider, itemsForRoute)
         {
             foreach (var node in itemsForRoute)
             {
@@ -35,6 +37,7 @@ namespace Dialogue.Logic.Routes
             }
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public DialoguePageRouteHandler(int realNodeId,
             string searchUrlName,
             string searchPageName)

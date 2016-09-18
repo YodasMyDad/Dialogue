@@ -1,31 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dialogue.Logic", "Src\Dialogue.Logic\Dialogue.Logic.csproj", "{DD101876-52AC-494C-B1FB-78A205C05AB3}"
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Dialogue.Website", "http://localhost:3456", "{3DD40D42-0984-4C81-924E-1EB345A2D2AC}"
-	ProjectSection(WebsiteProperties) = preProject
-		UseIISExpress = "true"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_3456"
-		Debug.AspNetCompiler.PhysicalPath = "Src\Dialogue.Website\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_3456\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_3456"
-		Release.AspNetCompiler.PhysicalPath = "Src\Dialogue.Website\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_3456\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "Src\Dialogue.Website\"
-		DefaultWebSiteLanguage = "Visual C#"
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{389FF9D0-561B-4C10-8F2F-F30212BFBE8A}"
 	ProjectSection(SolutionItems) = preProject
@@ -70,6 +48,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7B0FC5
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Dialogue.Ui", "Src\Dialogue.Ui\", "{D94792D0-6895-431B-8BC0-CDD26D74BAEE}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_8885"
+		Debug.AspNetCompiler.PhysicalPath = "Src\Dialogue.Ui\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_8885\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_8885"
+		Release.AspNetCompiler.PhysicalPath = "Src\Dialogue.Ui\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_8885\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "8885"
+		SlnRelativePath = "Src\Dialogue.Ui\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{DD101876-52AC-494C-B1FB-78A205C05AB3} = {DD101876-52AC-494C-B1FB-78A205C05AB3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,8 +83,6 @@ Global
 		{DD101876-52AC-494C-B1FB-78A205C05AB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD101876-52AC-494C-B1FB-78A205C05AB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD101876-52AC-494C-B1FB-78A205C05AB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DD40D42-0984-4C81-924E-1EB345A2D2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DD40D42-0984-4C81-924E-1EB345A2D2AC}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{FFE9A4B8-EB52-41D2-ABE8-03A6435D48FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FFE9A4B8-EB52-41D2-ABE8-03A6435D48FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFE9A4B8-EB52-41D2-ABE8-03A6435D48FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -118,6 +119,9 @@ Global
 		{E07637B5-97F0-4AE9-99B7-26CDF85C162B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E07637B5-97F0-4AE9-99B7-26CDF85C162B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E07637B5-97F0-4AE9-99B7-26CDF85C162B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D94792D0-6895-431B-8BC0-CDD26D74BAEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D94792D0-6895-431B-8BC0-CDD26D74BAEE}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{D94792D0-6895-431B-8BC0-CDD26D74BAEE}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

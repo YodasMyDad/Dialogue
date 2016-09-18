@@ -8,6 +8,9 @@ using Umbraco.Web;
 
 namespace Dialogue.Logic.Routes
 {
+    using System.ComponentModel;
+    using Umbraco.Web.Routing;
+
     public class DialogueMemberRouteHandler : UmbracoVirtualNodeByIdRouteHandler
     {
 
@@ -21,8 +24,8 @@ namespace Dialogue.Logic.Routes
         private readonly List<UrlNames> _urlNames = new List<UrlNames>();
 
         
-        public DialogueMemberRouteHandler(IEnumerable<IPublishedContent> itemsForRoute)
-            : base(itemsForRoute)
+        public DialogueMemberRouteHandler(UrlProvider umbracoUrlProvider, IEnumerable<IPublishedContent> itemsForRoute)
+            : base(umbracoUrlProvider, itemsForRoute)
         {
             foreach (var node in itemsForRoute)
             {
@@ -36,6 +39,7 @@ namespace Dialogue.Logic.Routes
             }
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public DialogueMemberRouteHandler(int realNodeId,
             string searchUrlName,
             string searchPageName)
