@@ -1,0 +1,66 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.PageListPrivateMessageViewModel
+
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+<div class="btn-group pm-buttons">
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageInbox)" class="btn btn-default">@Html.Lang("PM.PrivateMessages")</a>
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageCreate)" class="btn btn-default">@Html.Lang("PM.Create")</a>
+</div>
+
+@if (Model.ListPrivateMessageViewModel.Messages.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>@Html.Lang("PM.Subject")</th>
+                    <th>@Html.Lang("PM.Date")</th>
+                    <th>@Html.Lang("PM.To")</th>
+                    <th>@Html.Lang("PM.Delete")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var message in Model.ListPrivateMessageViewModel.Messages)
+                {
+                    <tr class="@(message.IsRead ? "" : "info")">
+                        <td>
+                            <strong>
+                                <a href="@Urls.GenerateUrl(Urls.UrlType.MessageView)?id=@message.Id">
+                                    @Html.Raw(message.Subject)
+                                </a>
+                            </strong>
+                        </td>
+                        <td>@message.DateSent.ToShortDateString()</td>
+                        <td>
+                            <a href="@Html.Raw(message.MemberTo.Url)">
+                                @Html.Raw(message.MemberTo.UserName)
+                            </a>
+                        </td>
+                        <td>
+                            <a class="privatemessagedelete" data-messageid="@message.Id">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    if (Model.ListPrivateMessageViewModel.TotalCount > AppConstants.PrivateMessageListSize)
+    {
+        @Html.Pager(Convert.ToInt32(Model.ListPrivateMessageViewModel.PageIndex), AppConstants.PrivateMessageListSize, Convert.ToInt32(Model.ListPrivateMessageViewModel.TotalCount), new { })
+    }
+}
+else
+{
+    <p>@Html.Lang("PM.NoMessages")</p>
+}

@@ -1,0 +1,11 @@
+﻿@using Dialogue.Logic.Models.ViewModels
+@model ViewMemberDiscussionsViewModel
+
+@foreach (var topic in Model.Topics)
+{
+    // Get the permissions for this topic via its parent category
+    var permissions = Model.AllPermissionSets[topic.Category];
+
+    var viewModel = new ViewTopicViewModel { Permissions = permissions, Topic = topic, User = Model.CurrentUser, ShowCategoryName = false };
+    Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("TopicRowSlim"), viewModel);
+}

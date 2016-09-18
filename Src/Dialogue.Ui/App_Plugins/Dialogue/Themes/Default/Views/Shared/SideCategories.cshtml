@@ -1,0 +1,20 @@
+﻿@model Dialogue.Logic.Models.ViewModels.CategoryListViewModel
+@{
+    
+}
+
+<div class="side-box categories-box">
+    <h4>@Html.Lang("Category.CategoriesSideHeading")</h4>
+
+    <ul>
+        @foreach (var category in Model.AllPermissionSets.Keys)
+        {
+            var permissions = Model.AllPermissionSets[category];
+            if (!permissions[AppConstants.PermissionDenyAccess].IsTicked)
+            {
+                <li><a href="@Html.Raw(category.Url)">@Html.Raw(@category.Name)</a></li>
+            }
+        }
+    </ul>
+
+</div>

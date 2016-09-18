@@ -1,0 +1,29 @@
+﻿@model Dialogue.Logic.Models.MasterModel
+@{
+    Layout = "Master.cshtml";
+}
+@section PageTitle{
+    @RenderSection("PageTitle", false)
+}
+@section MetaDescription
+{
+    @RenderSection("MetaDescription", false)
+}
+@section SocialMeta
+{
+    @RenderSection("SocialMeta", false)
+}
+@section Head{
+    @RenderSection("Head", false)
+}
+
+<div class="row">
+    <div class="col-md-6 col-md-push-3">
+        @RenderBody()
+    </div>
+</div>
+
+
+@section scripts{
+    @RenderSection("scripts", false)
+}

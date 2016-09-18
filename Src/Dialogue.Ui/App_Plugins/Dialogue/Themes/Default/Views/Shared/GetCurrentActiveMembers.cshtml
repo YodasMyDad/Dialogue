@@ -1,0 +1,18 @@
+﻿
+@model Dialogue.Logic.Models.ViewModels.ActiveMembersViewModel
+
+@if (Model.ActiveMembers.Any())
+{
+    <p class="activememberslistheading">@Html.Lang("Stats.FooterActiveUsersText")</p>
+    <ul class="activememberslist">        
+        @foreach (var member in Model.ActiveMembers)
+        {
+            <li>
+                <a title="@Html.Raw(member.UserName)" href="@member.Url">
+                    <img src="@member.MemberImage(AppConstants.GravatarLeaderboardSize)" alt="@Html.Raw(member.UserName)" />
+                </a>
+            </li>
+        }
+    </ul>
+
+}

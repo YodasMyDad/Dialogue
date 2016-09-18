@@ -1,0 +1,96 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.AuthoriseViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#members" role="tab" data-toggle="tab">@Html.Lang("Authorise.Members")</a></li>
+    <li><a href="#topics" role="tab" data-toggle="tab">@Html.Lang("Authorise.Topics")</a></li>
+    <li><a href="#posts" role="tab" data-toggle="tab">@Html.Lang("Authorise.Posts")</a></li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane active" id="members">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var member in Model.Members)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@member.MemberImage(AppConstants.GravatarTopicSize)" alt="@member.UserName" />
+                            </td>
+                            <td>
+                                <strong>
+                                    <a href="@member.Url">
+                                        @member.UserName
+                                    </a>
+                                </strong>
+                            </td>
+                            <td>@member.Email</td>
+                            <td>
+                                <a class="btn btn-success approvemember" data-memberid="@member.Id">
+                                    @Html.Lang("Buttons.Approve")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane" id="topics">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var topic in Model.Topics)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    @topic.Name
+                                </strong><br />
+                                @Html.Lang("Misc.By") <em><a href="@topic.Member.Url">@topic.Member.UserName</a></em>
+                            </td>
+                            <td>@Html.Raw(AppHelpers.ConvertPostContent(topic.LastPost.PostContent))</td>
+                            <td>
+                                <a class="btn btn-success approvetopic" data-topicid="@topic.Id">
+                                    @Html.Lang("Buttons.Approve")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane" id="posts">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var post in Model.Posts)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    @Html.Lang("Misc.By") <em><a href="@post.Member.Url">@post.Member.UserName</a></em>
+                                </strong>
+                            </td>
+                            <td>@Html.Raw(AppHelpers.ConvertPostContent(post.PostContent))</td>
+                            <td>
+                                <a class="btn btn-success approvepost" data-postid="@post.Id">
+                                    @Html.Lang("Buttons.Approve")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

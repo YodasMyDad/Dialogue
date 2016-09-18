@@ -1,0 +1,19 @@
+﻿@using Dialogue.Logic.Application.ExtensionMethods
+@inherits UmbracoViewPage<Dialogue.Logic.Models.RegisterModel>
+@{
+    Layout = "OneColThin.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+@if (Html.Settings().SuspendRegistration != true)
+{
+    @Html.Action("RegisterForm", "DialogueLoginRegisterSurface")
+}

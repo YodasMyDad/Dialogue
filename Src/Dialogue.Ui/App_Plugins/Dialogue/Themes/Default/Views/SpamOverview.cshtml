@@ -1,0 +1,46 @@
+﻿@model Dialogue.Logic.Models.SpamOverviewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+<div class="row spamoverview">
+    <div class="col-md-6">
+        <h2>@Html.Lang("Spam.DodgyMembers")</h2>
+        <p>@Html.Lang("Spam.DogdyMembers.Description")</p>
+        @if (Model.DodgyMembers.Any())
+        {
+            <ul>
+                @foreach (var members in Model.DodgyMembers)
+                {
+                    <li><a href="@members.Key.Url">@members.Key.UserName</a> <span class="badge">@members.Value</span></li>
+                }
+            </ul>
+        }
+
+
+    </div>
+    <div class="col-md-6">
+        <h2>@Html.Lang("Spam.DodgyPosts")</h2>
+        <p>@Html.Lang("Spam.DodgyPosts.Description")</p>
+        @if (Model.DodgyPosts.Any())
+        {
+            <ul>
+                @foreach (var post in Model.DodgyPosts)
+                {
+                    <li>
+                        @Html.Lang("Spam.InTopic") 
+                        <a href="@(post.Topic.Url)#comment-@(post.Id)">@post.Topic.Name</a> 
+                        @Html.Lang("Spam.PostBy") 
+                        <a href="@post.Member.Url">@post.Member.UserName</a> 
+                        <span class="badge">@post.VoteCount</span>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+

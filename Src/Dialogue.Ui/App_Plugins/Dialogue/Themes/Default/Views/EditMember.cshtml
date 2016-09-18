@@ -1,0 +1,126 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.PageMemberEditViewModel
+@{
+    Layout = "OneColThin.cshtml";
+
+}
+@section PageTitle
+{
+    @Model.PageTitle
+}
+
+@using (Html.BeginForm("Edit", "DialogueMemberSurface", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form", role = "form" }))
+{
+    @Html.HiddenFor(x => Model.MemberEditViewModel.Id)
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.MemberEditViewModel.UserName)
+        @Html.TextBoxFor(x => x.MemberEditViewModel.UserName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.MemberEditViewModel.UserName)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.MemberEditViewModel.Email)
+        @Html.TextBoxFor(x => x.MemberEditViewModel.Email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.MemberEditViewModel.Email)
+    </div>
+
+    if (!Model.MemberEditViewModel.DisableFileUploads)
+    {
+        <div class="row membereditavatar">
+            <div class="col-md-2">
+                <img src="@AppHelpers.MemberImage(Model.MemberEditViewModel.Avatar, Model.MemberEditViewModel.Email, Model.MemberEditViewModel.Id, AppConstants.GravatarProfileSize)" alt="@Model.MemberEditViewModel.UserName">
+            </div>
+            <div class="col-md-10">
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MemberEditViewModel.Files)
+                    @Html.TextBoxFor(x => x.MemberEditViewModel.Files, new { type = "file" })
+                    @Html.ValidationMessageFor(x => x.MemberEditViewModel.Files)
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.MemberEditViewModel.Website)
+        @Html.TextBoxFor(x => x.MemberEditViewModel.Website, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.MemberEditViewModel.Website)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.MemberEditViewModel.Twitter)
+        @Html.TextBoxFor(x => x.MemberEditViewModel.Twitter, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.MemberEditViewModel.Twitter)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.MemberEditViewModel.Signature)
+        @Html.TextAreaFor(x => x.MemberEditViewModel.Signature, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.MemberEditViewModel.Signature)
+    </div>
+
+    // ONLY ADMINS
+    if (User.IsInRole(AppConstants.AdminRoleName))
+    {
+        <div class="checkbox">
+            @using (Html.BeginLabelFor(m => m.MemberEditViewModel.DisableFileUploads, new { @class = "checkbox" }))
+            {
+                @Html.CheckBoxFor(m => m.MemberEditViewModel.DisableFileUploads)
+            }
+            @Html.ValidationMessageFor(m => m.MemberEditViewModel.DisableFileUploads)
+        </div>
+
+        <div class="checkbox">
+            @using (Html.BeginLabelFor(m => m.MemberEditViewModel.DisableEmailNotifications, new { @class = "checkbox" }))
+            {
+                @Html.CheckBoxFor(m => m.MemberEditViewModel.DisableEmailNotifications)
+            }
+            @Html.ValidationMessageFor(m => m.MemberEditViewModel.DisableEmailNotifications)
+        </div>
+
+
+        <div class="checkbox">
+            @using (Html.BeginLabelFor(m => m.MemberEditViewModel.DisablePosting, new { @class = "checkbox" }))
+            {
+                @Html.CheckBoxFor(m => m.MemberEditViewModel.DisablePosting)
+            }
+            @Html.ValidationMessageFor(m => m.MemberEditViewModel.DisablePosting)
+        </div>
+
+        <div class="checkbox">
+            @using (Html.BeginLabelFor(m => m.MemberEditViewModel.DisablePrivateMessages, new { @class = "checkbox" }))
+            {
+                @Html.CheckBoxFor(m => m.MemberEditViewModel.DisablePrivateMessages)
+            }
+            @Html.ValidationMessageFor(m => m.MemberEditViewModel.DisablePrivateMessages)
+        </div>
+
+        <div class="checkbox">
+            @using (Html.BeginLabelFor(m => m.MemberEditViewModel.CanEditOtherMembers, new { @class = "checkbox" }))
+            {
+                @Html.CheckBoxFor(m => m.MemberEditViewModel.CanEditOtherMembers)
+            }
+            @Html.ValidationMessageFor(m => m.MemberEditViewModel.CanEditOtherMembers)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.MemberEditViewModel.Comments)
+            @Html.TextAreaFor(x => x.MemberEditViewModel.Comments, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.MemberEditViewModel.Comments)
+        </div>
+    }
+
+
+    <div class="btn-group">
+        <input type="submit" class="btn btn-large btn-success" value="@Html.Lang("Buttons.Save")" />
+    </div>
+
+    <div class="btn-group">
+        <a href="@Urls.GenerateUrl(Urls.UrlType.ChangePassword)" class="btn btn-default">@Html.Lang("Members.ChangePassword.Title")</a>
+    </div>
+
+
+}
+

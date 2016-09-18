@@ -1,0 +1,14 @@
+﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Application.ExtensionMethods;
+@model Dialogue.Logic.Models.ViewModels.CreateTopicButtonViewModel
+@{
+    var qs = Model.CategoryId > 0 ? string.Concat("?cat=", Model.CategoryId) : "";
+}
+@if (Model.LoggedOnUser != null && Model.LoggedOnUser.DisablePosting != true && Model.UserCanPostTopics)
+{
+    <div class="createtopicbutton">
+        <a href="@Urls.GenerateUrl(Urls.UrlType.TopicCreate)@(qs)" class="btn btn-large btn-success btn-fullwidth">
+            @Html.Lang("Layout.CreateButton")
+        </a>
+    </div>
+}

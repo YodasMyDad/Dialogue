@@ -1,7 +1,4 @@
-﻿using Dialogue.Logic.Application;
-using Dialogue.Logic.Models;
-
-namespace Dialogue.Logic
+﻿namespace Dialogue.Logic
 {
     public static class PathHelper
     {

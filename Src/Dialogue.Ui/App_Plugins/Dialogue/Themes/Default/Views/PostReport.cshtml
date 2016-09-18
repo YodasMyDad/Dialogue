@@ -1,0 +1,36 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.ReportPostPageViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+<h2>@Model.PageTitle</h2>
+
+@using (Html.BeginForm("Report", "DialoguePostSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+{
+    @Html.HiddenFor(x => Model.PostId)
+    @Html.ValidationSummary(false)
+
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Reason)
+            @Html.TextAreaFor(m => m.Reason, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Reason)
+        </div>
+
+        <div class="submit-holder">
+            <input type="submit" class="btn btn-default" value="@Html.Lang("Buttons.Send")" />
+        </div>
+}
+
+<div class="beingreported">
+    @Html.Raw(AppHelpers.ConvertPostContent(Model.Post.PostContent))
+</div>

@@ -1,0 +1,172 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewMemberViewModel
+@{
+    Layout = "OneCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+@section Head
+{
+    <script type="text/javascript">
+        $(function () {
+            $.post(app_base + 'umbraco/Surface/DialogueMemberSurface/GetMemberDiscussions',
+                { "id": '@Model.User.Id' },
+                function (data) {
+                    $(".memberdiscussions").html(data);
+                });
+            TimeBadges();
+        });
+        function TimeBadges() {
+            var timeBadgeViewModel = new Object();
+            timeBadgeViewModel.Id = '@Model.User.Id';
+            var strung = JSON.stringify(timeBadgeViewModel);
+            $.ajax({
+                url: app_base + 'umbraco/Surface/DialogueBadgeSurface/Time',
+                type: 'POST',
+                dataType: 'html',
+                data: strung,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    ShowUserMessage("Error: " + xhr.status + " " + thrownError);
+                }
+            });
+        }
+    </script>
+}
+
+
+<div class="memberprofilepublic">
+
+    <h1>@Model.User.UserName</h1>
+
+    <div class="row">
+
+        <div class="col-md-3 memberavatardetails">
+            <p><img src="@Model.User.MemberImage(AppConstants.GravatarProfileSize)" alt="@Model.User.UserName"></p>
+            @if (User.Identity.IsAuthenticated && Model.User.UserName != User.Identity.Name)
+            {
+                <p>
+                    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageCreate)?to=@Model.User.Id" class="btn btn-default">
+                        @Html.Lang("Members.MessageMe")
+                    </a>
+                </p>
+            }
+
+            @if (User.Identity.IsAuthenticated && Html.Settings().EnableMemberReporting && Model.User.Id != Model.LoggedOnUserId)
+            {
+                <p>
+                    <a href="@Urls.GenerateUrl(Urls.UrlType.ReportMember)?id=@Model.User.Id" class="btn btn-default">
+                        @Html.Lang("Buttons.Report")
+                    </a>
+                </p>
+            }
+
+            @if (User.Identity.IsAuthenticated && (User.IsInRole(AppConstants.AdminRoleName) || Html.CurrentMember().CanEditOtherMembers))
+            {
+                // If this is an admins profile then do not show
+                if (!Model.User.Groups.Any(x => x.Name.Contains(AppConstants.AdminRoleName)))
+                {
+
+                    <div class="adminprofiletools">
+
+                        <p>
+                            <a href="@Urls.GenerateUrl(Urls.UrlType.KillSpammer)?id=@Model.User.Id" class="btn btn-default" onclick="return confirm('@Html.Lang("Confirmation.ClenseSpammerDesc")')">
+                                @Html.Lang("Members.SpammerBeGone")
+                            </a>
+                        </p>
+
+                        @if (!Model.User.IsLockedOut)
+                        {
+                            <p>
+                                <a href="@Urls.GenerateUrl(Urls.UrlType.BanMember)?id=@Model.User.Id" class="btn btn-default">
+                                    @Html.Lang("Members.BanUser")
+                                </a>
+                            </p>
+                        }
+                        else
+                        {
+                            <p><a href="@Urls.GenerateUrl(Urls.UrlType.UnBanMember)?id=@Model.User.Id" class="btn btn-default">@Html.Lang("Members.UnBanUser")</a></p>
+                        }
+
+                        <p><a href="@Urls.GenerateUrl(Urls.UrlType.EditMember)?id=@Model.User.Id" class="btn btn-default">@Html.Lang("Members.EditMember")</a></p>
+
+                    </div>
+
+                }
+            }
+        </div>
+
+        <div class="col-md-9 membermaindetails">
+
+            <div class="row">
+                <div class="col-md-6 memberbio">
+                    <h3>@Html.Lang("Members.Profile.Info")</h3>
+                    <p>@Html.Lang("Members.Profile.Joined") @Model.User.DateCreated.ToShortDateString()</p>
+                    <p>@Html.Lang("Members.Profile.Posts") @Model.PostCount</p>
+                    <p>@Html.Lang("Members.Profile.Points") @Model.User.TotalPoints</p>
+                    <p>@Html.Lang("Members.Profile.Website") @Html.Raw(string.IsNullOrEmpty(Model.User.Website) ? "" : string.Format("<a href='{0}' rel='nofollow'>{0}</a>", Model.User.Website))</p>
+                    <p>@Html.Lang("Members.Profile.Twitter") @Html.Raw(string.IsNullOrEmpty(Model.User.Twitter) ? "" : string.Format("<a href='http://twitter.com/{0}' rel='nofollow'>{0}</a>", Model.User.Twitter))</p>
+                </div>
+
+                <div class="col-md-6 memberlatesttopics">
+                    <h3>@Html.Lang("Members.Profile.DiscussionActivity")</h3>
+                    <div class="memberdiscussions">
+                        <span class="ajaxspinner" title="@Html.Lang("Ajax.PleaseWait")">@Html.Lang("Ajax.PleaseWait")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 badgeactivity">
+                    <h3>@Html.Lang("Members.Profile.Badges")</h3>
+                    <div class="memberactivity">
+                        @if (Model.User.Badges != null && Model.User.Badges.Any())
+                        {
+                            <ul class="memberbadgelist">
+                                @foreach (var badge in Model.User.Badges)
+                                {
+                                    <li>
+                                        <img src="@Url.Content(AppHelpers.ReturnBadgeUrl(badge.Image))" alt="@badge.Name" title="@badge.Name" />
+                                        @if (badge.AwardsPoints != null && badge.AwardsPoints > 0)
+                                        {
+                                            <strong>[@badge.AwardsPoints]</strong>
+                                        }
+                                        @Html.Raw(badge.DisplayName)
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (User.IsInRole(AppConstants.AdminRoleName) || Model.User.CanEditOtherMembers)
+            {
+                if (!string.IsNullOrEmpty(Model.User.Comments))
+                {
+                    // Show the admin/mod notes on this user in case they are a spammer etc...
+                    <div class="row adminpublicomments">
+                        <div class="col-md-12">
+                            @Html.Raw(Model.User.Comments)
+                        </div>
+                    </div>
+                }
+
+            }
+
+        </div>
+
+    </div>
+
+</div>

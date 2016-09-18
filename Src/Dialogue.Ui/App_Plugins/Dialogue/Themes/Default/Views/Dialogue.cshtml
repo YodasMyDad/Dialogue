@@ -1,0 +1,36 @@
+﻿@using Dialogue.Logic.Application
+@inherits UmbracoViewPage<Dialogue.Logic.Models.DialogueForum>
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+@*<div class="openingtext">
+        <h1>@Model.MainHeading</h1>
+        @Html.Raw(Model.MainContent)
+    </div>*@
+
+
+@*<h2>@Html.Lang("Home.MainCategories")</h2>
+    @foreach (var category in Model.MainCategories)
+    {
+        <div class="maincategory">
+            <h3><a href="@category.Url">@category.Name</a></h3>
+            @Html.Raw(category.Description)
+        </div>
+    }*@
+
+
+<div class="row">
+    <div class="col-md-12 latesttopics">
+        @Html.Action("LatestTopics", "DialogueTopicSurface")
+    </div>
+</div>

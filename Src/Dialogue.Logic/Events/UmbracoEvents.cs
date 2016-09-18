@@ -20,32 +20,30 @@ using System;
 namespace Dialogue.Logic.Events
 {
 
-    public class UmbracoEvents : IApplicationEventHandler
+    public class UmbracoEvents : ApplicationEventHandler
     {
 
-        public void OnApplicationInitialized(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+        protected override void ApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
-            //throw new NotImplementedException();
-        }
+            base.ApplicationStarting(umbracoApplication, applicationContext);
 
-        public void OnApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
-        {
             UrlProviderResolver.Current.AddType<VirtualNodeUrlProvider>();
         }
 
-        public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+        protected override void ApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
-            // Map the Custom routes
-            DialogueRoutes.MapRoutes(RouteTable.Routes, UmbracoContext.Current.ContentCache);
-
             //list to the init event of the application base, this allows us to bind to the actual HttpApplication events
             UmbracoApplicationBase.ApplicationInit += UmbracoApplicationBase_ApplicationInit;
+
+            // Map the Custom routes
+            DialogueRoutes.MapRoutes(RouteTable.Routes, UmbracoContext.Current.ContentCache, UmbracoContext.Current.UrlProvider);
 
             MemberService.Saved += MemberServiceSaved;
             MemberService.Deleting += MemberServiceOnDeleting;
             ContentService.Trashing +=ContentService_Trashing;
 
             PageCacheRefresher.CacheUpdated += PageCacheRefresher_CacheUpdated;
+            DomainCacheRefresher.CacheUpdated += DomainCacheRefresher_CacheUpdated;
 
             // Sync the badges
             // Do the badge processing
@@ -76,7 +74,7 @@ namespace Dialogue.Logic.Events
                 {
                     // This is a category attempting to be moved to the Recycle bin
                     // See if any topics are currently using the category
-                    var topics = ServiceFactory.TopicService.GetPagedTopicsByCategory(1, Int32.MaxValue, Int32.MaxValue, item.Entity.Id);
+                    var topics = ServiceFactory.TopicService.GetPagedTopicsByCategory(1, int.MaxValue, int.MaxValue, item.Entity.Id);
                     if (topics.Any())
                     {
                         // We have topics using it, so stop the move
@@ -89,6 +87,11 @@ namespace Dialogue.Logic.Events
             }
         }
 
+        private void DomainCacheRefresher_CacheUpdated(DomainCacheRefresher sender, Umbraco.Core.Cache.CacheRefresherEventArgs e)
+        {
+            //ensure routes are rebuilt
+            ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem("dialogue-refresh-routes", () => true);
+        }
 
         /// <summary>
         /// Bind to the PostRequestHandlerExecute event of the HttpApplication
@@ -115,7 +118,7 @@ namespace Dialogue.Logic.Events
             if (ApplicationContext.Current == null) return;
             if (ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem("dialogue-refresh-routes") == null) return;
             //the token was found so that means one or more articulate root nodes were changed in this request, rebuild the routes.
-            DialogueRoutes.MapRoutes(RouteTable.Routes, UmbracoContext.Current.ContentCache);
+            DialogueRoutes.MapRoutes(RouteTable.Routes, UmbracoContext.Current.ContentCache, UmbracoContext.Current.UrlProvider);
         }
 
         /// <summary>

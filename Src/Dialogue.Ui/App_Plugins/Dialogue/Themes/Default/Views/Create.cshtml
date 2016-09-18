@@ -1,0 +1,91 @@
+﻿@using Dialogue.Logic.Application.ExtensionMethods
+@using Dialogue.Logic.Controllers
+@model Dialogue.Logic.Models.CreateTopic
+@{
+    Layout = "OneColThin.cshtml";
+}
+@section PageTitle
+{
+    @Model.PageTitle
+}
+@section Head
+{
+    <script type="text/javascript">
+        counter = 0;
+    </script>
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+
+    <div class="createtopicholder">
+        @using (Html.BeginForm("Create", "DialogueTopicSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+        {
+            @Html.ValidationSummary(false)
+            @Html.AntiForgeryToken()
+
+            <div class="row paddedrow">
+                <div class="col-md-8 topictitleholder">
+                    <h1>@Model.PageTitle</h1>
+                </div>
+                <div class="col-md-4 pollcreatebuttonholder">
+                    <a href="#" class="btn btn-default createpollbutton">@Html.Lang("Poll.Button.Create")</a>
+                    <a href="#" style="display: none;" class="btn btn-default removepollbutton">@Html.Lang("Poll.Button.Remove")</a>
+                </div>
+            </div>
+
+            <div class="form-group create-categories">
+                @Html.LabelFor(model => model.Category)
+                @Html.DropDownListFor(model => model.Category, new SelectList(Model.Categories, "id", "Name"), new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Category)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TopicName)
+                @Html.TextBoxFor(model => model.TopicName, new { @class = "form-control createtopicname" })
+                @Html.ValidationMessageFor(model => model.TopicName)
+            </div>
+
+            @*<div class="row paddedrow relatedtopicsholder">
+                    <div class="col-md-12 relatedtopics">
+                        <h5>@Html.Lang("Topic.AlreadyAnswered")</h5>
+                        <div class="relatedtopicskey"></div>
+                    </div>
+                </div>*@
+
+            <div class="row paddedrow pollanswerholder" style="display: none;">
+                <div class="col-md-10">
+                    <ul class="pollanswerlist"></ul>
+                    <input type="hidden" id="pollanswerplaceholder" value="@Html.Lang("Poll.Placeholder.TypeAnswerHere")" />
+                </div>
+                <div class="col-md-2 polladdremovenewanswers">
+                    <a href="#" class="btn btn-default addanswer"><span class="glyphicon glyphicon-plus"></span></a><a href="#" class="btn btn-default removeanswer"><span class="glyphicon glyphicon-minus"></span></a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.EditorFor(model => model.TopicContent)
+                @Html.ValidationMessageFor(model => model.TopicContent)
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 createtopicbuttonholder">
+                    <div class="submit-holder">
+                        <input type="submit" class="btn btn-large btn-success" value="@Html.Lang("Topic.CreateDiscussion")" />
+                    </div>
+                </div>
+                <div class="col-md-6 createtopicbuttonholder">
+                    <div class="editor-field n3ocheckboxfield">
+                        @Html.CheckBoxFor(x => x.SubscribeToTopic)
+                        @Html.LabelFor(model => model.SubscribeToTopic)
+                    </div>
+                </div>
+            </div>
+
+        }
+
+    </div>
+
+
+}
+

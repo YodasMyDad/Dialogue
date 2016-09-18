@@ -1,0 +1,66 @@
+﻿@using Dialogue.Logic.Application.ExtensionMethods
+@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models.ViewModels
+@model ViewTopicViewModel
+@{
+    var topic = Model.Topic;
+    var posts = topic.Posts.Where(x => x.Pending != true).ToList();
+    var topicSolved = Model.Topic.Solved ? "answered" : "";
+
+    var firstPost = posts.FirstOrDefault(x => x.IsTopicStarter);
+    var postToolTip = string.Empty;
+    if (firstPost != null)
+    {
+        postToolTip = string.Concat(AppHelpers.ReturnAmountWordsFromString(AppHelpers.StripHtmlFromString(firstPost.PostContent), 50), "....");
+    }
+    var answerCount = (posts.Count() - 1);
+    var answerText = answerCount == 1 ? Html.Lang("Topic.Comment") : Html.Lang("Topic.Comments");
+}
+@if (!Model.Permissions[AppConstants.PermissionDenyAccess].IsTicked)
+{
+    <div class="row">
+        <div class="topicrow topicsticky-@topic.IsSticky topiclocked-@topic.IsLocked">
+            
+            <div class="col-md-10 col-sm-9 col-xs-9 topicrowdetails">
+                <h3>
+                    <a title="@postToolTip" href="@Html.Raw(topic.Url)">
+                        @if (topic.IsSticky)
+                        {
+                            <span class="glyphicon glyphicon-bullhorn"></span>
+                        }
+                        @if (topic.Poll != null)
+                        {
+                            <span class="glyphicon glyphicon-stats"></span>
+                        }
+                        @Html.Raw(topic.Name)
+                    </a>
+                </h3>
+                <span class="topiccomments topiccomments@(Html.Settings().AllowPoints) statsblock @topicSolved">
+                    @answerCount.KiloFormat() <span>@answerText</span>
+                </span>
+                -
+                <span class="topicviews topicviews@(Html.Settings().AllowPoints) statsblock @topicSolved">
+                    @topic.Views.KiloFormat() <span>@Html.Lang("Topic.Views")</span>
+                </span>
+                <div class="topicrowstatscategory">
+                    @Html.Raw(string.Format(Html.Lang("Topic.StartedBy"), DatesUI.GetPrettyDate(topic.CreateDate.ToString()), topic.Member.UserName))
+                    @if (Model.ShowCategoryName)
+                    {
+                        @Html.Lang("Topic.InCategory") <a href="@topic.Category.Url">@topic.Category.Name</a>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-2 col-sm-3 col-xs-3 topicrecent">
+                <p class="latesttext">@Html.Lang("Topic.LatestBy")</p>
+                <p class="topicrecentavatar">
+                    <a href="@topic.LastPost.Member.Url">
+                        <img src="@topic.LastPost.Member.MemberImage(AppConstants.GravatarTopicSize)" alt="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName" title="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName">
+                    </a>
+                </p>
+                <p class="topicrecentdate">@DatesUI.GetPrettyDate(topic.LastPost.DateCreated.ToString())</p>
+            </div>
+        </div>
+    </div>
+    <hr/>
+}

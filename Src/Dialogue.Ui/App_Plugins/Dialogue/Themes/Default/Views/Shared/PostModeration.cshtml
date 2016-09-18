@@ -1,0 +1,11 @@
+﻿@using Dialogue.Logic.Models
+
+@{
+    var viewModel = new GenericMessageViewModel
+    {
+        Message = Html.Lang("Moderate.AwaitingModeration"),
+        MessageType = GenericMessages.Info
+    };
+    TempData[AppConstants.MessageViewBagName] = viewModel;
+}
+@Html.ThemedPartial("_GenericMessage")

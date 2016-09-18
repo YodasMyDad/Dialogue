@@ -1,0 +1,115 @@
+﻿@using Dialogue.Logic.Controllers
+@model Dialogue.Logic.Models.ViewModels.EditPostPageViewModel
+@{
+    Layout = "OneColThin.cshtml";
+    var count = 0;
+}
+@section PageTitle
+{
+    @Model.PageTitle
+}
+@section Head
+{
+    <script type="text/javascript">
+        counter = @(Model.EditPostViewModel.PollAnswers != null ? Model.EditPostViewModel.PollAnswers.Count : 0);
+    </script>
+}
+<div class="editpostholder">
+
+    @using (Html.BeginForm("EditPost" ,"DialoguePostSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+    {
+        @Html.ValidationSummary(false)
+        @Html.AntiForgeryToken()
+
+        <h2>@ViewBag.Title</h2>
+
+        if (Model.EditPostViewModel.IsTopicStarter)
+        {
+
+            <div class="form-group create-categories">
+                @Html.LabelFor(model => model.EditPostViewModel.Category)
+                @Html.DropDownListFor(model => model.EditPostViewModel.Category, new SelectList(Model.EditPostViewModel.Categories, "id", "Name"), new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.EditPostViewModel.Category)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EditPostViewModel.Name)
+                @Html.TextBoxFor(model => model.EditPostViewModel.Name, new { @class = "form-control createtopicname" })
+                @Html.ValidationMessageFor(model => model.EditPostViewModel.Name)
+            </div>
+
+            if (Model.EditPostViewModel.PollAnswers != null && Model.EditPostViewModel.PollAnswers.Any())
+            {
+                <div class="row paddedrow pollanswerholder">
+                    <div class="col-md-10">
+                        <ul class="pollanswerlist">
+                            @foreach (var pollAnswer in Model.EditPostViewModel.PollAnswers.OrderBy(x => x.Answer))
+                            {
+                                <li id="answer@(count)">
+                                    <input type="text" name="EditPostViewModel.PollAnswers[@(count)].Answer" id="EditPostViewModel_PollAnswers_@(count)_Answer" value="@pollAnswer.Answer" class="form-control" />
+                                    <input type="hidden" value="@pollAnswer.Id" name="EditPostViewModel.PollAnswers[@(count)].Id" id="EditPostViewModel_PollAnswers_@(count)_Id" />
+                                </li>
+
+                                count++;
+                            }
+                        </ul>
+                        <input type="hidden" id="pollanswerplaceholder" value="@Html.Lang("Poll.Placeholder.TypeAnswerHere")" />
+                    </div>
+                    <div class="col-md-2 polladdremovenewanswers">
+                        <a href="#" class="btn btn-default addanswer"><span class="glyphicon glyphicon-plus"></span></a><a href="#" class="btn btn-default removeanswer"><span class="glyphicon glyphicon-minus"></span></a>
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="form-group">
+            @Html.EditorFor(model => model.EditPostViewModel.Content)
+            @Html.ValidationMessageFor(model => model.EditPostViewModel.Content)
+        </div>
+
+
+        if (Model.EditPostViewModel.IsTopicStarter)
+        {
+            <div class="topicoptionsholder">
+
+                <h3>@Html.Lang("Topic.OptionsHeading")</h3>
+
+                @if (Model.EditPostViewModel.Permissions[AppConstants.PermissionModerate].IsTicked)
+                {
+                    <div class="checkbox">
+                        @using (Html.BeginLabelFor(m => m.EditPostViewModel.IsSticky, new { @class = "checkbox" }))
+                        {
+                            @Html.CheckBoxFor(m => m.EditPostViewModel.IsSticky)
+                        }
+                        @Html.ValidationMessageFor(m => m.EditPostViewModel.IsSticky)
+                    </div>
+                }
+
+                @if (Model.EditPostViewModel.Permissions[AppConstants.PermissionModerate].IsTicked)
+                {
+                    <div class="checkbox">
+                        @using (Html.BeginLabelFor(m => m.EditPostViewModel.IsLocked, new { @class = "checkbox" }))
+                        {
+                            @Html.CheckBoxFor(m => m.EditPostViewModel.IsLocked)
+                        }
+                        @Html.ValidationMessageFor(m => m.EditPostViewModel.IsLocked)
+                    </div>
+                }
+            </div>
+
+
+        }
+
+        <div class="row">
+            <div class="col-md-12 createtopicbuttonholder">
+                <div class="submit-holder">
+                    <input type="submit" class="btn btn-large btn-success" value="@Html.Lang("Post.EditButton")" />
+                </div>
+            </div>
+        </div>
+
+        @Html.HiddenFor(x => x.EditPostViewModel.Id)
+        @Html.Hidden("EditMode", true)
+    }
+
+</div>

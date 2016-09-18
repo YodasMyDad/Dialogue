@@ -1,0 +1,35 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.ViewPrivateMessageViewModel
+
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+<div class="btn-group pm-buttons">
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageInbox)" class="btn btn-default">@Html.Lang("PM.PrivateMessages")</a>
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageOutbox)" class="btn btn-default">@Html.Lang("PM.SentPrivateMessages")</a>
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageCreate)" class="btn btn-default">@Html.Lang("PM.Create")</a>
+</div>
+
+<h1>@Model.Message.Subject</h1>
+<p class="privatemessagefrom">
+    <strong>@Html.Lang("PM.From")</strong>
+    <a href="@Model.Message.MemberFrom.Url">@Model.Message.MemberFrom.UserName</a>
+</p>
+<p class="privatemessagesent">
+    <strong>@Html.Lang("PM.Sent")</strong>
+    @Model.Message.DateSent.ToShortDateString()
+</p>
+
+<div class="privatemessagecontent">
+    @Html.Raw(AppHelpers.ConvertPostContent(Model.Message.Message))
+</div>
+
+<p>
+    <a href="@Urls.GenerateUrl(Urls.UrlType.MessageCreate)?id=@Model.Message.Id" class="btn btn-default pmreply">@Html.Lang("PM.Reply")</a>
+</p>
+

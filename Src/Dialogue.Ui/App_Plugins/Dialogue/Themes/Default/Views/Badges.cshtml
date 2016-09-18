@@ -1,0 +1,35 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.AllBadgesViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+<h2>@ViewBag.Title</h2>
+
+<div class="badgeholder">
+    @foreach (var badge in Model.AllBadges)
+    {
+        <div class="row publicbadgeline">
+            <div class="publicbadge col-xs-2">
+                <img src="@Url.Content(AppHelpers.ReturnBadgeUrl(badge.Image))" alt="@badge.Name" />
+            </div>
+            <div class="publicbadgedetails col-xs-10">
+                <h4 class="publicbadgename">@Html.Raw(badge.DisplayName)</h4>
+                <p class="publicbadgenamedesc">@badge.Description</p>
+                @if (badge.AwardsPoints != null && badge.AwardsPoints > 0)
+                {
+                    <p class="publicbadgenamedesc">@string.Format(Html.Lang("Badge.AwardsPoints"), badge.AwardsPoints)</p>
+                }
+            </div>
+        </div>
+        <hr />
+    }
+</div>

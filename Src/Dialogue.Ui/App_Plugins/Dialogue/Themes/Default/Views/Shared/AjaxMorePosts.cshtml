@@ -1,0 +1,7 @@
+﻿@using Dialogue.Logic.Models.ViewModels
+@model ShowMorePostsViewModel
+
+@foreach (var post in Model.Posts)
+{
+    Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), post);
+}

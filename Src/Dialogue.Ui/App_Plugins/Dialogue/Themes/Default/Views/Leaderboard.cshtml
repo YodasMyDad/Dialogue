@@ -1,0 +1,51 @@
+﻿@using Dialogue.Logic.Models
+@model DialoguePage
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+@section scripts
+{
+    <script>
+        $(function () {
+            // Get the this week earners
+            $.get(app_base + "umbraco/Surface/DialogueSurface/GetThisWeeksTopEarners",
+            function (data) {
+                $(".thisweekleaderboard").html(data);
+            });
+
+            // Get the this week earners
+            $.get(app_base + "umbraco/Surface/DialogueSurface/GetThisYearsTopEarners",
+            function (data) {
+                $(".alltimeleaderboard").html(data);
+            });
+
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-6 thisweeksstars">
+        <h2>@Html.Lang("Leaderboard.ThisWeeksStars")</h2>
+
+        <div class="leaderboardholders thisweekleaderboard">
+            <span class="ajaxspinner" title="@Html.Lang("Ajax.PleaseWait")">@Html.Lang("Ajax.PleaseWait")</span>
+        </div>
+
+    </div>
+    <div class="col-md-6 thisyearsstars">
+        <h2>@Html.Lang("Leaderboard.ThisYearsStars")</h2>
+        <div class="leaderboardholders alltimeleaderboard">
+            <span class="ajaxspinner" title="@Html.Lang("Ajax.PleaseWait")">@Html.Lang("Ajax.PleaseWait")</span>
+        </div>
+    </div>
+</div>

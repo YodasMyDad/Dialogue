@@ -1,0 +1,37 @@
+﻿@using Dialogue.Logic.Services
+@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = null;
+    
+    //TODO - This is for example purposes only
+    //TODO - Put this logic in your controllers
+
+    var recentTopics = ServiceFactory.TopicService.GetRecentTopics(1, 10, 10);
+    var mainCategories = ServiceFactory.CategoryService.GetAllMainCategories();
+    var recentMembers = ServiceFactory.MemberService.GetLatestUsers(10);
+}
+
+<h1>My Home Page</h1>
+<p>Example of getting recent topics using the ServiceFactory</p>
+<ul>
+    @foreach (var topic in recentTopics)
+    {
+        <li><a href="@topic.Url">@topic.Name</a></li>
+    }
+</ul>
+
+<p>Example of getting categories using the ServiceFactory</p>
+<ul>
+    @foreach (var cat in mainCategories)
+    {
+        <li><a href="@cat.Url">@cat.Name</a></li>
+    }
+</ul>
+
+<p>Example of getting members using the ServiceFactory</p>
+<ul>
+    @foreach (var member in recentMembers)
+    {
+        <li><a href="@member.Url">@member.UserName</a></li>
+    }
+</ul>

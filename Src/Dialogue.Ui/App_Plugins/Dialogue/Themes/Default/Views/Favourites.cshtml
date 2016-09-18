@@ -1,0 +1,58 @@
+﻿@using Dialogue.Logic.Application
+@model Dialogue.Logic.Models.ViewModels.ViewFavouritesViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+<h2>@Model.PageTitle</h2>
+
+@foreach (var post in Model.Posts)
+{
+    <div class="post row" data-postid="@post.Id">
+        <div class="postbody col-md-10">
+            <a id="comment-@post.Id"></a>
+            <div class="postbodytop">
+                <span class="badge">@post.VoteCount.KiloFormat()</span> 
+                <a class="postmember-@post.Id" href="@Html.Raw(post.Member.Url)">
+                    @Html.Raw(post.Member.UserName)
+                </a>
+                @Html.Lang("Post.PostedThis")
+                @DatesUI.GetPrettyDate(post.DateCreated.ToString())
+            </div>
+            <div id="postcontent-@post.Id" class="postcontent">
+                <p>@Html.Lang("Post.PostedIn") <a href="@post.Topic.Url#comment-@post.Id">@post.Topic.Name</a></p>
+                @Html.Raw(AppHelpers.ConvertPostContent(post.PostContent))
+                @if (post.DateEdited > post.DateCreated)
+                {
+                    <p class="postlastedited">
+                        @Html.Lang("Post.LastEdited")  @DatesUI.GetPrettyDate(post.DateEdited.ToString())
+                    </p>
+                }
+                <div class="post-actions">
+
+                    <a class="pills removefav" data-postid="@post.Id">
+                        @Html.Lang("Post.RemoveFavourite")
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="postinfo col-md-2">
+            <a href="@Html.Raw(post.Member.Url)" class="postmemberavatar">
+                <img src="@post.Member.MemberImage(AppConstants.GravatarPostSize)" alt="@post.Member.UserName">
+            </a>
+        </div>
+
+    </div>
+}
+

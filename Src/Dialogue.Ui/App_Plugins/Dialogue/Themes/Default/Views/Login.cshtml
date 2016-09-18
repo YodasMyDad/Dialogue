@@ -1,0 +1,25 @@
+﻿@using Dialogue.Logic.Application.ExtensionMethods
+@inherits UmbracoViewPage<Dialogue.Logic.Models.LogOnModel>
+@{
+    Layout = "OneColThin.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+@if (!Model.ShowForgotPassword)
+{
+    @Html.Action("LogOnForm", "DialogueLoginRegisterSurface")
+}
+else
+{
+    @Html.Action("ForgotPasswordForm", "DialogueLoginRegisterSurface")
+}
+
+@*@Html.Partial("_SocialLoginButtons")*@

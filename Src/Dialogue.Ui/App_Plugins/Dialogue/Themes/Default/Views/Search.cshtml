@@ -1,0 +1,30 @@
+﻿@using Dialogue.Logic.Models.ViewModels
+@model SearchViewModel
+@{
+    Layout = "TwoCol.cshtml";
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+
+<div class="searchresults">
+    <h1>@Model.PageTitle</h1>
+    @if (Model.Posts.Any())
+    {
+        foreach (var post in Model.Posts)
+        {
+            Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), post);
+        }
+
+        if (Model.TotalPages > 1)
+        {
+            @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().PostsPerPage, Convert.ToInt32(Model.TotalCount), new { term = Model.Term })
+        }
+    }
+    else
+    {
+        @Html.Lang("Search.NoResults")
+    }
+</div>

@@ -1,0 +1,106 @@
+﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models.Activity
+@model Dialogue.Logic.Models.ViewModels.AllRecentActivitiesViewModel
+@{
+    Layout = "TwoCol.cshtml";
+    var totalCount = Convert.ToInt32(Model.TotalCount);
+}
+
+@section PageTitle {
+    @Model.PageTitle
+}
+
+@section MetaDescription
+{
+    @Model.MetaDesc
+}
+
+<div class="row activityheader">
+    <div class="col-xs-9 activityheading">
+        <h2>@Model.PageTitle</h2>
+    </div>
+    <div class="col-xs-3 activityrss">
+        @if (Html.Settings().AllowPoints)
+        {
+            <a href="@Urls.GenerateUrl(Urls.UrlType.ActivityRss)" class="rsssubscribe" title="@Html.Lang("Home.Rss")">@Html.Lang("Home.Rss")</a>
+        }
+    </div>
+
+</div>
+
+<div class="activityholder">
+
+    @foreach (var activity in Model.Activities)
+    {
+        <div class="activityentry row">
+
+            @if (activity is BadgeActivity)
+            {
+                var badgeActivity = activity as BadgeActivity;
+
+                <div class="activitybadge col-md-1 col-xs-2">
+                    <img src="@Url.Content(AppHelpers.ReturnBadgeUrl(badgeActivity.Badge.Image))" alt="@badgeActivity.Badge.DisplayName" />
+                </div>
+
+                <div class="activityinfo col-md-11 col-xs-10">
+                    <p class="activityinfotext">
+                        <a href="@Html.Raw(badgeActivity.User.Url)">@Html.Raw(badgeActivity.User.UserName)</a>
+                        @Html.Lang("Activity.UserAwardedBadge") @Html.Raw(badgeActivity.Badge.DisplayName) @Html.Lang("Activity.Badge")
+                    </p>
+                    <p class="activitybadgedescription">
+                        @Html.Raw(badgeActivity.Badge.Description)
+                        @if (badgeActivity.Badge.AwardsPoints != null && badgeActivity.Badge.AwardsPoints > 0)
+                        {
+                            @(string.Format("({0} {1})", badgeActivity.Badge.AwardsPoints, Html.Lang("Members.Points")))
+                        }
+                    </p>
+                    <p class="activitysubdate">
+                        @Html.Raw(badgeActivity.ActivityMapped.Timestamp.ToShortDateString())
+                    </p>
+                </div>
+            }
+            else if (activity is MemberJoinedActivity)
+            {
+                var memberJoinedActivity = activity as MemberJoinedActivity;
+
+                <div class="activitybadge col-md-1 col-xs-2">
+                    <img src="@memberJoinedActivity.User.MemberImage(AppConstants.GravatarPostSize)" alt="@memberJoinedActivity.User.UserName" />
+                </div>
+
+                <div class="activityinfo col-md-11 col-xs-10">
+                    <p class="activityinfotext">
+                        <a href="@Html.Raw(memberJoinedActivity.User.Url)">@Html.Raw(memberJoinedActivity.User.UserName)</a>
+                        @Html.Lang("Activity.UserJoined")
+                    </p>
+                    <p class="activitysubdate">
+                        @Html.Raw(memberJoinedActivity.ActivityMapped.Timestamp.ToShortDateString())
+                    </p>
+                </div>
+            }
+            else if (activity is ProfileUpdatedActivity)
+            {
+                var profileUpdatedActivity = activity as ProfileUpdatedActivity;
+
+                <div class="activitybadge col-md-1 col-xs-2">
+                    <img src="@profileUpdatedActivity.User.MemberImage(AppConstants.GravatarPostSize)" alt="@profileUpdatedActivity.User.UserName" />
+                </div>
+
+                <div class="activityinfo col-md-11 col-xs-10">
+                    <p class="activityinfotext">
+                        <a href="@Html.Raw(profileUpdatedActivity.User.Url)">@Html.Raw(profileUpdatedActivity.User.UserName)</a>
+                        @Html.Lang("Activity.ProfileUpdated")
+                    </p>
+                    <p class="activitysubdate">
+                        @Html.Raw(profileUpdatedActivity.ActivityMapped.Timestamp.ToShortDateString())
+                    </p>
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.Activities.TotalPages > 1)
+    {
+        @Html.Pager(Convert.ToInt32(Model.PageIndex), Html.Settings().TopicsPerPage, totalCount, null)
+    }
+
+</div>

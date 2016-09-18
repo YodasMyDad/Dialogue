@@ -1,0 +1,148 @@
+﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
+@using Dialogue.Logic.Models.ViewModels
+@model ShowTopicViewModel
+@{
+    Layout = "TwoCol.cshtml";
+    ViewBag.Title = Html.Raw(Model.Topic.Name);
+    ViewBag.MetaDesc = AppHelpers.ReturnAmountWordsFromString(string.Concat(AppHelpers.StripHtmlFromString(Model.TopicStarterPost.Post.PostContent), "..."), 20);
+    var totalCount = Convert.ToInt32(Model.TotalCount);
+    if (Request.QueryString.AllKeys.Any())
+    {
+        ViewBag.Canonical = Html.Raw(string.Format("<link rel=\"canonical\" href=\"{0}\"/>", Model.Topic.Url));
+    }
+
+    // Email subscription
+    var subScribe = string.Empty;
+    var unSubscribe = string.Empty;
+    const string displayNone = "style='display:none;'";
+    if (Model.IsSubscribed)
+    {
+        subScribe = displayNone;
+    }
+    else
+    {
+        unSubscribe = displayNone;
+    }
+
+    var qs = Request.QueryString[AppConstants.PostOrderBy] ?? string.Empty;
+    var disablePosting = Model.User != null && (Model.User.DisablePosting);
+}
+
+@section PageTitle {
+    @ViewBag.Title
+}
+
+@section MetaDescription
+{
+    @ViewBag.MetaDesc
+}
+
+@section SocialMeta {
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:url" content="@HttpContext.Current.Request.Url.AbsoluteUri" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="@ViewBag.Title" />
+    <meta name="twitter:description" content="@ViewBag.MetaDesc" />
+}
+
+@section Head
+{
+    <script>
+        $(function () {
+            // Any images uploaded, fire fancybox
+            $('div.fileupload a[href$=".gif"], div.fileupload a[href$=".jpg"], div.fileupload a[href$=".png"], div.fileupload a[href$=".bmp"], div.fileupload a[href$=".jpeg"]').fancybox();
+        });
+    </script>
+}
+
+@Html.Action("GetTopicBreadcrumb", "DialogueTopicSurface", new { topic = Model.Topic })
+
+<div class="row topicheading">
+
+    <div class="col-md-8 topicheaderholder">
+        <h1 class="topicheader">@Html.Raw(Model.Topic.Name)</h1>
+    </div>
+    <div class="col-md-4 topicsubscription">
+        @if (Model.User != null && Html.Settings().AllowEmailSubscriptions)
+        {
+            <div class="subscribebuttons clearfix">
+                <a @Html.Raw(subScribe) title="Subscribe Via Email" href="#" class="emailsubscription" rel="@Model.Topic.Id">
+                    <span class="emailsubscriptionimage" rel="topic">@Html.Lang("Topic.Subscribe")</span>
+                </a>
+                <a @Html.Raw(unSubscribe) title="Unsubscribe From Emails" href="#" class="emailunsubscription" rel="@Model.Topic.Id">
+                    <span class="emailunsubscriptionimage" rel="topic">@Html.Lang("Topic.UnSubscribe")</span>
+                </a>
+            </div>
+        }
+    </div>
+
+</div>
+
+@if (Model.Topic.Poll != null)
+{    <div class="pollcontainer">
+        @{
+    // Show the poll if there is one
+    var viewModel = new ShowPollViewModel { Poll = Model.Topic.Poll, TotalVotesInPoll = Model.TotalVotesInPoll, UserHasAlreadyVoted = Model.UserHasAlreadyVotedInPoll, UserAllowedToVote = Model.Permissions[AppConstants.PermissionVoteInPolls].IsTicked };
+    Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Poll"), viewModel);
+        }
+    </div>
+}
+
+<div class="topicstarterpost">
+    @{
+        Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), Model.TopicStarterPost);
+    }
+
+    @if ((totalCount) > 0)
+    {
+        <div class="row topicstarterpostbeginpostsheading">
+            <div class="col-md-6 topicstarterpostcomments">
+                @(totalCount) @Html.Lang("Topic.CommentsDetails")
+            </div>
+            <div class="col-md-6 topicpostorderfilter">
+                @Html.Lang("Post.Filter.OrderBy")
+                <a class="orderfilerlink @(string.IsNullOrEmpty(qs) ? "orderfilerlinkactive" : "")" href="@Model.Topic.Url">@Html.Lang("Post.Filter.Standard")</a> |
+                <a class="orderfilerlink @(qs.Contains(PostOrderBy.Newest.ToString()) ? "orderfilerlinkactive" : "")" href="?@AppConstants.PostOrderBy=@PostOrderBy.Newest.ToString()">@Html.Lang("Post.Filter.Newest")</a> |
+                <a class="orderfilerlink @(qs.Contains(PostOrderBy.Votes.ToString()) ? "orderfilerlinkactive" : "")" href="?@AppConstants.PostOrderBy=@PostOrderBy.Votes.ToString()">@Html.Lang("Post.Filter.Votes")</a> |
+                <a class="orderfilerlink @(qs.Contains(PostOrderBy.All.ToString()) ? "orderfilerlinkactive" : "")" href="?@AppConstants.PostOrderBy=@PostOrderBy.All.ToString()">@Html.Lang("Post.Filter.All")</a>
+            </div>
+        </div>
+    }
+</div>
+<div class="topicposts">
+    @foreach (var post in Model.Posts)
+    {
+        Html.RenderPartial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("Post"), post);
+    }
+
+
+    @if (Model.TotalPages > 1)
+    {
+        <a class="showmoreposts btn btn-success btn-fullwidth">
+            <span class="smpactive">@Html.Lang("Topic.ShowMorePosts")</span>
+            <span class="smploading" style="display: none;">@Html.Lang("Topic.ShowMorePostsLoading")</span>
+        </a>
+    }
+
+    @if (!Model.Topic.IsLocked && !Model.Topic.Category.LockCategory)
+    {
+        <span id="newpostmarker"></span>
+
+        if (!Model.Permissions[AppConstants.PermissionDenyAccess].IsTicked && !Model.Permissions[AppConstants.PermissionReadOnly].IsTicked)
+        {
+            @Html.Partial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("CreateNewPost"),
+                        new CreateAjaxPostViewModel { Topic = Model.Topic.Id, DisablePosting = disablePosting, PostContent = Model.PostContent })
+        }
+        <a id="createpost"></a>
+    }
+    else
+    {
+        <p class="topiclockedmessage">@Html.Lang("Topic.IsLocked")</p>
+    }
+
+    <input type="hidden" id="pageIndex" value="@(Model.PageIndex + 1)" />
+    <input type="hidden" id="topicId" value="@Model.Topic.Id" />
+    <input type="hidden" id="totalPages" value="@Model.TotalPages" />
+</div>

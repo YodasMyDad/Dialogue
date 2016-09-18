@@ -1,0 +1,56 @@
+﻿@model Dialogue.Logic.Models.ViewModels.RegisterViewModel
+@using Dialogue.Logic.Application.ExtensionMethods
+@using Dialogue.Logic.Controllers
+@{
+    
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    @Html.ThemedPartial("SocialButtons")
+
+    using (Html.BeginUmbracoForm<DialogueLoginRegisterSurfaceController>("Register", FormMethod.Post, new { @class = "form", role = "form" }))
+    {
+        @Html.ValidationSummary(false)
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.UserName)
+            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.UserName)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password)
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Password)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email)
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Email)
+        </div>
+    
+        if (!string.IsNullOrEmpty(Html.Settings().SpamQuestion))
+        {
+        <div class="form-group">
+            <label for="SpamAnswer">@Html.Settings().SpamQuestion</label>
+            @Html.TextBoxFor(x => Model.SpamAnswer, new { @class = "form-control" })
+        </div>             
+        }
+
+        <div class="submit-holder">
+            <button type="submit" class="btn btn-default">
+                @Html.Lang("Buttons.Register")
+            </button>
+        </div>
+
+        @Html.HiddenFor(x => x.ReturnUrl)
+    }
+
+}
+else
+{
+    <p>@Html.Lang("Members.AlreadyRegistered")</p>
+}

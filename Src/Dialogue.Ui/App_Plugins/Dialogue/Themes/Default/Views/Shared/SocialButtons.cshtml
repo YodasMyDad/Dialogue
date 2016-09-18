@@ -1,0 +1,23 @@
+﻿@using Dialogue.Logic.Application
+@{
+    var showOr = false;
+}
+<div class="socialbuttonsholder">
+    @if (!string.IsNullOrEmpty(Html.Settings().FacebookAppId) && !string.IsNullOrEmpty(Html.Settings().FacebookAppSecret))
+    {
+        showOr = true;
+        <p><a href="@Urls.GenerateUrl(Urls.UrlType.FacebookLogin)" class="btn btn-default btn-fullwidth">Facebook Login</a></p>
+    }
+    @if (!string.IsNullOrEmpty(Html.Settings().GoogleClientId) && !string.IsNullOrEmpty(Html.Settings().GoogleClientSecret))
+    {
+        showOr = true;
+        <p><a href="@Urls.GenerateUrl(Urls.UrlType.GoogleLogin)" class="btn btn-default btn-fullwidth">Google Login</a></p>
+    }
+
+    @if (showOr)
+    {
+        <p class="largeor">
+            Or
+        </p>
+    }
+</div>

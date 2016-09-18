@@ -1,0 +1,48 @@
+﻿@model Dialogue.Logic.Models.ViewModels.LogOnViewModel
+@using Dialogue.Logic.Application.ExtensionMethods
+@using Dialogue.Logic.Controllers
+@{
+
+}
+
+@*@Html.ValidationSummary(false)*@
+
+@Html.ThemedPartial("SocialButtons")
+
+
+@using (Html.BeginUmbracoForm<DialogueLoginRegisterSurfaceController>("LogOn", FormMethod.Post, new { @class = "form", role = "form" }))
+{
+    @Html.ValidationSummary(false)
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.UserName)
+        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.UserName)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Password)
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Password)
+    </div>
+
+    <div class="checkbox">
+        @using (Html.BeginLabelFor(m => m.RememberMe, new { @class = "checkbox" }))
+        {
+            @Html.CheckBoxFor(m => m.RememberMe)
+        }
+        @Html.ValidationMessageFor(m => m.RememberMe)
+    </div>
+
+    <div class="submit-holder">
+            <button type="submit" class="btn btn-default">
+                @Html.Lang("Buttons.LogOn")
+            </button>
+    </div>
+
+    @Html.HiddenFor(x => x.ReturnUrl)
+}
+
+<p class="forgotpasswordtext"><a href="?forgot=yes">@Html.Lang("Members.ForgotPassword.Link")</a></p>

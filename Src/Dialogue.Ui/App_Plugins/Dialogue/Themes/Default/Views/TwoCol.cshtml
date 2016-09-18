@@ -1,0 +1,36 @@
+﻿@model Dialogue.Logic.Models.MasterModel
+@{
+    Layout = "Master.cshtml";
+}
+@section PageTitle{
+    @RenderSection("PageTitle", false)
+}
+@section MetaDescription
+{
+    @RenderSection("MetaDescription", false)
+}
+@section SocialMeta
+{
+    @RenderSection("SocialMeta", false)
+}
+@section Head{
+    @RenderSection("Head", false)
+}
+
+<div class="row">
+    <div class="col-sm-8">
+        @RenderBody()
+    </div>
+    <div class="col-sm-4">
+        @if (User.Identity.IsAuthenticated)
+        {
+            @Html.Action("CreateTopicButton", "DialogueTopicSurface")
+        }
+        @Html.Action("ListCategorySideMenu", "DialogueCategorySurface")
+        @Html.Action("CurrentWeekHighPointUsers", "DialogueSurface")
+    </div>
+</div>
+
+@section scripts{
+    @RenderSection("scripts", false)
+}
