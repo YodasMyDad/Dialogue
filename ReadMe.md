@@ -1,23 +1,23 @@
 # Dialogue For Umbraco #
 
-Dialogue is a forum/bulletin board Umbraco 7.1 upwards. It is a semi port of [MVCForum](http://www.mvcforum.com) and has some features similar to StackOverFlow.
+Dialogue is a forum/bulletin board Umbraco 7.1 upwards. It is a semi port of [MVCForum](http://www.mvcforum.com) and has some features similar to Stack Overflow.
 
-It's built to use Umbraco API's as much as possible, but also relies on EntityFramework v6.1 for dealing with the main forum. It has only been tested with SQLExpress.
+It's built to use Umbraco API's as much as possible, but also relies on Entity Framework v6.1 for dealing with the main forum. It has only been tested with SQLExpress.
 
 **Current Features Include**
 
 - Multi-Lingual / Localisation (Using Umbraco)
 - Points System
 - Moderate Topics & Posts
-- Badge System (Like StackOverflow)
+- Badge System (Like Stack Overflow)
 - Permission System
 - Roles / Member Groups (Using Umbraco)
-- Mark Posts As Solution
+- Mark Posts as Solution
 - Vote Up / Down Posts
 - Global and Weekly points Leader board
 - Responsive Bootstrap Theme
 - Latest Activity
-- Simple API / ServiceFactory
+- Simple API / Service Factory
 - Polls
 - Spam Prevention
 - Facebook & Google Login
@@ -154,7 +154,7 @@ That's it. You will now be able to select this permission on Categories, and whe
 
 To see if this new permission has been enabled on the Category.
 
-## Vitrual Nodes ##
+## Virtual Nodes ##
 
 Dialogue only comes with about 4 DocTypes. The rest of the pages are done using `DialogueVirtualPage` which uses the base class `PublishedContentWrapped`. This means that all the pages that are not powered by DocTypes are powered via this.
 
@@ -195,7 +195,7 @@ You can create this in any assembly. You will need to reference the Dialogue dll
 
 **Step 2: Inherit from the Badge Type Interface**
 
-Each badge type in the system is defined by an interface. For example, the up-vote badge type is defined by the interface `IVoteUpBadge`,  which is part of the "Dialogue.Logic.Interfaces.Badges" namespace.
+Each badge type in the system is defined by an interface. For example, the up-vote badge type is defined by the interface `IVoteUpBadge`, which is part of the "Dialogue.Logic.Interfaces.Badges" namespace.
 
 To make a new instance of a badge type you make a class that inherits from the required badge type interface. For example:
 
@@ -331,18 +331,18 @@ Typically the controller actions that call for badge processing are themselves c
 Our Social logins (Currently only Facebook and Google) is powered via a fantastic library called [Skybrud.Social](http://social.skybrud.dk/) - To enable social logins you need to add the appropriate keys into the Social settings on your forum root. See below.
 
 **Facebook uses OAuth 2.0** for authentication and communication. In order for
-users to authenticate with the Facebook API, you must specify the ID, secret and redirect URI of your Facebook app. You can create a new app at the following URL:
+Users to authenticate with the Facebook API, you must specify the ID, secret and redirect URI of your Facebook app. You can create a new app at the following URL:
 [https://developers.facebook.com/](https://developers.facebook.com/)
 
 **Google uses OAuth 2.0** for authentication and communication. In order for
-users to authenticate with the Google API, you must specify the ID, secret and redirect URI of your Google app. You can create a new app at the following URL:
+Users to authenticate with the Google API, you must specify the ID, secret and redirect URI of your Google app. You can create a new app at the following URL:
 [https://console.developers.google.com/project](https://console.developers.google.com/project)
 
 Notice: When a user is redirected to the Google of Facebook login dialog, the scope (permissions of the app) are specified. You can change these if you require further permissions. Just look in the OAuthControllers folder and edit the controller as needed.
 
 ## Swapping Out The Markdown Editor ##
 
-Dialogue comes with 2 Rich Text Editors build in. MarkDown Editor (Default) and TinyMCE. These can be found in the following folder in your Umbraco installation (Read here to find out more about EditorTemplates)
+Dialogue comes with 2 Rich Text Editors build in. Mark Down Editor (Default) and TinyMCE. These can be found in the following folder in your Umbraco installation (Read here to find out more about EditorTemplates)
 
 Views > Shared > EditorTemplates
 
