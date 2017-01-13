@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-using Umbraco.Core;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class TopicService
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Linq;
+    using Application;
+    using Data.Context;
+    using Mapping;
+    using Models;
+    using Umbraco.Core;
+
+    public partial class TopicService : IRequestCachedService
     {
+
+
 
         #region Populate Methods
 
@@ -148,8 +151,9 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <param name="topic"></param>
         /// <param name="postContent"></param>
+        /// <param name="postService"></param>
         /// <returns></returns>
-        public Topic AddLastPost(Topic topic, string postContent)
+        public Topic AddLastPost(Topic topic, string postContent, PostService postService)
         {
             topic = SanitizeTopic(topic);
 
@@ -165,8 +169,9 @@ namespace Dialogue.Logic.Services
             };
 
             // Add the post
-            ServiceFactory.PostService.Add(post);
+            postService.Add(post);
 
+            // Assign to topic
             topic.LastPost = post;
 
             return topic;
@@ -463,44 +468,6 @@ namespace Dialogue.Logic.Services
             return topic;
         }
 
-        /// <summary>
-        /// Delete a topic
-        /// </summary>
-        /// <param name="topic"></param>
-        public void Delete(Topic topic)
-        {
-            topic.LastPost = null;
-            var memberIds = new List<int>();
-
-            // Delete all posts
-            if (topic.Posts != null)
-            {
-                var postsToDelete = new List<Post>();
-                postsToDelete.AddRange(topic.Posts);
-                memberIds = postsToDelete.Select(x => x.MemberId).Distinct().ToList();
-                foreach (var post in postsToDelete)
-                {
-                    ServiceFactory.PostService.Delete(post);
-                }
-
-                // Sync the members post count. For all members who had a post deleted.
-                var members = ServiceFactory.MemberService.GetAllById(memberIds);
-                ServiceFactory.PostService.SyncMembersPostCount(members);
-            }
-
-            if (topic.TopicNotifications != null)
-            {
-                var notificationsToDelete = new List<TopicNotification>();
-                notificationsToDelete.AddRange(topic.TopicNotifications);
-                foreach (var topicNotification in notificationsToDelete)
-                {
-                    ServiceFactory.TopicNotificationService.Delete(topicNotification);
-                }
-            }
-
-            ContextPerRequest.Db.Topic.Remove(topic);
-        }
-
         public int TopicCount()
         {
             return ContextPerRequest.Db.Topic.Count();
@@ -533,8 +500,9 @@ namespace Dialogue.Logic.Services
         /// <param name="post"></param>
         /// <param name="marker"></param>
         /// <param name="solutionWriter"></param>
+        /// <param name="memberPointsService"></param>
         /// <returns>True if topic has been marked as solved</returns>
-        public bool SolveTopic(Topic topic, Post post, Member marker, Member solutionWriter)
+        public bool SolveTopic(Topic topic, Post post, Member marker, Member solutionWriter, MemberPointsService memberPointsService)
         {
             var solved = false;
 
@@ -552,7 +520,7 @@ namespace Dialogue.Logic.Services
                 // Do not give points to the user if they are marking their own post as the solution
                 if (marker.Id != solutionWriter.Id)
                 {
-                    ServiceFactory.MemberPointsService.Add(new MemberPoints
+                    memberPointsService.Add(new MemberPoints
                     {
                         Points = Dialogue.Settings().PointsAddedForASolution,
                         Member = solutionWriter,

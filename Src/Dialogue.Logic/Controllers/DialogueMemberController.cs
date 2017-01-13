@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Principal;
-using System.Web.Mvc;
-using System.Web.Security;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Routes;
-using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
-using Umbraco.Web.Models;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    #region Render Controllers
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Principal;
+    using System.Web.Mvc;
+    using System.Web.Security;
+    using Application;
+    using Constants;
+    using Models;
+    using Models.ViewModels;
+    using Routes;
+    using Umbraco.Core.Models;
+    using Umbraco.Web.Models;
 
-    public partial class DialogueMemberController : BaseRenderController
+    public partial class DialogueMemberController : DialogueBaseController
     {
         private readonly IMemberGroup _membersGroup;
 
         public DialogueMemberController()
         {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         /// <summary>
@@ -51,14 +47,15 @@ namespace Dialogue.Logic.Controllers
 
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                var member = ServiceFactory.MemberService.GetUserBySlug(membername, true);
+                var member = MemberService.GetUserBySlug(membername, true);
                 var loggedonId = UserIsAuthenticated ? CurrentMember.Id : 0;
                 var viewModel = new ViewMemberViewModel(model.Content)
                 {
                     User = member,
                     LoggedOnUserId = loggedonId,
                     PageTitle = string.Concat(member.UserName, Lang("Members.ProfileTitle")),
-                    PostCount = member.PostCount
+                    PostCount = member.PostCount,
+                    CurrentMember = CurrentMember
                 };
 
                 // Get the topic view slug
@@ -66,20 +63,6 @@ namespace Dialogue.Logic.Controllers
             }
         }
 
-
-    }
-
-    #endregion
-
-
-    public partial class DialogueMemberSurfaceController : BaseSurfaceController
-    {
-        private readonly IMemberGroup _membersGroup;
-
-        public DialogueMemberSurfaceController()
-        {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-        }
 
         [HttpPost]
         [Authorize]
@@ -89,12 +72,12 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var member = ServiceFactory.MemberService.Get(model.Id);
-                    ServiceFactory.MemberService.ApproveMember(member);
+                    var member = MemberService.Get(model.Id);
+                    MemberService.ApproveMember(member);
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);                    
+                    LogError(ex);
                 }
             }
         }
@@ -108,7 +91,7 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var changePasswordSucceeded = ServiceFactory.MemberService.ResetPassword(CurrentMember, model.ChangePasswordViewModel.NewPassword);
+                    var changePasswordSucceeded = MemberService.ResetPassword(CurrentMember, model.ChangePasswordViewModel.NewPassword);
                     if (changePasswordSucceeded)
                     {
                         ShowMessage(new GenericMessageViewModel
@@ -139,11 +122,11 @@ namespace Dialogue.Logic.Controllers
         {
             using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
-                var user = ServiceFactory.MemberService.Get(userModel.MemberEditViewModel.Id);
-                var userEditUrl = string.Format("{0}?id={1}", Urls.GenerateUrl(Urls.UrlType.EditMember), user.Id);
+                var user = MemberService.Get(userModel.MemberEditViewModel.Id);
+                var userEditUrl = $"{Urls.GenerateUrl(Urls.UrlType.EditMember)}?id={user.Id}";
 
                 // Before we do anything DB wise, check it contains no bad links
-                if (ServiceFactory.BannedLinkService.ContainsBannedLink(userModel.MemberEditViewModel.Signature) || ServiceFactory.BannedLinkService.ContainsBannedLink(userModel.MemberEditViewModel.Website))
+                if (BannedLinkService.ContainsBannedLink(userModel.MemberEditViewModel.Signature) || BannedLinkService.ContainsBannedLink(userModel.MemberEditViewModel.Website))
                 {
                     ShowMessage(new GenericMessageViewModel
                     {
@@ -164,7 +147,8 @@ namespace Dialogue.Logic.Controllers
                     if (file != null)
                     {
                         // If successful then upload the file
-                        var uploadResult = AppHelpers.UploadFile(file, true);
+                        var memberMediFolderId = MemberService.ConfirmMemberAvatarMediaFolder();
+                        var uploadResult = UploadedFileService.UploadFile(file, memberMediFolderId, true);
 
                         if (!uploadResult.UploadSuccessful)
                         {
@@ -183,13 +167,13 @@ namespace Dialogue.Logic.Controllers
                     }
                 }
 
-                user.Signature = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.ScrubHtml(userModel.MemberEditViewModel.Signature));
+                user.Signature = BannedWordService.SanitiseBannedWords(AppHelpers.ScrubHtml(userModel.MemberEditViewModel.Signature));
                 if (userModel.MemberEditViewModel.Twitter != null && userModel.MemberEditViewModel.Twitter.IndexOf("http", StringComparison.OrdinalIgnoreCase) <= 0)
                 {
-                    user.Twitter = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Twitter));
+                    user.Twitter = BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Twitter));
                 }
-                user.Website = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Website));
-                user.Comments = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Comments));
+                user.Website = BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Website));
+                user.Comments = BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.Comments));
 
 
                 // User is trying to update their email address, need to 
@@ -198,14 +182,14 @@ namespace Dialogue.Logic.Controllers
                 {
                     // Add get by email address
                     var sanitisedEmail = AppHelpers.SafePlainText(userModel.MemberEditViewModel.Email);
-                    var userWithSameEmail = ServiceFactory.MemberService.GetByEmail(sanitisedEmail);
+                    var userWithSameEmail = MemberService.GetByEmail(sanitisedEmail);
 
                     //Firstly check new email isn't banned!
-                    if (ServiceFactory.BannedEmailService.EmailIsBanned(sanitisedEmail))
-                    {                        
+                    if (BannedEmailService.EmailIsBanned(sanitisedEmail))
+                    {
                         unitOfWork.Rollback();
                         ModelState.AddModelError(string.Empty, Lang("Error.EmailIsBanned"));
-                        ShowModelErrors();
+                        // TODO - SHOW MOdel messages
                         return Redirect(userEditUrl);
                     }
 
@@ -214,7 +198,7 @@ namespace Dialogue.Logic.Controllers
                     {
                         unitOfWork.Rollback();
                         ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateEmail"));
-                        ShowModelErrors();
+                        // TODO - SHOW MOdel messages
                         return Redirect(userEditUrl);
                     }
 
@@ -224,14 +208,14 @@ namespace Dialogue.Logic.Controllers
                 // User is trying to change username, need to check if a user already exists
                 // with the username they are trying to change to
                 var changedUsername = false;
-                var sanitisedUsername = ServiceFactory.BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.UserName));
+                var sanitisedUsername = BannedWordService.SanitiseBannedWords(AppHelpers.SafePlainText(userModel.MemberEditViewModel.UserName));
                 if (sanitisedUsername != user.UserName)
                 {
-                    if (ServiceFactory.MemberService.Get(sanitisedUsername) != null)
+                    if (MemberService.Get(sanitisedUsername) != null)
                     {
                         unitOfWork.Rollback();
                         ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateUserName"));
-                        ShowModelErrors();
+                        // TODO - SHOW MOdel messages
                         return Redirect(userEditUrl);
                     }
 
@@ -240,8 +224,8 @@ namespace Dialogue.Logic.Controllers
                 }
 
                 // Update Everything
-                ServiceFactory.MemberService.SaveMember(user, changedUsername);
-                ServiceFactory.ActivityService.ProfileUpdated(user);
+                MemberService.SaveMember(user, changedUsername);
+                ActivityService.ProfileUpdated(user);
 
                 ShowMessage(new GenericMessageViewModel
                 {
@@ -295,7 +279,7 @@ namespace Dialogue.Logic.Controllers
                     ModelState.AddModelError(string.Empty, Lang("Errors.GenericMessage"));
                 }
 
-                ShowModelErrors();
+                // TODO - SHOW MOdel messages
                 return Redirect(userEditUrl);
             }
         }
@@ -308,10 +292,10 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var user = ServiceFactory.MemberService.Get(viewModel.MemberId);
+                    var user = MemberService.Get(viewModel.MemberId);
 
                     // Banned link?
-                    if (ServiceFactory.BannedLinkService.ContainsBannedLink(viewModel.Reason))
+                    if (BannedLinkService.ContainsBannedLink(viewModel.Reason))
                     {
                         ShowMessage(new GenericMessageViewModel
                         {
@@ -327,7 +311,7 @@ namespace Dialogue.Logic.Controllers
                         ReportedMember = user,
                         Reporter = CurrentMember
                     };
-                    ServiceFactory.ReportService.MemberReport(report);
+                    ReportService.MemberReport(report, EmailService);
                     ShowMessage(new GenericMessageViewModel
                     {
                         Message = Lang("Report.ReportSent"),
@@ -352,10 +336,10 @@ namespace Dialogue.Logic.Controllers
                     if (id != null)
                     {
                         // Get the member
-                        var member = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                        var member = MemberService.Get(Convert.ToInt32(id));
 
                         // Delete all their posts and votes and delete etc..
-                        var worked = ServiceFactory.MemberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork);
+                        var worked = MemberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork, UploadedFileService, PostService, MemberPointsService, PollService, TopicService, TopicNotificationService, ActivityService, PrivateMessageService, BadgeService, VoteService, CategoryNotificationService);
 
                         // SAVE UOW
                         var message = new GenericMessageViewModel
@@ -367,7 +351,7 @@ namespace Dialogue.Logic.Controllers
                         try
                         {
                             // Clear the website and signature fields and ban them
-                            ServiceFactory.MemberService.KillSpammer(member);
+                            MemberService.KillSpammer(member);
                         }
                         catch (Exception ex)
                         {
@@ -398,7 +382,7 @@ namespace Dialogue.Logic.Controllers
                     if (id != null)
                     {
                         // Get the member
-                        var member = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                        var member = MemberService.Get(Convert.ToInt32(id));
 
                         var message = new GenericMessageViewModel
                         {
@@ -408,7 +392,7 @@ namespace Dialogue.Logic.Controllers
 
                         try
                         {
-                            ServiceFactory.MemberService.BanMember(member);
+                            MemberService.BanMember(member);
                         }
                         catch (Exception ex)
                         {
@@ -437,7 +421,7 @@ namespace Dialogue.Logic.Controllers
                     if (id != null)
                     {
                         // Get the member
-                        var member = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                        var member = MemberService.Get(Convert.ToInt32(id));
 
                         var message = new GenericMessageViewModel
                         {
@@ -447,7 +431,7 @@ namespace Dialogue.Logic.Controllers
 
                         try
                         {
-                            ServiceFactory.MemberService.UnBanMember(member);
+                            MemberService.UnBanMember(member);
                         }
                         catch (Exception ex)
                         {
@@ -471,7 +455,7 @@ namespace Dialogue.Logic.Controllers
                 var count = 0;
                 if (CurrentMember != null)
                 {
-                    count = ServiceFactory.PrivateMessageService.NewPrivateMessageCount(CurrentMember.Id);
+                    count = PrivateMessageService.NewPrivateMessageCount(CurrentMember.Id);
                 }
                 if (count > 0)
                 {
@@ -494,11 +478,11 @@ namespace Dialogue.Logic.Controllers
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
                     // Get the user discussions, only grab 100 posts
-                    var posts = ServiceFactory.PostService.GetByMember(id, 100);
+                    var posts = PostService.GetByMember(id, 100);
 
                     // Get the distinct topics
                     var topics = posts.Select(x => x.Topic).Where(x => x.Pending != true).Distinct().Take(6).OrderByDescending(x => x.LastPost.DateCreated).ToList();
-                    ServiceFactory.TopicService.PopulateCategories(topics);
+                    TopicService.PopulateCategories(topics);
 
                     // Get all the categories for this topic collection
                     var categories = topics.Select(x => x.Category).Distinct();
@@ -514,7 +498,7 @@ namespace Dialogue.Logic.Controllers
                     // loop through the categories and get the permissions
                     foreach (var category in categories)
                     {
-                        var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                        var permissionSet = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
                         viewModel.AllPermissionSets.Add(category, permissionSet);
                     }
 
@@ -542,7 +526,7 @@ namespace Dialogue.Logic.Controllers
                     // Update
                     try
                     {
-                        ServiceFactory.MemberService.UpdateLastActiveDate(CurrentMember);
+                        MemberService.UpdateLastActiveDate(CurrentMember);
                     }
                     catch (Exception ex)
                     {
@@ -555,6 +539,6 @@ namespace Dialogue.Logic.Controllers
             // You can return anything to reset the timer.
             return Json(new { Timer = "reset" }, JsonRequestBehavior.AllowGet);
         }
-
     }
+
 }

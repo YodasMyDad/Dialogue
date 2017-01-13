@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Web.Mvc;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    public partial class DialogueVoteSurfaceController : BaseSurfaceController
+    using System;
+    using System.Linq;
+    using System.Web.Mvc;
+    using Application;
+    using Models;
+    using Models.ViewModels;
+
+    public partial class DialogueVoteController : DialogueBaseController
     {
         [HttpPost]
         [Authorize]
@@ -15,10 +15,11 @@ namespace Dialogue.Logic.Controllers
         {
             if (Request.IsAjaxRequest())
             {
+
                 // Quick check to see if user is locked out, when logged in
                 if (CurrentMember.IsLockedOut | !CurrentMember.IsApproved)
                 {
-                    ServiceFactory.MemberService.LogOff();
+                    MemberService.LogOff();
                     throw new Exception(Lang("Errors.NoAccess"));
                 }
 
@@ -26,7 +27,7 @@ namespace Dialogue.Logic.Controllers
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
                     // Firstly get the post
-                    var post = ServiceFactory.PostService.Get(voteUpViewModel.Post);
+                    var post = PostService.Get(voteUpViewModel.Post);
 
                     var allowedToVote = (CurrentMember.Id != post.MemberId &&
                                     CurrentMember.TotalPoints > Settings.AmountOfPointsBeforeAUserCanVote &&
@@ -38,10 +39,10 @@ namespace Dialogue.Logic.Controllers
                         var voter = CurrentMember;
 
                         // Also get the user that wrote the post
-                        var postWriter = ServiceFactory.MemberService.Get(post.MemberId);
+                        var postWriter = MemberService.Get(post.MemberId);
 
                         // Mark the post up or down
-                        var returnValue = string.Empty;
+                        string returnValue;
                         if (voteUpViewModel.IsVoteUp)
                         {
                             returnValue = MarkPostUpOrDown(post, postWriter, voter, PostType.Positive);
@@ -86,7 +87,7 @@ namespace Dialogue.Logic.Controllers
                                         (-Settings.PointsDeductedForNegativeVote) : (Settings.PointsAddedForPositiveVote);
 
                     // Update the users points who wrote the post
-                    ServiceFactory.MemberPointsService.Add(new MemberPoints
+                    MemberPointsService.Add(new MemberPoints
                     {
                         Points = usersPoints, 
                         Member = postWriter, 
@@ -104,14 +105,14 @@ namespace Dialogue.Logic.Controllers
                         VotedByMember = CurrentMember,
                         DateVoted = DateTime.Now
                     };
-                    ServiceFactory.VoteService.Add(vote);
+                    VoteService.Add(vote);
 
                     // Update the post with the new points amount
                     var allVotes = post.Votes.ToList();
                     var allVoteCount = allVotes.Sum(x => x.Amount);
                     //var newPointTotal = (postType == PostType.Negative) ? (post.VoteCount - 1) : (post.VoteCount + 1);
                     post.VoteCount = allVoteCount;
-                    var postTypeVoteCount = 0;
+                    int postTypeVoteCount;
                     if (postType == PostType.Positive)
                     {
                         postTypeVoteCount = allVotes.Count(x => x.Amount > 0);
@@ -138,10 +139,11 @@ namespace Dialogue.Logic.Controllers
         {
             if (Request.IsAjaxRequest())
             {
+
                 // Quick check to see if user is locked out, when logged in
                 if (CurrentMember.IsLockedOut | !CurrentMember.IsApproved)
                 {
-                    ServiceFactory.MemberService.LogOff();
+                    MemberService.LogOff();
                     throw new Exception(Lang("Errors.NoAccess"));
                 }
 
@@ -149,13 +151,13 @@ namespace Dialogue.Logic.Controllers
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
                     // Firstly get the post
-                    var post = ServiceFactory.PostService.Get(markAsSolutionViewModel.Post);
+                    var post = PostService.Get(markAsSolutionViewModel.Post);
 
                     // Check the member marking owns the topic
                     if (CurrentMember.Id == post.Topic.MemberId)
                     {
                         // Person who created the solution post
-                        var solutionWriter = ServiceFactory.MemberService.Get(post.MemberId);
+                        var solutionWriter = MemberService.Get(post.MemberId);
 
                         // Get the post topic
                         var topic = post.Topic;
@@ -164,12 +166,12 @@ namespace Dialogue.Logic.Controllers
                         var marker = CurrentMember;
                         try
                         {
-                            var solved = ServiceFactory.TopicService.SolveTopic(topic, post, marker, solutionWriter);
+                            var solved = TopicService.SolveTopic(topic, post, marker, solutionWriter, MemberPointsService);
 
                             if (solved)
                             {
                                 unitOfWork.Commit();
-                                return Content(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-ok\"></span>", Lang("Post.Solution")));
+                                return Content($"<span class=\"glyphicon glyphicon-ok\"></span> {Lang("Post.Solution")}");
                             }
                         }
                         catch (Exception ex)

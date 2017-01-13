@@ -75,3 +75,5 @@ packages/*
 Src/Dialogue.Logic/App_Data/NuGetBackup/*
 Src/Dialogue.Logic/bin/*
 Src/Dialogue.Ui/Bin/*
+Src/Dialogue.Logic/bin/*
+Src/Dialogue.Ui/App_Data/NuGetBackup/*

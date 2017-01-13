@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class BannedEmailService
+    using Interfaces;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public partial class BannedEmailService : IRequestCachedService
     {
         public IEnumerable<string> GetAllWildCards()
         {

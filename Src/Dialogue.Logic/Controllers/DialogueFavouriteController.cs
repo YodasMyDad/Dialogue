@@ -1,13 +1,12 @@
-﻿using System;
-using System.Web.Mvc;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    #region Surface Controllers
-    public partial class DialogueFavouriteSurfaceController : BaseSurfaceController
+    using System;
+    using System.Web.Mvc;
+    using Application;
+    using Models;
+    using Models.ViewModels;
+
+    public partial class DialogueFavouriteController : DialogueBaseController
     {
         [HttpPost]
         [Authorize]
@@ -15,18 +14,19 @@ namespace Dialogue.Logic.Controllers
         {
             if (Request.IsAjaxRequest() && CurrentMember != null)
             {
+
                 using (var unitOfwork = UnitOfWorkManager.NewUnitOfWork())
                 {
                     try
                     {
-                        var post = ServiceFactory.PostService.Get(viewModel.PostId);
+                        var post = PostService.Get(viewModel.PostId);
                         string returnValue;
 
                         // See if this is a user adding or removing the favourite
-                        var existingFavourite = ServiceFactory.FavouriteService.GetByMemberAndPost(CurrentMember.Id, post.Id);
+                        var existingFavourite = FavouriteService.GetByMemberAndPost(CurrentMember.Id, post.Id);
                         if (existingFavourite != null)
                         {
-                            ServiceFactory.FavouriteService.Delete(existingFavourite);
+                            FavouriteService.Delete(existingFavourite);
                             returnValue = Lang("Post.Favourite");
                         }
                         else
@@ -38,7 +38,7 @@ namespace Dialogue.Logic.Controllers
                                 PostId = post.Id,
                                 TopicId = post.Topic.Id
                             };
-                            ServiceFactory.FavouriteService.Add(favourite);
+                            FavouriteService.Add(favourite);
                             returnValue = Lang("Post.Favourited");
                         }
                         unitOfwork.Commit();
@@ -57,5 +57,5 @@ namespace Dialogue.Logic.Controllers
 
 
     } 
-    #endregion
+
 }

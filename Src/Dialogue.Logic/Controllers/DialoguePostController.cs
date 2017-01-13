@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Mvc;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Application.Akismet;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    #region MVC Controllers
-    public partial class DialoguePostSurfaceController : BaseSurfaceController
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Web.Mvc;
+    using Application;
+    using Application.Akismet;
+    using Constants;
+    using Mapping;
+    using Models;
+    using Models.ViewModels;
+    using Umbraco.Core.Models;
+
+    public partial class DialoguePostController : DialogueBaseController
     {
         private readonly IMemberGroup _membersGroup;
 
-        public DialoguePostSurfaceController()
+        public DialoguePostController()
         {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         [HttpPost]
@@ -32,7 +30,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var post = ServiceFactory.PostService.Get(model.Id);
+                    var post = PostService.Get(model.Id);
                     post.Pending = false;
                     try
                     {
@@ -51,32 +49,35 @@ namespace Dialogue.Logic.Controllers
         [HttpPost]
         public PartialViewResult CreatePost(CreateAjaxPostViewModel post)
         {
+            // Make sure correct culture on Ajax Call    
+
             PermissionSet permissions;
             Post newPost;
             Topic topic;
-            var postContent = string.Empty;
+            string postContent;
             using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
                 // Quick check to see if user is locked out, when logged in
                 if (CurrentMember.IsLockedOut | !CurrentMember.IsApproved)
                 {
-                    ServiceFactory.MemberService.LogOff();
+                    MemberService.LogOff();
                     throw new Exception(Lang("Errors.NoAccess"));
                 }
 
                 // Check for banned links
-                if (ServiceFactory.BannedLinkService.ContainsBannedLink(post.PostContent))
+                if (BannedLinkService.ContainsBannedLink(post.PostContent))
                 {
                     throw new Exception(Lang("Errors.BannedLink"));
                 }
 
-                topic = ServiceFactory.TopicService.Get(post.Topic);
+                topic = TopicService.Get(post.Topic);
 
-                postContent = ServiceFactory.BannedWordService.SanitiseBannedWords(post.PostContent);
+                postContent = BannedWordService.SanitiseBannedWords(post.PostContent);
 
                 var akismetHelper = new AkismetHelper();
 
-                newPost = ServiceFactory.PostService.AddNewPost(postContent, topic, CurrentMember, out permissions);
+                // Create the new post
+                newPost = PostService.AddNewPost(postContent, topic, CurrentMember, PermissionService, MemberService, CategoryPermissionService, MemberPointsService, out permissions);
 
                 if (!akismetHelper.IsSpam(newPost))
                 {
@@ -107,7 +108,6 @@ namespace Dialogue.Logic.Controllers
             // All good send the notifications and send the post back
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-
                 // Create the view model
                 var viewModel = PostMapper.MapPostViewModel(permissions, newPost, CurrentMember, Settings, topic, new List<Vote>(), new List<Favourite>());
 
@@ -118,79 +118,32 @@ namespace Dialogue.Logic.Controllers
             }
         }
 
-        private void NotifyNewTopics(Topic topic, string postContent)
-        {
-            // Get all notifications for this category
-            var notifications = ServiceFactory.TopicNotificationService.GetByTopic(topic).Select(x => x.MemberId).ToList();
-
-            if (notifications.Any())
-            {
-                // remove the current user from the notification, don't want to notify yourself that you 
-                // have just made a topic!
-                notifications.Remove(CurrentMember.Id);
-
-                if (notifications.Count > 0)
-                {
-                    // Now get all the users that need notifying
-                    var usersToNotify = ServiceFactory.MemberService.GetUsersById(notifications);
-
-                    // Create the email
-                    var sb = new StringBuilder();
-                    sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Post.Notification.NewPosts"), topic.Name));
-                    sb.AppendFormat("<p>{0}</p>", string.Concat(Settings.ForumRootUrlWithDomain, topic.Url));
-                    sb.Append(postContent);
-
-                    // create the emails only to people who haven't had notifications disabled
-                    var emails = usersToNotify.Where(x => x.DisableEmailNotifications != true).Select(user => new Email
-                    {
-                        Body = ServiceFactory.EmailService.EmailTemplate(user.UserName, sb.ToString()),
-                        EmailFrom = Settings.NotificationReplyEmailAddress,
-                        EmailTo = user.Email,
-                        NameTo = user.UserName,
-                        Subject = string.Concat(Lang("Post.Notification.Subject"), Settings.ForumName)
-                    }).ToList();
-
-                    // and now pass the emails in to be sent
-                    ServiceFactory.EmailService.SendMail(emails);
-                }
-            }
-        }
-
         public ActionResult DeletePost(Guid id)
         {
-            bool isTopicStarter;
+            bool topicWasDeleted;
             Topic topic;
 
             using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
                 // Got to get a lot of things here as we have to check permissions
                 // Get the post
-                var post = ServiceFactory.PostService.Get(id);
+                var post = PostService.Get(id);
 
                 // get this so we know where to redirect after
-                isTopicStarter = post.IsTopicStarter;
+                topicWasDeleted = post.IsTopicStarter;
 
                 // Get the topic
                 topic = post.Topic;
-                var category = ServiceFactory.CategoryService.Get(topic.CategoryId);
+                var category = CategoryService.Get(topic.CategoryId);
 
                 // get the users permissions
-                var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                var permissions = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
 
                 if (post.MemberId == CurrentMember.Id || permissions[AppConstants.PermissionModerate].IsTicked)
                 {
-                    var postUser = post.Member;
-
-                    var deleteTopic = ServiceFactory.PostService.Delete(post);
+                    topicWasDeleted = PostService.Delete(post, MemberService, MemberPointsService, TopicNotificationService);
+                   
                     unitOfWork.SaveChanges();
-
-                    if (deleteTopic)
-                    {
-                        ServiceFactory.TopicService.Delete(topic);
-                    }
-
-                    // Remove the points the user got for this post
-                    ServiceFactory.MemberPointsService.Delete(Settings.PointsAddedPerNewPost, postUser);
 
                     try
                     {
@@ -207,7 +160,7 @@ namespace Dialogue.Logic.Controllers
             }
 
             // Deleted successfully
-            if (isTopicStarter)
+            if (topicWasDeleted)
             {
                 // Redirect to root as this was a topic and deleted
                 TempData[AppConstants.MessageViewBagName] = new GenericMessageViewModel
@@ -237,10 +190,10 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var post = ServiceFactory.PostService.Get(viewModel.PostId);
+                    var post = PostService.Get(viewModel.PostId);
 
                     // Banned link?
-                    if (ServiceFactory.BannedLinkService.ContainsBannedLink(viewModel.Reason))
+                    if (BannedLinkService.ContainsBannedLink(viewModel.Reason))
                     {
                         ShowMessage(new GenericMessageViewModel
                         {
@@ -256,7 +209,7 @@ namespace Dialogue.Logic.Controllers
                         ReportedPost = post,
                         Reporter = CurrentMember
                     };
-                    ServiceFactory.ReportService.PostReport(report);
+                    ReportService.PostReport(report, EmailService);
 
                     var message= new GenericMessageViewModel
                     {
@@ -279,20 +232,20 @@ namespace Dialogue.Logic.Controllers
             {
                 // Got to get a lot of things here as we have to check permissions
                 // Get the post
-                var post = ServiceFactory.PostService.Get(editPostViewModel.Id);
+                var post = PostService.Get(editPostViewModel.Id);
 
                 // Get the topic
                 var topic = post.Topic;
-                var category = ServiceFactory.CategoryService.Get(topic.CategoryId);
+                var category = CategoryService.Get(topic.CategoryId);
                 topic.Category = category;
 
                 // get the users permissions
-                var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                var permissions = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
 
                 if (post.MemberId == CurrentMember.Id || permissions[AppConstants.PermissionModerate].IsTicked)
                 {
                     // User has permission so update the post
-                    post.PostContent = AppHelpers.GetSafeHtml(ServiceFactory.BannedWordService.SanitiseBannedWords(editPostViewModel.Content));
+                    post.PostContent = AppHelpers.GetSafeHtml(BannedWordService.SanitiseBannedWords(editPostViewModel.Content));
                     post.DateEdited = DateTime.UtcNow;
 
                     // if topic starter update the topic
@@ -301,13 +254,13 @@ namespace Dialogue.Logic.Controllers
                         // if category has changed then update it
                         if (topic.Category.Id != editPostViewModel.Category)
                         {
-                            var cat = ServiceFactory.CategoryService.Get(editPostViewModel.Category);
+                            var cat = CategoryService.Get(editPostViewModel.Category);
                             topic.Category = cat;
                         }
 
                         topic.IsLocked = editPostViewModel.IsLocked;
                         topic.IsSticky = editPostViewModel.IsSticky;
-                        topic.Name = AppHelpers.GetSafeHtml(ServiceFactory.BannedWordService.SanitiseBannedWords(editPostViewModel.Name));
+                        topic.Name = AppHelpers.GetSafeHtml(BannedWordService.SanitiseBannedWords(editPostViewModel.Name));
 
                         // See if there is a poll
                         if (editPostViewModel.PollAnswers != null && editPostViewModel.PollAnswers.Count > 0)
@@ -338,7 +291,7 @@ namespace Dialogue.Logic.Controllers
                             foreach (var oldPollAnswer in pollAnswersToRemove)
                             {
                                 // Delete
-                                ServiceFactory.PollService.Delete(oldPollAnswer);
+                                PollService.Delete(oldPollAnswer);
 
                                 // Remove from Poll
                                 topic.Poll.PollAnswers.Remove(oldPollAnswer);
@@ -352,7 +305,7 @@ namespace Dialogue.Logic.Controllers
                                     Poll = topic.Poll,
                                     Answer = newPollAnswer.Answer
                                 };
-                                ServiceFactory.PollService.Add(npa);
+                                PollService.Add(npa);
                                 topic.Poll.PollAnswers.Add(npa);
                             }
                         }
@@ -370,7 +323,7 @@ namespace Dialogue.Logic.Controllers
                                     foreach (var answer in answersToDelete)
                                     {
                                         // Delete
-                                        ServiceFactory.PollService.Delete(answer);
+                                        PollService.Delete(answer);
 
                                         // Remove from Poll
                                         topic.Poll.PollAnswers.Remove(answer);
@@ -379,7 +332,7 @@ namespace Dialogue.Logic.Controllers
 
                                 // Now delete the poll
                                 var pollToDelete = topic.Poll;
-                                ServiceFactory.PollService.Delete(pollToDelete);
+                                PollService.Delete(pollToDelete);
 
                                 // Remove from topic.
                                 topic.Poll = null;
@@ -410,6 +363,48 @@ namespace Dialogue.Logic.Controllers
                 return NoPermission(topic);
             }
         }
-    } 
-    #endregion
+
+
+        #region Private Methods
+
+        private void NotifyNewTopics(Topic topic, string postContent)
+        {
+            // Get all notifications for this category
+            var notifications = TopicNotificationService.GetByTopic(topic).Select(x => x.MemberId).ToList();
+
+            if (notifications.Any())
+            {
+                // remove the current user from the notification, don't want to notify yourself that you 
+                // have just made a topic!
+                notifications.Remove(CurrentMember.Id);
+
+                if (notifications.Count > 0)
+                {
+                    // Now get all the users that need notifying
+                    var usersToNotify = MemberService.GetUsersById(notifications);
+
+                    // Create the email
+                    var sb = new StringBuilder();
+                    sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Post.Notification.NewPosts"), topic.Name));
+                    sb.AppendFormat("<p>{0}</p>", string.Concat(Settings.ForumRootUrlWithDomain, topic.Url));
+                    sb.Append(postContent);
+
+                    // create the emails only to people who haven't had notifications disabled
+                    var emails = usersToNotify.Where(x => x.DisableEmailNotifications != true).Select(user => new Email
+                    {
+                        Body = EmailService.EmailTemplate(user.UserName, sb.ToString()),
+                        EmailFrom = Settings.NotificationReplyEmailAddress,
+                        EmailTo = user.Email,
+                        NameTo = user.UserName,
+                        Subject = string.Concat(Lang("Post.Notification.Subject"), Settings.ForumName)
+                    }).ToList();
+
+                    // and now pass the emails in to be sent
+                    EmailService.SendMail(emails);
+                }
+            }
+        }
+
+        #endregion
+    }
 }

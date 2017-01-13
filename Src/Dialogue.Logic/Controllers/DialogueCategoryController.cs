@@ -1,26 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
-using Umbraco.Web.Models;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Web.Mvc;
+    using Application;
+    using Constants;
+    using Mapping;
+    using Models;
+    using Models.ViewModels;
+    using Umbraco.Core.Models;
+    using Umbraco.Web.Models;
 
-    #region Render Controllers
-    public partial class DialogueCategoryController : BaseRenderController
+    public partial class DialogueCategoryController : DialogueBaseController
     {
         private readonly IMemberGroup _usersRole;
 
         public DialogueCategoryController()
         {           
-            _usersRole = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _usersRole = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         public override ActionResult Index(RenderModel model)
@@ -35,16 +32,16 @@ namespace Dialogue.Logic.Controllers
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
 
                 // check the user has permission to this category
-                var permissions = ServiceFactory.PermissionService.GetPermissions(category, _usersRole);
+                var permissions = PermissionService.GetPermissions(category, _usersRole, MemberService, CategoryPermissionService);
 
                 if (!permissions[AppConstants.PermissionDenyAccess].IsTicked)
                 {
 
-                    var topics = ServiceFactory.TopicService.GetPagedTopicsByCategory(pageIndex,
+                    var topics = TopicService.GetPagedTopicsByCategory(pageIndex,
                                                                         Settings.TopicsPerPage,
                                                                         int.MaxValue, category.Id);
 
-                    var isSubscribed = UserIsAuthenticated && (ServiceFactory.CategoryNotificationService.GetByUserAndCategory(CurrentMember, category).Any());
+                    var isSubscribed = UserIsAuthenticated && (CategoryNotificationService.GetByUserAndCategory(CurrentMember, category).Any());
 
                     // Create the main view model for the category
                     var viewModel = new ViewCategoryViewModel(model.Content)
@@ -67,7 +64,7 @@ namespace Dialogue.Logic.Controllers
                         };
                         foreach (var subCategory in category.SubCategories)
                         {
-                            var permissionSet = ServiceFactory.PermissionService.GetPermissions(subCategory, _usersRole);
+                            var permissionSet = PermissionService.GetPermissions(subCategory, _usersRole, MemberService, CategoryPermissionService);
                             subCatViewModel.AllPermissionSets.Add(subCategory, permissionSet);
                         }
                         viewModel.SubCategories = subCatViewModel;
@@ -79,18 +76,8 @@ namespace Dialogue.Logic.Controllers
                 return ErrorToHomePage(Lang("Errors.NoPermission"));
             }
         }
-    } 
-    #endregion
 
-    #region Surface Controllers
-    public partial class DialogueCategorySurfaceController : BaseSurfaceController
-    {
-        private readonly IMemberGroup _usersRole;
-
-        public DialogueCategorySurfaceController()
-        {
-            _usersRole = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-        }
+        #region Child Actions
 
         [ChildActionOnly]
         public PartialViewResult ListCategorySideMenu()
@@ -102,16 +89,18 @@ namespace Dialogue.Logic.Controllers
 
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                foreach (var category in ServiceFactory.CategoryService.GetAllMainCategories())
+                foreach (var category in CategoryService.GetAllMainCategories())
                 {
-                    var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _usersRole);
+                    var permissionSet = PermissionService.GetPermissions(category, _usersRole, MemberService, CategoryPermissionService);
                     catViewModel.AllPermissionSets.Add(category, permissionSet);
                 }
             }
 
             return PartialView(PathHelper.GetThemePartialViewPath("SideCategories"), catViewModel);
         }
-    }
 
-    #endregion
+        #endregion
+
+    } 
+
 }

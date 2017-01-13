@@ -144,7 +144,7 @@
     @if ((Model.Permissions[AppConstants.PermissionAttachFiles].IsTicked && Model.Post.Member.DisableFileUploads != true) || Model.IsAdminOrMod)
     {
         <div class="postuploadholder row">
-            @using (Html.BeginForm("UploadPostFiles", "DialogueUploadSurface", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", role = "form" }))
+            @using (Html.BeginForm("UploadPostFiles", "DialogueUpload", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", role = "form" }))
                 {
                 <div class="col-md-12">
                     <span style="display: none;" class="ajaxspinner" title="@Html.Lang("Post.PleaseWait")">@Html.Lang("Post.PleaseWait")</span>

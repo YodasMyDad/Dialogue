@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-using Umbraco.Core.Models;
-using Umbraco.Web;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class CategoryService
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Application;
+    using Constants;
+    using Mapping;
+    using Models;
+    using Umbraco.Core.Models;
+    using Umbraco.Web;
+
+    public partial class CategoryService : IRequestCachedService
     {
         private readonly IPublishedContent _forumRootNode;
 
@@ -74,14 +75,17 @@ namespace Dialogue.Logic.Services
         /// Return allowed categories based on the users role
         /// </summary>
         /// <param name="role"></param>
+        /// <param name="permissionService"></param>
+        /// <param name="memberService"></param>
+        /// <param name="categoryPermissionService"></param>
         /// <returns></returns>
-        public IEnumerable<Category> GetAllowedCategories(IMemberGroup role)
+        public IEnumerable<Category> GetAllowedCategories(IMemberGroup role, PermissionService permissionService, MemberService memberService, CategoryPermissionService categoryPermissionService)
         {
             var filteredCats = new List<Category>();
             var allCats = GetAll().Where(x => !x.LockCategory);
             foreach (var category in allCats)
             {
-                var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, role);
+                var permissionSet = permissionService.GetPermissions(category, role, memberService, categoryPermissionService);
                 if (!permissionSet[AppConstants.PermissionDenyAccess].IsTicked && !permissionSet[AppConstants.PermissionReadOnly].IsTicked)
                 {
                     filteredCats.Add(category);

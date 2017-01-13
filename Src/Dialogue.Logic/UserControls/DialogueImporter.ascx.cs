@@ -56,7 +56,8 @@ namespace Dialogue.Logic.UserControls
                     var adminGroup = memberGroupService.GetByName(AppConstants.AdminRoleName);
 
                     var unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
-                    var pointService = ServiceFactory.MemberPointsService;
+                    var pointService = ServiceResolver.Current.Instance<MemberPointsService>();
+                    var bannedWordService = ServiceResolver.Current.Instance<BannedWordService>();
                     using (var unitOfWork = unitOfWorkManager.NewUnitOfWork())
                     {
                         try
@@ -66,7 +67,7 @@ namespace Dialogue.Logic.UserControls
                                 //var m = memService.CreateMemberWithIdentity("username", "email", "name", AppConstants.MemberTypeAlias);
 
                                 var userToSave = memHelper.CreateRegistrationModel(AppConstants.MemberTypeAlias);
-                                userToSave.Username = ServiceFactory.BannedWordService.SanitiseBannedWords(newmem.Username);
+                                userToSave.Username = bannedWordService.SanitiseBannedWords(newmem.Username);
                                 userToSave.Name = userToSave.Username;
                                 userToSave.UsernameIsEmail = false;
                                 userToSave.Email = newmem.Email;

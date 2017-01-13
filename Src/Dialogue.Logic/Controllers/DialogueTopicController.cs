@@ -1,29 +1,27 @@
-﻿using System;
-using System.Linq;
-using System.Web.Mvc;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Application.Akismet;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Routes;
-using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
-using Umbraco.Web.Models;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    #region Render Controllers
-    public partial class DialogueTopicController : BaseRenderController
+    using System;
+    using System.Linq;
+    using System.Web.Mvc;
+    using Application;
+    using Application.Akismet;
+    using Constants;
+    using Mapping;
+    using Models;
+    using Models.ViewModels;
+    using Routes;
+    using Umbraco.Core.Models;
+    using Umbraco.Web.Models;
+    using System.Collections.Generic;
+    using System.Text;
+
+    public partial class DialogueTopicController : DialogueBaseController
     {
         private readonly IMemberGroup _membersGroup;
 
         public DialogueTopicController()
         {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace Dialogue.Logic.Controllers
             using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
             {
                 // Get the topic
-                var topic = ServiceFactory.TopicService.GetTopicBySlug(topicname);
+                var topic = TopicService.GetTopicBySlug(topicname);
 
                 if (topic != null)
                 {
@@ -80,14 +78,14 @@ namespace Dialogue.Logic.Controllers
 
 
                     // Get the posts
-                    var posts = ServiceFactory.PostService.GetPagedPostsByTopic(pageIndex,
+                    var posts = PostService.GetPagedPostsByTopic(pageIndex,
                                                                   amountPerPage,
                                                                   int.MaxValue,
                                                                   topic.Id,
                                                                   orderBy);
 
                     // Get the permissions for the category that this topic is in
-                    var permissions = ServiceFactory.PermissionService.GetPermissions(topic.Category, _membersGroup);
+                    var permissions = PermissionService.GetPermissions(topic.Category, _membersGroup, MemberService, CategoryPermissionService);
 
                     // If this user doesn't have access to this topic then
                     // redirect with message
@@ -97,7 +95,7 @@ namespace Dialogue.Logic.Controllers
                     }
 
                     // See if the user has subscribed to this topic or not
-                    var isSubscribed = UserIsAuthenticated && (ServiceFactory.TopicNotificationService.GetByUserAndTopic(CurrentMember, topic).Any());
+                    var isSubscribed = UserIsAuthenticated && (TopicNotificationService.GetByUserAndTopic(CurrentMember, topic).Any());
 
                     // Populate the view model for this page
                     var viewModel = new ShowTopicViewModel(model.Content)
@@ -114,18 +112,18 @@ namespace Dialogue.Logic.Controllers
 
                     // Get all votes for all the posts
                     var postIds = posts.Select(x => x.Id).ToList();
-                    var allPostVotes = ServiceFactory.VoteService.GetAllVotesForPosts(postIds);
+                    var allPostVotes = VoteService.GetAllVotesForPosts(postIds);
 
                     // Get all favourites for this user
                     viewModel.Favourites = new List<Favourite>();
                     if (CurrentMember != null)
                     {
-                        viewModel.Favourites.AddRange(ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id));
+                        viewModel.Favourites.AddRange(FavouriteService.GetAllByMember(CurrentMember.Id));
                     }
 
                     // Map the topic Start
                     // Get the topic starter post
-                    var topicStarter = ServiceFactory.PostService.GetTopicStarterPost(topic.Id);
+                    var topicStarter = PostService.GetTopicStarterPost(topic.Id);
                     viewModel.TopicStarterPost = PostMapper.MapPostViewModel(permissions, topicStarter, CurrentMember, Settings, topic, topicStarter.Votes.ToList(), viewModel.Favourites);
 
                     // Map the posts to the posts viewmodel
@@ -143,7 +141,7 @@ namespace Dialogue.Logic.Controllers
                         try
                         {
                             // Got a quote
-                            var postToQuote = ServiceFactory.PostService.Get(new Guid(quote));
+                            var postToQuote = PostService.Get(new Guid(quote));
                             viewModel.PostContent = postToQuote.PostContent;
                         }
                         catch (Exception ex)
@@ -193,20 +191,6 @@ namespace Dialogue.Logic.Controllers
             return ErrorToHomePage(Lang("Errors.GenericMessage"));
         }
 
-    }
-
-    #endregion
-
-    #region Surface controllers
-    public partial class DialogueTopicSurfaceController : BaseSurfaceController
-    {
-
-        private readonly IMemberGroup _membersGroup;
-
-        public DialogueTopicSurfaceController()
-        {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
-        }
 
 
         [HttpPost]
@@ -217,7 +201,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var topic = ServiceFactory.TopicService.Get(model.Id);
+                    var topic = TopicService.Get(model.Id);
                     topic.Pending = false;
                     try
                     {
@@ -237,10 +221,10 @@ namespace Dialogue.Logic.Controllers
         public PartialViewResult AjaxMorePosts(GetMorePostsViewModel getMorePostsViewModel)
         {
             // Get the topic
-            var topic = ServiceFactory.TopicService.Get(getMorePostsViewModel.TopicId);
+            var topic = TopicService.Get(getMorePostsViewModel.TopicId);
 
             // Get the permissions for the category that this topic is in
-            var permissions = ServiceFactory.PermissionService.GetPermissions(topic.Category, _membersGroup);
+            var permissions = PermissionService.GetPermissions(topic.Category, _membersGroup, MemberService, CategoryPermissionService);
 
             // If this user doesn't have access to this topic then just return nothing
             if (permissions[AppConstants.PermissionDenyAccess].IsTicked)
@@ -266,15 +250,15 @@ namespace Dialogue.Logic.Controllers
             var favourites = new List<Favourite>();
             if (CurrentMember != null)
             {
-                favourites.AddRange(ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id));
+                favourites.AddRange(FavouriteService.GetAllByMember(CurrentMember.Id));
             }
 
             // Get the posts
-            var posts = ServiceFactory.PostService.GetPagedPostsByTopic(getMorePostsViewModel.PageIndex, Settings.PostsPerPage, int.MaxValue, topic.Id, orderBy);
+            var posts = PostService.GetPagedPostsByTopic(getMorePostsViewModel.PageIndex, Settings.PostsPerPage, int.MaxValue, topic.Id, orderBy);
 
             // Get all votes for all the posts
             var postIds = posts.Select(x => x.Id).ToList();
-            var allPostVotes = ServiceFactory.VoteService.GetAllVotesForPosts(postIds);
+            var allPostVotes = VoteService.GetAllVotesForPosts(postIds);
 
             viewModel.Posts = new List<ViewPostViewModel>();
             foreach (var post in posts)
@@ -289,7 +273,7 @@ namespace Dialogue.Logic.Controllers
         [ChildActionOnly]
         public PartialViewResult GetTopicBreadcrumb(Topic topic)
         {
-            var category = ServiceFactory.CategoryService.Get(topic.CategoryId, true);
+            var category = CategoryService.Get(topic.CategoryId, true);
             var viewModel = new BreadCrumbViewModel
             {
                 Categories = category.ParentCategories,
@@ -310,7 +294,7 @@ namespace Dialogue.Logic.Controllers
                 var pageIndex = p ?? 1;
 
                 // Get the topics
-                var topics = ServiceFactory.TopicService.GetRecentTopics(pageIndex,
+                var topics = TopicService.GetRecentTopics(pageIndex,
                                                            Dialogue.Settings().TopicsPerPage,
                                                            AppConstants.ActiveTopicsListSize);
 
@@ -330,7 +314,7 @@ namespace Dialogue.Logic.Controllers
                 // loop through the categories and get the permissions
                 foreach (var category in categories)
                 {
-                    var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                    var permissionSet = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
                     viewModel.AllPermissionSets.Add(category, permissionSet);
                 }
                 return PartialView(PathHelper.GetThemePartialViewPath("LatestTopics"), viewModel);
@@ -366,7 +350,7 @@ namespace Dialogue.Logic.Controllers
                 // Quick check to see if user is locked out, when logged in
                 if (CurrentMember.IsLockedOut || CurrentMember.DisablePosting == true || !CurrentMember.IsApproved)
                 {
-                    ServiceFactory.MemberService.LogOff();
+                    MemberService.LogOff();
                     return ErrorToHomePage(Lang("Errors.NoPermission"));
                 }
 
@@ -378,7 +362,7 @@ namespace Dialogue.Logic.Controllers
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
                     // Before we do anything DB wise, check it contains no bad links
-                    if (ServiceFactory.BannedLinkService.ContainsBannedLink(topicViewModel.TopicContent))
+                    if (BannedLinkService.ContainsBannedLink(topicViewModel.TopicContent))
                     {
                         ShowMessage(new GenericMessageViewModel
                         {
@@ -389,10 +373,10 @@ namespace Dialogue.Logic.Controllers
                     }
 
                     // Not using automapper for this one only, as a topic is a post and topic in one
-                    category = ServiceFactory.CategoryService.Get(topicViewModel.Category);
+                    category = CategoryService.Get(topicViewModel.Category);
 
                     // First check this user is allowed to create topics in this category
-                    var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                    var permissions = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
 
                     // Check this users role has permission to create a post
                     if (permissions[AppConstants.PermissionDenyAccess].IsTicked || permissions[AppConstants.PermissionReadOnly].IsTicked || !permissions[AppConstants.PermissionCreateTopics].IsTicked)
@@ -404,11 +388,11 @@ namespace Dialogue.Logic.Controllers
                     {
                         // We get the banned words here and pass them in, so its just one call
                         // instead of calling it several times and each call getting all the words back
-                        
+
 
                         topic = new Topic
                         {
-                            Name = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicName, Dialogue.Settings().BannedWords),
+                            Name = BannedWordService.SanitiseBannedWords(topicViewModel.TopicName, Dialogue.Settings().BannedWords),
                             Category = category,
                             CategoryId = category.Id,
                             Member = CurrentMember,
@@ -419,7 +403,7 @@ namespace Dialogue.Logic.Controllers
                         if (!string.IsNullOrEmpty(topicViewModel.TopicContent))
                         {
                             // Check for any banned words
-                            topicViewModel.TopicContent = ServiceFactory.BannedWordService.SanitiseBannedWords(topicViewModel.TopicContent, Dialogue.Settings().BannedWords);
+                            topicViewModel.TopicContent = BannedWordService.SanitiseBannedWords(topicViewModel.TopicContent, Dialogue.Settings().BannedWords);
 
                             // See if this is a poll and add it to the topic
                             if (topicViewModel.PollAnswers != null && topicViewModel.PollAnswers.Count > 0)
@@ -435,7 +419,7 @@ namespace Dialogue.Logic.Controllers
                                     };
 
                                     // Create the poll
-                                    ServiceFactory.PollService.Add(newPoll);
+                                    PollService.Add(newPoll);
 
                                     // Save the poll in the context so we can add answers
                                     unitOfWork.SaveChanges();
@@ -446,7 +430,7 @@ namespace Dialogue.Logic.Controllers
                                     {
                                         // Attach newly created poll to each answer
                                         pollAnswer.Poll = newPoll;
-                                        ServiceFactory.PollService.Add(pollAnswer);
+                                        PollService.Add(pollAnswer);
                                         newPollAnswers.Add(pollAnswer);
                                     }
                                     // Attach answers to poll
@@ -478,16 +462,16 @@ namespace Dialogue.Logic.Controllers
 
 
                             // Create the topic
-                            topic = ServiceFactory.TopicService.Add(topic);
+                            topic = TopicService.Add(topic);
 
                             // Save the changes
                             unitOfWork.SaveChanges();
 
                             // Now create and add the post to the topic
-                            ServiceFactory.TopicService.AddLastPost(topic, topicViewModel.TopicContent);
+                            TopicService.AddLastPost(topic, topicViewModel.TopicContent, PostService);
 
                             // Update the users points score for posting
-                            ServiceFactory.MemberPointsService.Add(new MemberPoints
+                            MemberPointsService.Add(new MemberPoints
                             {
                                 Points = Settings.PointsAddedPerNewPost,
                                 Member = CurrentMember,
@@ -514,7 +498,7 @@ namespace Dialogue.Logic.Controllers
                                     MemberId = CurrentMember.Id
                                 };
                                 //save
-                                ServiceFactory.TopicNotificationService.Add(topicNotification);
+                                TopicNotificationService.Add(topicNotification);
                             }
 
                             try
@@ -526,7 +510,7 @@ namespace Dialogue.Logic.Controllers
                                 }
 
                                 // Update the users post count
-                                ServiceFactory.MemberService.AddPostCount(CurrentMember);
+                                MemberService.AddPostCount(CurrentMember);
 
                             }
                             catch (Exception ex)
@@ -561,18 +545,19 @@ namespace Dialogue.Logic.Controllers
                     }
                 }
             }
-            ShowModelErrors();
+            //TODO - SHOW MODEL ERRORS
             return Redirect(Urls.GenerateUrl(Urls.UrlType.TopicCreate));
         }
 
         private void NotifyNewTopics(Category cat)
         {
+
             // *CHANGE THIS TO BE CALLED LIKE THE BADGES VIA AN AJAX Method* 
             // TODO: This really needs to be an async call so it doesn't hang when a user creates  
             //  a topic if there are 1000's of users
 
             // Get all notifications for this category
-            var notifications = ServiceFactory.CategoryNotificationService.GetByCategory(cat).Select(x => x.MemberId).ToList();
+            var notifications = CategoryNotificationService.GetByCategory(cat).Select(x => x.MemberId).ToList();
 
             if (notifications.Any())
             {
@@ -583,7 +568,7 @@ namespace Dialogue.Logic.Controllers
                 if (notifications.Count > 0)
                 {
                     // Now get all the users that need notifying
-                    var usersToNotify = ServiceFactory.MemberService.GetUsersById(notifications);
+                    var usersToNotify = MemberService.GetUsersById(notifications);
 
                     // Create the email
                     var sb = new StringBuilder();
@@ -593,7 +578,7 @@ namespace Dialogue.Logic.Controllers
                     // create the emails and only send them to people who have not had notifications disabled
                     var emails = usersToNotify.Where(x => x.DisableEmailNotifications != true).Select(user => new Email
                     {
-                        Body = ServiceFactory.EmailService.EmailTemplate(user.UserName, sb.ToString()),
+                        Body = EmailService.EmailTemplate(user.UserName, sb.ToString()),
                         EmailFrom = Settings.NotificationReplyEmailAddress,
                         EmailTo = user.Email,
                         NameTo = user.UserName,
@@ -601,7 +586,7 @@ namespace Dialogue.Logic.Controllers
                     }).ToList();
 
                     // and now pass the emails in to be sent
-                    ServiceFactory.EmailService.SendMail(emails);
+                    EmailService.SendMail(emails);
                 }
             }
         }
@@ -618,7 +603,7 @@ namespace Dialogue.Logic.Controllers
             if (CurrentMember != null)
             {
                 // Add all categories to a permission set
-                var allCategories = ServiceFactory.CategoryService.GetAll();
+                var allCategories = CategoryService.GetAll();
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
                     foreach (var category in allCategories)
@@ -626,7 +611,7 @@ namespace Dialogue.Logic.Controllers
                         // Now check to see if they have access to any categories
                         // if so, check they are allowed to create topics - If no to either set to false
                         viewModel.UserCanPostTopics = false;
-                        var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                        var permissionSet = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
                         if (permissionSet[AppConstants.PermissionCreateTopics].IsTicked)
                         {
                             viewModel.UserCanPostTopics = true;
@@ -645,7 +630,5 @@ namespace Dialogue.Logic.Controllers
             return PartialView(PathHelper.GetThemePartialViewPath("CreateTopicButton"), viewModel);
         }
 
-
     }
-    #endregion
 }

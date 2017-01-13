@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Models;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class PollService
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Linq;
+    using Application;
+    using Data.Context;
+    using Models;
+
+    public partial class PollService : IRequestCachedService
     {
         #region Polls
 

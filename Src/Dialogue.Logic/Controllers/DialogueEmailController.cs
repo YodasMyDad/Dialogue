@@ -1,14 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Web.Mvc;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    #region Surface Controllers
-    public partial class DialogueEmailSurfaceController : BaseSurfaceController
+    using System;
+    using System.Linq;
+    using System.Web.Mvc;
+    using Application;
+    using Models;
+    using Models.ViewModels;
+
+    public partial class DialogueEmailController : DialogueBaseController
     {
         [HttpPost]
         [Authorize]
@@ -27,7 +26,7 @@ namespace Dialogue.Logic.Controllers
                         if (isCategory)
                         {
                             // get the category
-                            var cat = ServiceFactory.CategoryService.Get(Convert.ToInt32(id));
+                            var cat = CategoryService.Get(Convert.ToInt32(id));
 
                             if (cat != null)
                             {
@@ -42,13 +41,13 @@ namespace Dialogue.Logic.Controllers
                                 };
                                 //save
 
-                                ServiceFactory.CategoryNotificationService.Add(categoryNotification);
+                                CategoryNotificationService.Add(categoryNotification);
                             }
                         }
                         else
                         {
                             // get the category
-                            var topic = ServiceFactory.TopicService.Get(new Guid(id));
+                            var topic = TopicService.Get(new Guid(id));
 
                             // check its not null
                             if (topic != null)
@@ -61,7 +60,7 @@ namespace Dialogue.Logic.Controllers
                                     Member = CurrentMember,
                                     MemberId = CurrentMember.Id
                                 };
-                                ServiceFactory.TopicNotificationService.Add(topicNotification);
+                                TopicNotificationService.Add(topicNotification);
                             }
                         }
 
@@ -98,19 +97,19 @@ namespace Dialogue.Logic.Controllers
                         if (isCategory)
                         {
                             // get the category
-                            var cat = ServiceFactory.CategoryService.Get(Convert.ToInt32(id));
+                            var cat = CategoryService.Get(Convert.ToInt32(id));
 
                             if (cat != null)
                             {
                                 // get the notifications by user
-                                var notifications = ServiceFactory.CategoryNotificationService.GetByUserAndCategory(CurrentMember, cat);
+                                var notifications = CategoryNotificationService.GetByUserAndCategory(CurrentMember, cat);
 
                                 if (notifications.Any())
                                 {
                                     foreach (var categoryNotification in notifications)
                                     {
                                         // Delete
-                                        ServiceFactory.CategoryNotificationService.Delete(categoryNotification);
+                                        CategoryNotificationService.Delete(categoryNotification);
                                     }
                                 }
 
@@ -119,19 +118,19 @@ namespace Dialogue.Logic.Controllers
                         else
                         {
                             // get the topic
-                            var topic = ServiceFactory.TopicService.Get(new Guid(id));
+                            var topic = TopicService.Get(new Guid(id));
 
                             if (topic != null)
                             {
                                 // get the notifications by user
-                                var notifications = ServiceFactory.TopicNotificationService.GetByUserAndTopic(CurrentMember, topic);
+                                var notifications = TopicNotificationService.GetByUserAndTopic(CurrentMember, topic);
 
                                 if (notifications.Any())
                                 {
                                     foreach (var topicNotification in notifications)
                                     {
                                         // Delete
-                                        ServiceFactory.TopicNotificationService.Delete(topicNotification);
+                                        TopicNotificationService.Delete(topicNotification);
                                     }
                                 }
 
@@ -154,5 +153,5 @@ namespace Dialogue.Logic.Controllers
             }
         }
     } 
-    #endregion
+
 }

@@ -96,7 +96,7 @@ $(function () {
         var strung = JSON.stringify(updatePollViewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialoguePollSurface/UpdatePoll',
+            url: app_base + 'umbraco/Surface/DialoguePoll/UpdatePoll',
             type: 'POST',
             dataType: 'html',
             data: strung,
@@ -127,7 +127,7 @@ $(function () {
         var strung = JSON.stringify(subscribeEmailViewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialogueEmailSurface/Subscribe',
+            url: app_base + 'umbraco/Surface/DialogueEmail/Subscribe',
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
@@ -155,7 +155,7 @@ $(function () {
         var strung = JSON.stringify(unSubscribeEmailViewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialogueEmailSurface/UnSubscribe',
+            url: app_base + 'umbraco/Surface/DialogueEmail/UnSubscribe',
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
@@ -191,7 +191,7 @@ $(function () {
         var strung = JSON.stringify(getMorePostsViewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialogueTopicSurface/AjaxMorePosts',
+            url: app_base + 'umbraco/Surface/DialogueTopic/AjaxMorePosts',
             type: 'POST',
             dataType: 'html',
             data: strung,
@@ -237,7 +237,7 @@ $(function () {
         var strung = JSON.stringify(deletePrivateMessageViewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialogueMessageSurface/Delete',
+            url: app_base + 'umbraco/Surface/DialogueMessage/Delete',
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
@@ -267,7 +267,7 @@ function ApproveHandlers() {
         var strung = JSON.stringify(viewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialogueMemberSurface/ApproveMember',
+            url: app_base + 'umbraco/Surface/DialogueMember/ApproveMember',
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
@@ -292,7 +292,7 @@ function ApproveHandlers() {
         var strung = JSON.stringify(viewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialoguePostSurface/ApprovePost',
+            url: app_base + 'umbraco/Surface/DialoguePost/ApprovePost',
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
@@ -317,7 +317,7 @@ function ApproveHandlers() {
         var strung = JSON.stringify(viewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialogueTopicSurface/ApproveTopic',
+            url: app_base + 'umbraco/Surface/DialogueTopic/ApproveTopic',
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
@@ -362,7 +362,7 @@ function ShowFileUploadClickHandler() {
 
 
 function SortWhosOnline() {
-    $.getJSON(app_base + 'umbraco/Surface/DialogueMemberSurface/LastActiveCheck');
+    $.getJSON(app_base + 'umbraco/Surface/DialogueMember/LastActiveCheck');
 }
 
 // *** Votes ***//
@@ -382,7 +382,7 @@ function AddPostClickEvents() {
         var strung = JSON.stringify(markAsSolutionViewModel);
 
         $.ajax({
-            url: app_base + 'umbraco/Surface/DialogueVoteSurface/MarkAsSolution',
+            url: app_base + 'umbraco/Surface/DialogueVote/MarkAsSolution',
             type: 'POST',
             data: strung,
             contentType: 'application/json; charset=utf-8',
@@ -422,7 +422,7 @@ function AddPostClickEvents() {
         var totalVoteCount = postHolder.find('.posttotalvotecount');
 
 
-        var ajaxUrl = "umbraco/Surface/DialogueVoteSurface/PostVote";
+        var ajaxUrl = "umbraco/Surface/DialogueVote/PostVote";
 
         var voteViewModel = new Object();
         voteViewModel.Post = postId;
@@ -459,7 +459,7 @@ function AddPostClickEvents() {
         var favLink = $(this);
         var postId = favLink.data('postid');
 
-        var ajaxUrl = "umbraco/Surface/DialogueFavouriteSurface/FavouritePost";
+        var ajaxUrl = "umbraco/Surface/DialogueFavourite/FavouritePost";
 
         var voteViewModel = new Object();
         voteViewModel.PostId = postId;
@@ -488,7 +488,7 @@ function AddPostClickEvents() {
         var favLink = $(this);
         var postId = favLink.data('postid');
 
-        var ajaxUrl = "umbraco/Surface/DialogueFavouriteSurface/FavouritePost";
+        var ajaxUrl = "umbraco/Surface/DialogueFavourite/FavouritePost";
 
         var viewModel = new Object();
         viewModel.PostId = postId;
@@ -529,7 +529,7 @@ function BadgeSolution(postId) {
     var markAsSolutionBadgeViewModel = new Object();
     markAsSolutionBadgeViewModel.PostId = postId;
 
-    var ajaxUrl = "umbraco/Surface/DialogueBadgeSurface/MarkAsSolution";
+    var ajaxUrl = "umbraco/Surface/DialogueBadge/MarkAsSolution";
 
     // Ajax call to post the view model to the controller
     var strung = JSON.stringify(markAsSolutionBadgeViewModel);
@@ -556,9 +556,9 @@ function BadgeVote(postId, isVoteUp) {
 
     var ajaxUrl = "";
     if (isVoteUp) {
-        ajaxUrl = "umbraco/Surface/DialogueBadgeSurface/VoteUpPost";
+        ajaxUrl = "umbraco/Surface/DialogueBadge/VoteUpPost";
     } else {
-        ajaxUrl = "umbraco/Surface/DialogueBadgeSurface/VoteDownPost";
+        ajaxUrl = "umbraco/Surface/DialogueBadge/VoteDownPost";
     }
 
     // Ajax call to post the view model to the controller
@@ -600,7 +600,7 @@ function AddNewPollAnswer(counter) {
 function UserPost() {
 
     $.ajax({
-        url: app_base + 'umbraco/Surface/DialogueBadgeSurface/Post',
+        url: app_base + 'umbraco/Surface/DialogueBadge/Post',
         type: 'POST',
         success: function (data) {
             // No need to do anything

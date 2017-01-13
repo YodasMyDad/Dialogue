@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Models;
-using Umbraco.Core.Models;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class PermissionService
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Web;
+    using Application;
+    using Constants;
+    using Data.Context;
+    using Models;
+    using Umbraco.Core.Models;
+
+    public partial class PermissionService : IRequestCachedService
     {
 
         private PermissionSet _permissions;
-
 
         public IEnumerable<Permission> GetAll()
         {
@@ -34,12 +34,12 @@ namespace Dialogue.Logic.Services
             return ContextPerRequest.Db.Permission.FirstOrDefault(x => x.Id == id);
         }
 
-        public void Delete(Permission item)
+        public void Delete(Permission item, CategoryPermissionService categoryPermissionService)
         {
-            var catPermForRoles = ServiceFactory.CategoryPermissionService.GetByPermission(item.Id);
+            var catPermForRoles = categoryPermissionService.GetByPermission(item.Id);
             foreach (var categoryPermissionForRole in catPermForRoles)
             {
-                ServiceFactory.CategoryPermissionService.Delete(categoryPermissionForRole);
+                categoryPermissionService.Delete(categoryPermissionForRole);
             }
             ContextPerRequest.Db.Permission.Remove(item);
         }
@@ -107,7 +107,8 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <param name="category"></param>
         /// <param name="memberGroup"></param>
-        private PermissionSet GetGuestPermissions(Category category, IMemberGroup memberGroup)
+        /// <param name="categoryPermissionService"></param>
+        private PermissionSet GetGuestPermissions(Category category, IMemberGroup memberGroup, CategoryPermissionService categoryPermissionService)
         {
             // Get all the permissions 
             var permissionList = GetAll();
@@ -124,7 +125,7 @@ namespace Dialogue.Logic.Services
 
             
             // Deny Access may have been set (or left null) for guest for the category, so need to read for it
-            var denyAccessPermission = ServiceFactory.CategoryPermissionService.GetByRole(memberGroup.Id)
+            var denyAccessPermission = categoryPermissionService.GetByRole(memberGroup.Id)
                                .FirstOrDefault(x => x.CategoryId == category.Id &&
                                                     x.Permission.Name == AppConstants.PermissionDenyAccess &&
                                                     x.MemberGroupId == memberGroup.Id);
@@ -148,14 +149,15 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <param name="category"></param>
         /// <param name="memberGroup"></param>
+        /// <param name="categoryPermissionService"></param>
         /// <returns></returns>
-        private PermissionSet GetOtherPermissions(Category category, IMemberGroup memberGroup)
+        private PermissionSet GetOtherPermissions(Category category, IMemberGroup memberGroup, CategoryPermissionService categoryPermissionService)
         {
             // Get all permissions
             var permissionList = GetAll();
 
             // Get the known permissions for this role and category
-            var categoryRow = ServiceFactory.CategoryPermissionService.GetCategoryRow(memberGroup.Id, category.Id);
+            var categoryRow = categoryPermissionService.GetCategoryRow(memberGroup.Id, category.Id);
             //var categoryRowPermissions = categoryRow.ToDictionary(catRow => catRow.Permission);
 
             // Load up the results with the permisions for this role / cartegory. A null entry for a permissions results in a new
@@ -179,14 +181,16 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <param name="category"></param>
         /// <param name="memberGroup"></param>
+        /// <param name="memberService"></param>
+        /// <param name="categoryPermissionService"></param>
         /// <returns></returns>
-        public PermissionSet GetPermissions(Category category, IMemberGroup memberGroup)
+        public PermissionSet GetPermissions(Category category, IMemberGroup memberGroup, MemberService memberService, CategoryPermissionService categoryPermissionService)
         {
             if (memberGroup == null)
             {
                 // This can only happen if the user has deleted a group, and not reassigned them
                 // so in this occasion we just set them to a guest until the admin assigns them a new group
-                memberGroup = ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName);
+                memberGroup = memberService.GetGroupByName(AppConstants.GuestRoleName);
             }
 
             // Pass the role in to see select which permissions to apply
@@ -200,10 +204,10 @@ namespace Dialogue.Logic.Services
                         _permissions = GetAdminPermissions(category, memberGroup);
                         break;
                     case AppConstants.GuestRoleName:
-                        _permissions = GetGuestPermissions(category, memberGroup);
+                        _permissions = GetGuestPermissions(category, memberGroup, categoryPermissionService);
                         break;
                     default:
-                        _permissions = GetOtherPermissions(category, memberGroup);
+                        _permissions = GetOtherPermissions(category, memberGroup, categoryPermissionService);
                         break;
                 }
 

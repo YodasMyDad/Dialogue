@@ -16,7 +16,8 @@ namespace Badge.PosterMarkAsSolution
         public bool Rule(Member user)
         {
             //Post is marked as the answer to a topic - give the post author a badge
-            var usersSolutions = ServiceFactory.PostService.GetSolutionsByMember(user.Id);
+            var postService = new PostService();
+            var usersSolutions = postService.GetSolutionsByMember(user.Id);
             return (usersSolutions.Count >= 1);
         }
     }

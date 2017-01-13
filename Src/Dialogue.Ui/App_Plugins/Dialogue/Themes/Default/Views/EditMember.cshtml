@@ -9,7 +9,7 @@
     @Model.PageTitle
 }
 
-@using (Html.BeginForm("Edit", "DialogueMemberSurface", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form", role = "form" }))
+@using (Html.BeginForm("Edit", "DialogueMember", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form", role = "form" }))
 {
     @Html.HiddenFor(x => Model.MemberEditViewModel.Id)
     @Html.AntiForgeryToken()

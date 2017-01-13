@@ -16,7 +16,8 @@ namespace Badge.UserVoteUpBadge
     {
         public bool Rule(Member user)
         {
-            var userVotes = ServiceFactory.VoteService.GetAllVotesByUser(user.Id).ToList();
+            var voteService = new VoteService();
+            var userVotes = voteService.GetAllVotesByUser(user.Id).ToList();
             return userVotes.Count >= 1;
         }
     }

@@ -1,23 +1,22 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Web.Mvc;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    public partial class DialogueUploadSurfaceController : BaseSurfaceController
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Web.Mvc;
+    using Application;
+    using Constants;
+    using Models;
+    using Models.ViewModels;
+    using Umbraco.Core.Models;
+
+    public partial class DialogueUploadController : DialogueBaseController
     {
         private readonly IMemberGroup _membersGroup;
 
-        public DialogueUploadSurfaceController()
+        public DialogueUploadController()
         {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         [HttpPost]
@@ -32,7 +31,7 @@ namespace Dialogue.Logic.Controllers
                     var message = new GenericMessageViewModel();
 
                     // First this to do is get the post
-                    var post = ServiceFactory.PostService.Get(attachFileToPostViewModel.UploadPostId);
+                    var post = PostService.Get(attachFileToPostViewModel.UploadPostId);
 
                     // Check we get a valid post back and have some file
                     if (post != null && attachFileToPostViewModel.Files != null)
@@ -44,12 +43,12 @@ namespace Dialogue.Logic.Controllers
                             topic = post.Topic;
 
                             // Now get the category
-                            var category = ServiceFactory.CategoryService.Get(topic.CategoryId);
+                            var category = CategoryService.Get(topic.CategoryId);
 
 
                             // Get the permissions for this category, and check they are allowed to update and 
                             // not trying to be a sneaky mofo
-                            var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                            var permissions = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
                             if (permissions[AppConstants.PermissionAttachFiles].IsTicked == false && CurrentMember.DisableFileUploads != true)
                             {
                                 return ErrorToHomePage(Lang("Errors.NoPermission"));
@@ -69,7 +68,7 @@ namespace Dialogue.Logic.Controllers
                                 if (file != null)
                                 {
                                     // If successful then upload the file
-                                    var uploadResult = AppHelpers.UploadFile(file, uploadFolderPath);
+                                    var uploadResult = UploadedFileService.UploadFile(file, uploadFolderPath);
                                     if (!uploadResult.UploadSuccessful)
                                     {
                                         message.Message = uploadResult.ErrorMessage;
@@ -85,7 +84,7 @@ namespace Dialogue.Logic.Controllers
                                         Post = post,
                                         MemberId = CurrentMember.Id
                                     };
-                                    ServiceFactory.UploadedFileService.Add(uploadedFile);
+                                    UploadedFileService.Add(uploadedFile);
 
                                 }
                             }
@@ -131,7 +130,7 @@ namespace Dialogue.Logic.Controllers
                     try
                     {
                         // Get the file and associated objects we'll need
-                        var uploadedFile = ServiceFactory.UploadedFileService.Get(id);
+                        var uploadedFile = UploadedFileService.Get(id);
                         var post = uploadedFile.Post;
                         topic = post.Topic;
 
@@ -145,7 +144,7 @@ namespace Dialogue.Logic.Controllers
                             var filePath = uploadedFile.FilePath;
 
                             // Now delete it
-                            ServiceFactory.UploadedFileService.Delete(uploadedFile);
+                            UploadedFileService.Delete(uploadedFile);
 
 
                             // And finally delete from the file system

@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class TopicNotificationService
+    using Interfaces;
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Linq;
+    using Data.Context;
+    using Mapping;
+    using Models;
+
+    public partial class TopicNotificationService : IRequestCachedService
     {
 
         #region Populate Methods

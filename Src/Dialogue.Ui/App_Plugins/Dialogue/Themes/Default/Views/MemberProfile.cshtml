@@ -17,7 +17,7 @@
 {
     <script type="text/javascript">
         $(function () {
-            $.post(app_base + 'umbraco/Surface/DialogueMemberSurface/GetMemberDiscussions',
+            $.post(app_base + 'umbraco/Surface/DialogueMember/GetMemberDiscussions',
                 { "id": '@Model.User.Id' },
                 function (data) {
                     $(".memberdiscussions").html(data);
@@ -29,7 +29,7 @@
             timeBadgeViewModel.Id = '@Model.User.Id';
             var strung = JSON.stringify(timeBadgeViewModel);
             $.ajax({
-                url: app_base + 'umbraco/Surface/DialogueBadgeSurface/Time',
+                url: app_base + 'umbraco/Surface/DialogueBadge/Time',
                 type: 'POST',
                 dataType: 'html',
                 data: strung,
@@ -72,7 +72,7 @@
                 </p>
             }
 
-            @if (User.Identity.IsAuthenticated && (User.IsInRole(AppConstants.AdminRoleName) || Html.CurrentMember().CanEditOtherMembers))
+            @if (User.Identity.IsAuthenticated && (User.IsInRole(AppConstants.AdminRoleName) || (Model.CurrentMember != null && Model.CurrentMember.CanEditOtherMembers)))
             {
                 // If this is an admins profile then do not show
                 if (!Model.User.Groups.Any(x => x.Name.Contains(AppConstants.AdminRoleName)))

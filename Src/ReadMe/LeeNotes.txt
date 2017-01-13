@@ -1,7 +1,0 @@
-TODO
---------------------------
-
-Facebook Login
-	- Sort issue with protected emails out
-	- Facebook member path - Check it saves correctly and shows up in the backoffice
-	- Upgrade to 7.2 and use the Prepare method (Look into Articulate)

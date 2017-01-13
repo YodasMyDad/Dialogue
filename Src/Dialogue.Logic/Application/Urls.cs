@@ -100,19 +100,19 @@ namespace Dialogue.Logic.Application
                 case UrlType.Authorise:
                     return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlAuthorise);
                 case UrlType.GoogleLogin:
-                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuthSurface/GoogleLogin");
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuth/GoogleLogin");
                 case UrlType.FacebookLogin:
-                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/FacebookOAuthSurface/FacebookLogin");
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/FacebookOAuth/FacebookLogin");
                 case UrlType.PostDelete:
-                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialoguePostSurface/DeletePost");
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialoguePost/DeletePost");
                 case UrlType.FileDelete:
-                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueUploadSurface/DeleteUploadedFile");
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueUpload/DeleteUploadedFile");
                 case UrlType.KillSpammer:
-                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMemberSurface/KillSpammer");
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMember/KillSpammer");
                 case UrlType.BanMember:
-                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMemberSurface/BanMember");
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMember/BanMember");
                 case UrlType.UnBanMember:
-                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMemberSurface/UnBanMember");
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialogueMember/UnBanMember");
                 default:
                     return Dialogue.Settings().DialogueUrlName;
             }

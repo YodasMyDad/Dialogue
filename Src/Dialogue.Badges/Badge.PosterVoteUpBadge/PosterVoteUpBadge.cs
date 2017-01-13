@@ -16,7 +16,8 @@ namespace Badge.PosterVoteUpBadge
     {
         public bool Rule(Member user)
         {
-            var usersPosts = ServiceFactory.PostService.GetByMember(user.Id);
+            var postService = new PostService();
+            var usersPosts = postService.GetByMember(user.Id);
             return usersPosts != null && usersPosts.Any(post => post.Votes.Count > 0);
         }
     }

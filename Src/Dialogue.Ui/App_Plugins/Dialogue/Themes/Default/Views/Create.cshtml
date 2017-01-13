@@ -19,7 +19,7 @@
 {
 
     <div class="createtopicholder">
-        @using (Html.BeginForm("Create", "DialogueTopicSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+        @using (Html.BeginForm("Create", "DialogueTopic", FormMethod.Post, new { @class = "form", role = "form" }))
         {
             @Html.ValidationSummary(false)
             @Html.AntiForgeryToken()

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Text;
-using System.Web.Mvc;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    #region Base Controllers
-    public partial class DialogueMessageSurfaceController : BaseSurfaceController
+
+    using System;
+    using System.Text;
+    using System.Web.Mvc;
+    using Application;
+    using Models;
+    using Models.ViewModels;
+    using Services;
+
+    public partial class DialogueMessageController : DialogueBaseController
     {
         [Authorize]
         [HttpPost]
@@ -38,7 +38,7 @@ namespace Dialogue.Logic.Controllers
                             Message = createPrivateMessageViewModel.Message,
                         };
                         // now get the user its being sent to
-                        var memberTo = ServiceFactory.MemberService.Get(userTo);
+                        var memberTo = MemberService.Get(userTo);
 
                         // check the member
                         if (memberTo != null)
@@ -46,7 +46,7 @@ namespace Dialogue.Logic.Controllers
 
                             // Check in box size
                             // First check sender
-                            var receiverCount = ServiceFactory.PrivateMessageService.GetAllReceivedByUser(memberTo.Id).Count;
+                            var receiverCount = PrivateMessageService.GetAllReceivedByUser(memberTo.Id).Count;
                             if (receiverCount > Settings.PrivateMessageInboxSize)
                             {
                                 ModelState.AddModelError(string.Empty, string.Format(Lang("PM.ReceivedItemsOverCapcity"), memberTo.UserName));
@@ -56,7 +56,7 @@ namespace Dialogue.Logic.Controllers
                                 // Good to go send the message!
                                 privateMessage.MemberTo = memberTo;
                                 privateMessage.MemberToId = memberTo.Id;
-                                ServiceFactory.PrivateMessageService.Add(privateMessage);
+                                PrivateMessageService.Add(privateMessage);
 
                                 try
                                 {
@@ -82,8 +82,8 @@ namespace Dialogue.Logic.Controllers
 
                                         var sb = new StringBuilder();
                                         sb.AppendFormat("<p>{0}</p>", string.Format(Lang("PM.NewPrivateMessageBody"), CurrentMember.UserName));
-                                        email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
-                                        ServiceFactory.EmailService.SendMail(email);
+                                        email.Body = EmailService.EmailTemplate(email.NameTo, sb.ToString());
+                                        EmailService.SendMail(email);
                                     }
 
                                     return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageInbox));
@@ -107,7 +107,7 @@ namespace Dialogue.Logic.Controllers
                         ModelState.AddModelError(string.Empty, Lang("PM.TalkToSelf"));
                     }
                 }
-                ShowModelErrors();
+                // TODO SHOW MODEL MESSAGES
                 return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageCreate));
             }
         }
@@ -120,10 +120,11 @@ namespace Dialogue.Logic.Controllers
             {
                 if (Request.IsAjaxRequest())
                 {
-                    var privateMessage = ServiceFactory.PrivateMessageService.Get(deletePrivateMessageViewModel.Id);
+
+                    var privateMessage = PrivateMessageService.Get(deletePrivateMessageViewModel.Id);
                     if (privateMessage.MemberToId == CurrentMember.Id | privateMessage.MemberFromId == CurrentMember.Id)
                     {
-                        ServiceFactory.PrivateMessageService.DeleteMessage(privateMessage);
+                        PrivateMessageService.DeleteMessage(privateMessage);
                     }
                     else
                     {
@@ -146,5 +147,5 @@ namespace Dialogue.Logic.Controllers
             return null;
         }
     } 
-    #endregion
+
 }

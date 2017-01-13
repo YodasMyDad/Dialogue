@@ -14,14 +14,21 @@
     <a href="@Urls.GenerateUrl(Urls.UrlType.MessageOutbox)" class="btn btn-default">@Html.Lang("PM.SentPrivateMessages")</a>
 </div>
 
-@using (Html.BeginForm("Create", "DialogueMessageSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+@using (Html.BeginForm("Create", "DialogueMessage", FormMethod.Post, new { @class = "form", role = "form" }))
 {
     @Html.ValidationSummary(false)
     @Html.AntiForgeryToken()
 
     <div class="form-group">
         @Html.LabelFor(m => m.CreatePrivateMessageViewModel.UserToUsername)
-        @Html.TextBoxFor(m => m.CreatePrivateMessageViewModel.UserToUsername, new { @class = "form-control usertotextbox", @readonly = "readonly" })
+        @if (string.IsNullOrEmpty(Model.CreatePrivateMessageViewModel.UserToUsername))
+        {
+            @Html.TextBoxFor(m => m.CreatePrivateMessageViewModel.UserToUsername, new {@class = "form-control usertotextbox"})
+        }
+        else
+        {
+            @Html.TextBoxFor(m => m.CreatePrivateMessageViewModel.UserToUsername, new { @class = "form-control usertotextbox", @readonly = "readonly" })
+        }
         @Html.ValidationMessageFor(m => m.CreatePrivateMessageViewModel.UserToUsername)
     </div>
 

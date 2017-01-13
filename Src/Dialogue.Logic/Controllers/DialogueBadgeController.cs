@@ -1,15 +1,12 @@
-﻿using System;
-using System.Web.Mvc;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
+    using System;
+    using System.Web.Mvc;
+    using Models;
+    using Models.ViewModels;
+    using Services;
 
-    #region Surface Controllers
-
-    public partial class DialogueBadgeSurfaceController : BaseSurfaceController
+    public partial class DialogueBadgeController : DialogueBaseController
     {
         [HttpPost]
         [Authorize]
@@ -19,15 +16,15 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var databaseUpdateNeededOne = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteUp, CurrentMember);
+                    var databaseUpdateNeededOne = BadgeService.ProcessBadge(BadgeType.VoteUp, CurrentMember, MemberPointsService, ActivityService);
                     if (databaseUpdateNeededOne)
                     {
                         unitOfwork.SaveChanges();
                     }
 
-                    var post = ServiceFactory.PostService.Get(voteUpBadgeViewModel.PostId);
-                    var member = ServiceFactory.MemberService.Get(post.MemberId);
-                    var databaseUpdateNeededTwo = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteUp, member);
+                    var post = PostService.Get(voteUpBadgeViewModel.PostId);
+                    var member = MemberService.Get(post.MemberId);
+                    var databaseUpdateNeededTwo = BadgeService.ProcessBadge(BadgeType.VoteUp, member, MemberPointsService, ActivityService);
                     if (databaseUpdateNeededTwo)
                     {
                         unitOfwork.SaveChanges();
@@ -54,15 +51,15 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var databaseUpdateNeededOne = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteDown, CurrentMember);
+                    var databaseUpdateNeededOne = BadgeService.ProcessBadge(BadgeType.VoteDown, CurrentMember, MemberPointsService, ActivityService);
                     if (databaseUpdateNeededOne)
                     {
                         unitOfwork.SaveChanges();
                     }
 
-                    var post = ServiceFactory.PostService.Get(voteUpBadgeViewModel.PostId);
-                    var member = ServiceFactory.MemberService.Get(post.MemberId);
-                    var databaseUpdateNeededTwo = ServiceFactory.BadgeService.ProcessBadge(BadgeType.VoteDown, member);
+                    var post = PostService.Get(voteUpBadgeViewModel.PostId);
+                    var member = MemberService.Get(post.MemberId);
+                    var databaseUpdateNeededTwo = BadgeService.ProcessBadge(BadgeType.VoteDown, member, MemberPointsService, ActivityService);
 
                     if (databaseUpdateNeededTwo)
                     {
@@ -92,7 +89,7 @@ namespace Dialogue.Logic.Controllers
                 {
                     try
                     {
-                        var databaseUpdateNeeded = ServiceFactory.BadgeService.ProcessBadge(BadgeType.Post, CurrentMember);
+                        var databaseUpdateNeeded = BadgeService.ProcessBadge(BadgeType.Post, CurrentMember, MemberPointsService, ActivityService);
 
                         if (databaseUpdateNeeded)
                         {
@@ -116,10 +113,11 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var post = ServiceFactory.PostService.Get(markAsSolutionBadgeViewModel.PostId);
-                    var postMember = ServiceFactory.MemberService.Get(post.MemberId);
-                    var topicMember = ServiceFactory.MemberService.Get(post.Topic.MemberId);
-                    var databaseUpdateNeeded = ServiceFactory.BadgeService.ProcessBadge(BadgeType.MarkAsSolution, postMember) | ServiceFactory.BadgeService.ProcessBadge(BadgeType.MarkAsSolution, topicMember);
+                    var post = PostService.Get(markAsSolutionBadgeViewModel.PostId);
+                    var postMember = MemberService.Get(post.MemberId);
+                    var topicMember = MemberService.Get(post.Topic.MemberId);
+                    var databaseUpdateNeeded = BadgeService.ProcessBadge(BadgeType.MarkAsSolution, postMember, MemberPointsService, ActivityService) | 
+                                                BadgeService.ProcessBadge(BadgeType.MarkAsSolution, topicMember, MemberPointsService, ActivityService);
 
                     if (databaseUpdateNeeded)
                     {
@@ -141,8 +139,8 @@ namespace Dialogue.Logic.Controllers
             {
                 try
                 {
-                    var user = ServiceFactory.MemberService.Get(timeBadgeViewModel.Id);
-                    var databaseUpdateNeeded = ServiceFactory.BadgeService.ProcessBadge(BadgeType.Time, user);
+                    var user = MemberService.Get(timeBadgeViewModel.Id);
+                    var databaseUpdateNeeded = BadgeService.ProcessBadge(BadgeType.Time, user, MemberPointsService, ActivityService);
 
                     if (databaseUpdateNeeded)
                     {
@@ -159,5 +157,5 @@ namespace Dialogue.Logic.Controllers
         }
 
     } 
-    #endregion
+
 }

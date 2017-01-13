@@ -1,59 +1,33 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Web.Mvc;
-using System.Web.Security;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-using Skybrud.Social.Google;
-using Skybrud.Social.Google.OAuth;
-
-namespace Dialogue.Logic.Controllers.OAuthControllers
+﻿namespace Dialogue.Logic.Controllers.OAuthControllers
 {
-    public class GoogleOAuthSurfaceController : BaseSurfaceController
+    using System;
+    using System.Collections.Specialized;
+    using System.Web.Mvc;
+    using System.Web.Security;
+    using Application;
+    using Constants;
+    using Models;
+    using Models.ViewModels;
+    using Skybrud.Social.Google;
+    using Skybrud.Social.Google.OAuth;
+
+
+    public class GoogleOAuthController : DialogueBaseController
     {
-        public string ReturnUrl
-        {
-            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.GoogleLogin)); }
-        }
-
+        public string ReturnUrl => string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.GoogleLogin));
         public string Callback { get; private set; }
-
         public string ContentTypeAlias { get; private set; }
-
         public string PropertyAlias { get; private set; }
-
         public string Feature { get; private set; }
 
         /// <summary>
         /// Gets the authorizing code from the query string (if specified).
         /// </summary>
-        public string AuthCode
-        {
-            get { return Request.QueryString["code"]; }
-        }
-
-        public string AuthState
-        {
-            get { return Request.QueryString["state"]; }
-        }
-
-        public string AuthErrorReason
-        {
-            get { return Request.QueryString["error_reason"]; }
-        }
-
-        public string AuthError
-        {
-            get { return Request.QueryString["error"]; }
-        }
-
-        public string AuthErrorDescription
-        {
-            get { return Request.QueryString["error_description"]; }
-        }
+        public string AuthCode => Request.QueryString["code"];
+        public string AuthState => Request.QueryString["state"];
+        public string AuthErrorReason => Request.QueryString["error_reason"];
+        public string AuthError => Request.QueryString["error"];
+        public string AuthErrorDescription => Request.QueryString["error_description"];
 
         public ActionResult GoogleLogin()
         {
@@ -124,9 +98,9 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
 
                     // Declare the scope
                     var scope = new[] {
-                    GoogleScope.OpenId,
-                    GoogleScope.Email,
-                    GoogleScope.Profile
+                    GoogleScopes.OpenId,
+                    GoogleScopes.Email,
+                    GoogleScopes.Profile
                 };
 
                     // Construct the authorization URL
@@ -143,7 +117,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                 }
                 catch (Exception ex)
                 {
-                    resultMessage.Message = string.Format("Unable to acquire access token<br/>{0}", ex.Message);
+                    resultMessage.Message = $"Unable to acquire access token<br/>{ex.Message}";
                     resultMessage.MessageType = GenericMessages.Danger;
                 }
 
@@ -183,14 +157,14 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                 UserAccessToken = info.RefreshToken
                             };
 
-                            return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);
+                            return RedirectToAction("MemberRegisterLogic", "DialogueRegister", viewModel);
                         }
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    resultMessage.Message = string.Format("Unable to get user information<br/>{0}", ex.Message);
+                    resultMessage.Message = $"Unable to get user information<br/>{ex.Message}";
                     resultMessage.MessageType = GenericMessages.Danger;
                 }
 

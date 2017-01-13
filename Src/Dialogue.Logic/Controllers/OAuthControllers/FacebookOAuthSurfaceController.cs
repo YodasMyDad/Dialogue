@@ -1,57 +1,32 @@
-﻿using System;
-using System.Web.Mvc;
-using System.Web.Security;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Skybrud.Social.Facebook;
-using Skybrud.Social.Facebook.Fields;
-using Skybrud.Social.Facebook.OAuth;
-using Skybrud.Social.Facebook.Options.User;
-
-namespace Dialogue.Logic.Controllers.OAuthControllers
+﻿namespace Dialogue.Logic.Controllers.OAuthControllers
 {
-    public class FacebookOAuthSurfaceController : BaseSurfaceController
+    using System;
+    using System.Web.Mvc;
+    using System.Web.Security;
+    using Application;
+    using Constants;
+    using Models;
+    using Models.ViewModels;
+    using Skybrud.Social.Facebook;
+    using Skybrud.Social.Facebook.Fields;
+    using Skybrud.Social.Facebook.OAuth;
+    using Skybrud.Social.Facebook.Options.User;
+
+    public class FacebookOAuthController : DialogueBaseController
     {
-        public string ReturnUrl
-        {
-            get { return string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.FacebookLogin)); }
-        }
-
+        public string ReturnUrl => string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.FacebookLogin));
         public string Callback { get; private set; }
-
         public string ContentTypeAlias { get; private set; }
-
         public string PropertyAlias { get; private set; }
 
         /// <summary>
         /// Gets the authorizing code from the query string (if specified).
         /// </summary>
-        public string AuthCode
-        {
-            get { return Request.QueryString["code"]; }
-        }
-
-        public string AuthState
-        {
-            get { return Request.QueryString["state"]; }
-        }
-
-        public string AuthErrorReason
-        {
-            get { return Request.QueryString["error_reason"]; }
-        }
-
-        public string AuthError
-        {
-            get { return Request.QueryString["error"]; }
-        }
-
-        public string AuthErrorDescription
-        {
-            get { return Request.QueryString["error_description"]; }
-        }
+        public string AuthCode => Request.QueryString["code"];
+        public string AuthState => Request.QueryString["state"];
+        public string AuthErrorReason => Request.QueryString["error_reason"];
+        public string AuthError => Request.QueryString["error"];
+        public string AuthErrorDescription => Request.QueryString["error_description"];
 
         public ActionResult FacebookLogin()
         {
@@ -128,7 +103,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                 }
                 catch (Exception ex)
                 {
-                    resultMessage.Message = string.Format("Unable to acquire access token<br/>{0}", ex.Message);
+                    resultMessage.Message = $"Unable to acquire access token<br/>{ex.Message}";
                     resultMessage.MessageType = GenericMessages.Danger;
                 }
 
@@ -148,8 +123,8 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                         var email = user.Body.Email;
                         // TODO - Ignore if no email - Have to check PropMemberFacebookAccessToken has a value
                         // TODO - and the me.UserName is there to match existing logged in accounts
-                        
-     
+
+
                         // First see if this user has registered already - Use email address
                         using (UnitOfWorkManager.NewUnitOfWork())
                         {
@@ -180,7 +155,7 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                 };
 
                                 // Get the image and save it
-                                var getImageUrl = string.Format("http://graph.facebook.com/{0}/picture?type=square", user.Body.Id);
+                                var getImageUrl = $"http://graph.facebook.com/{user.Body.Id}/picture?type=square";
                                 viewModel.SocialProfileImageUrl = getImageUrl;
 
                                 //Large size photo https://graph.facebook.com/{facebookId}/picture?type=large
@@ -188,14 +163,14 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
                                 //Small size photo https://graph.facebook.com/{facebookId}/picture?type=small
                                 //Square photo https://graph.facebook.com/{facebookId}/picture?type=square
 
-                                return RedirectToAction("MemberRegisterLogic", "DialogueLoginRegisterSurface", viewModel);
+                                return RedirectToAction("MemberRegisterLogic", "DialogueRegister", viewModel);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    resultMessage.Message = string.Format("Unable to get user information<br/>{0}", ex.Message);
+                    resultMessage.Message = $"Unable to get user information<br/>{ex.Message}";
                     resultMessage.MessageType = GenericMessages.Danger;
                 }
 
@@ -204,5 +179,5 @@ namespace Dialogue.Logic.Controllers.OAuthControllers
             ShowMessage(resultMessage);
             return RedirectToUmbracoPage(Dialogue.Settings().ForumId);
         }
-    } 
+    }
 }

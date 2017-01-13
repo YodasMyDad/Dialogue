@@ -1,12 +1,13 @@
-﻿using System.Text;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Models;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public class ReportService
+    using Interfaces;
+    using System.Text;
+    using Application;
+    using Models;
+
+    public class ReportService : IRequestCachedService
     {
-        public void MemberReport(Report report)
+        public void MemberReport(Report report, EmailService emailService)
         {
             var sb = new StringBuilder();
             var email = new Email();
@@ -21,23 +22,24 @@ namespace Dialogue.Logic.Services
                 report.ReportedMember.UserName,
                 AppHelpers.Lang("Report.MemberReported"));
 
-            sb.AppendFormat("<p>{0}:</p>", AppHelpers.Lang("Report.Reason"));
-            sb.AppendFormat("<p>{0}</p>", report.Reason);
+            sb.Append($"<p>{AppHelpers.Lang("Report.Reason")}:</p>");
+            sb.Append($"<p>{report.Reason}</p>");
 
             email.EmailFrom = Dialogue.Settings().NotificationReplyEmailAddress;
             email.EmailTo = Dialogue.Settings().AdminEmailAddress;
             email.Subject = AppHelpers.Lang("Report.MemberReport");
             email.NameTo = AppHelpers.Lang("Report.Admin");
 
-            email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
-            ServiceFactory.EmailService.SendMail(email);
+            email.Body = emailService.EmailTemplate(email.NameTo, sb.ToString());
+            emailService.SendMail(email);
         }
 
         /// <summary>
         /// Report a post
         /// </summary>
         /// <param name="report"></param>
-        public void PostReport(Report report)
+        /// <param name="emailService"></param>
+        public void PostReport(Report report, EmailService emailService)
         {
             var sb = new StringBuilder();
             var email = new Email();
@@ -58,9 +60,9 @@ namespace Dialogue.Logic.Services
             email.Subject = AppHelpers.Lang("Report.PostReport");
             email.NameTo = AppHelpers.Lang("Report.Admin");
 
-            email.Body = ServiceFactory.EmailService.EmailTemplate(email.NameTo, sb.ToString());
+            email.Body = emailService.EmailTemplate(email.NameTo, sb.ToString());
 
-            ServiceFactory.EmailService.SendMail(email);
+            emailService.SendMail(email);
         }
     }
 }

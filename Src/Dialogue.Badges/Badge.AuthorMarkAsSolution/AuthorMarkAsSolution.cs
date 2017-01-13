@@ -15,7 +15,8 @@ namespace Badge.AuthorMarkAsSolution
     {
         public bool Rule(Member user)
         {
-            return ServiceFactory.TopicService.GetSolvedTopicsByMember(user.Id).Count >= 1;
+            var topicService = new TopicService();
+            return topicService.GetSolvedTopicsByMember(user.Id).Count >= 1;
         }
     }
 }

@@ -10,5 +10,6 @@ namespace Dialogue.Logic.Models
         public Member User { get; set; }
         public int PostCount { get; set; }
         public int LoggedOnUserId { get; set; }
+        public Member CurrentMember { get; set; }
     }
 }

@@ -18,13 +18,13 @@
     <script>
         $(function () {
             // Get the this week earners
-            $.get(app_base + "umbraco/Surface/DialogueSurface/GetThisWeeksTopEarners",
+            $.get(app_base + "umbraco/Surface/Dialogue/GetThisWeeksTopEarners",
             function (data) {
                 $(".thisweekleaderboard").html(data);
             });
 
             // Get the this week earners
-            $.get(app_base + "umbraco/Surface/DialogueSurface/GetThisYearsTopEarners",
+            $.get(app_base + "umbraco/Surface/Dialogue/GetThisYearsTopEarners",
             function (data) {
                 $(".alltimeleaderboard").html(data);
             });
