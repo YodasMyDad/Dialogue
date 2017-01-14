@@ -114,7 +114,8 @@ namespace Dialogue.Logic
                 settings.FacebookAppSecret = forumRootNode.GetPropertyValue<string>("FacebookAppSecret");
                 settings.GoogleClientId = forumRootNode.GetPropertyValue<string>("googleClientId");
                 settings.GoogleClientSecret = forumRootNode.GetPropertyValue<string>("googleClientSecret");
-                
+                settings.MicrosoftAppId = forumRootNode.GetPropertyValue<string>("microsoftAppId");
+                settings.MicrosoftAppSecret = forumRootNode.GetPropertyValue<string>("microsoftSecretKey");
 
                 // Meta
                 settings.PageTitle = forumRootNode.GetPropertyValue<string>("pageTitle");

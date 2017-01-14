@@ -12,7 +12,11 @@
     using Skybrud.Social.Facebook.OAuth;
     using Skybrud.Social.Facebook.Options.User;
 
-    public class FacebookOAuthController : DialogueBaseController
+    // Facebook uses OAuth 2.0 for authentication and communication. In order for users to authenticate with the Facebook API, 
+    // you must specify the ID, secret and redirect URI of your Facebook app. 
+    // You can create a new app at the following URL: https://developers.facebook.com/
+
+    public partial class FacebookOAuthController : DialogueBaseController
     {
         public string ReturnUrl => string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.FacebookLogin));
         public string Callback { get; private set; }
@@ -114,16 +118,26 @@
                         // Initialize the Facebook service (no calls are made here)
                         var service = FacebookService.CreateFromAccessToken(userAccessToken);
 
-                        var fbOptions = new FacebookGetUserOptions("me");
-                        fbOptions.Fields.Add(new FacebookField("email"));
-                        fbOptions.Fields.Add(new FacebookField("name"));
-                        var user = service.Users.GetUser(fbOptions);
+                        // Declare the options for the call to the API
+                        var options = new FacebookGetUserOptions
+                        {
+                            Identifier = "me",
+                            Fields = new[] { "id", "name", "email", "first_name", "last_name", "gender" }
+                        };
+
+                        var user = service.Users.GetUser(options);
 
                         // Try to get the email - Some FB accounts have protected passwords
                         var email = user.Body.Email;
-                        // TODO - Ignore if no email - Have to check PropMemberFacebookAccessToken has a value
-                        // TODO - and the me.UserName is there to match existing logged in accounts
+                        if (string.IsNullOrEmpty(email))
+                        {
+                            //maybe use 'user.Body.Id @ facebook.com'
 
+                            resultMessage.Message = "Unable to get email address from Facebook";
+                            resultMessage.MessageType = GenericMessages.Danger;
+                            ShowMessage(resultMessage);
+                            return RedirectToUmbracoPage(Dialogue.Settings().ForumId);
+                        }
 
                         // First see if this user has registered already - Use email address
                         using (UnitOfWorkManager.NewUnitOfWork())

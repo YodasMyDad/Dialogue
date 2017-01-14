@@ -26,6 +26,7 @@ namespace Dialogue.Logic.Application
             CategoryRss,
             FacebookLogin,
             GoogleLogin,
+            MicrosoftLogin,
             Favourites,
             PostDelete,
             PostReport,
@@ -103,6 +104,8 @@ namespace Dialogue.Logic.Application
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuth/GoogleLogin");
                 case UrlType.FacebookLogin:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/FacebookOAuth/FacebookLogin");
+                case UrlType.MicrosoftLogin:
+                    return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/MicrosoftOAuth/MicrosoftLogin");
                 case UrlType.PostDelete:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/DialoguePost/DeletePost");
                 case UrlType.FileDelete:
@@ -120,12 +123,12 @@ namespace Dialogue.Logic.Application
 
         public static string GenerateUrl(UrlType e, string slug)
         {
-            return VirtualPathUtility.ToAbsolute(string.Format("~{0}{1}/{2}/", Dialogue.Settings().ForumRootUrl, UrlTypeName(e), HttpUtility.HtmlDecode(slug)));            
+            return VirtualPathUtility.ToAbsolute($"~{Dialogue.Settings().ForumRootUrl}{UrlTypeName(e)}/{HttpUtility.HtmlDecode(slug)}/");            
         }
 
         public static string GenerateUrl(UrlType e)
         {
-            return VirtualPathUtility.ToAbsolute(string.Format("~{0}", UrlTypeName(e)));
+            return VirtualPathUtility.ToAbsolute($"~{UrlTypeName(e)}");
         }
 
         public static string GenerateFileUrl(string filePath)

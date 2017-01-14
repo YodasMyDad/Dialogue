@@ -71,6 +71,8 @@ namespace Dialogue.Logic.Models
         public string FacebookAppSecret { get; set; }
         public string GoogleClientId { get; set; }
         public string GoogleClientSecret { get; set; }
+        public string MicrosoftAppId { get; set; }
+        public string MicrosoftAppSecret { get; set; }
 
         // Meta
         public string PageTitle { get; set; }
