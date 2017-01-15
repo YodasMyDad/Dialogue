@@ -384,7 +384,7 @@
                     // Create the email
                     var sb = new StringBuilder();
                     sb.AppendFormat("<p>{0}</p>", string.Format(Lang("Post.Notification.NewPosts"), topic.Name));
-                    sb.AppendFormat("<p>{0}</p>", string.Concat(Settings.ForumRootUrlWithDomain, topic.Url));
+                    sb.AppendFormat("<p>{0}</p>", string.Concat(AppHelpers.ReturnCurrentDomain(), topic.Url));
                     sb.Append(postContent);
 
                     // create the emails only to people who haven't had notifications disabled

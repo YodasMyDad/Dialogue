@@ -93,7 +93,7 @@
                     }
                     else
                     {
-                        if (user.IsApproved)
+                        if (!user.IsApproved)
                         {
                             ModelState.AddModelError(string.Empty, Lang("Members.Errors.NotApproved"));
                         }
