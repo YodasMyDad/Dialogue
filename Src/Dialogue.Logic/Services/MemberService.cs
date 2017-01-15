@@ -860,13 +860,6 @@
             });
             socialGroup.PropertyTypes.Add(new PropertyType(textstring)
             {
-                Name = "Facebook Id",
-                Alias = "facebookId",
-                SortOrder = 0,
-                Description = ""
-            });
-            socialGroup.PropertyTypes.Add(new PropertyType(textstring)
-            {
                 Name = "Google Access Token",
                 Alias = "googleAccessToken",
                 SortOrder = 0,
@@ -874,8 +867,8 @@
             });
             socialGroup.PropertyTypes.Add(new PropertyType(textstring)
             {
-                Name = "Google Id",
-                Alias = "googleId",
+                Name = "Microsoft Access Token",
+                Alias = "microsoftAccessToken",
                 SortOrder = 0,
                 Description = ""
             });
