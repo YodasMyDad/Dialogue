@@ -15,8 +15,10 @@ namespace Badge.Padawan
     {
         public bool Rule(Member user)
         {
+            var postService = new PostService();
+
             //Post is marked as the answer to a topic - give the post author a badge
-            var usersSolutions = ServiceFactory.PostService.GetSolutionsByMember(user.Id);
+            var usersSolutions = postService.GetSolutionsByMember(user.Id);
 
             return (usersSolutions.Count >= 10);
         }

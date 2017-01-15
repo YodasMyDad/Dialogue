@@ -16,7 +16,7 @@
 }
 <div class="editpostholder">
 
-    @using (Html.BeginForm("EditPost" ,"DialoguePostSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+    @using (Html.BeginForm("EditPost" ,"DialoguePost", FormMethod.Post, new { @class = "form", role = "form" }))
     {
         @Html.ValidationSummary(false)
         @Html.AntiForgeryToken()

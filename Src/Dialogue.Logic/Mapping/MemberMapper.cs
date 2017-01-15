@@ -159,9 +159,8 @@ namespace Dialogue.Logic.Mapping
             siteMember.PostCount = member.GetPropertyValue<int>(AppConstants.PropMemberPostCount);
 
             siteMember.FacebookAccessToken = member.GetPropertyValue<string>(AppConstants.PropMemberFacebookAccessToken);
-            siteMember.FacebookId = member.GetPropertyValue<string>(AppConstants.PropMemberFacebookId);
             siteMember.GoogleAccessToken = member.GetPropertyValue<string>(AppConstants.PropMemberGoogleAccessToken);
-            siteMember.GoogleId = member.GetPropertyValue<string>(AppConstants.PropMemberGoogleId);
+            siteMember.MicrosoftAccessToken = member.GetPropertyValue<string>(AppConstants.PropMemberGoogleAccessToken);
 
             siteMember.IsApproved = member.GetPropertyValue<bool>(AppConstants.PropMemberUmbracoMemberApproved);
             siteMember.IsLockedOut = member.GetPropertyValue<bool>(AppConstants.PropMemberUmbracoMemberLockedOut);

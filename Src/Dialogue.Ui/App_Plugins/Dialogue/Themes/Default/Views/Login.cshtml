@@ -15,11 +15,11 @@
 
 @if (!Model.ShowForgotPassword)
 {
-    @Html.Action("LogOnForm", "DialogueLoginRegisterSurface")
+    @Html.Action("LogOnForm", "DialogueLogin")
 }
 else
 {
-    @Html.Action("ForgotPasswordForm", "DialogueLoginRegisterSurface")
+    @Html.Action("ForgotPasswordForm", "DialogueLogin")
 }
 
 @*@Html.Partial("_SocialLoginButtons")*@

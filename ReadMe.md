@@ -2,7 +2,11 @@
 
 Dialogue is a forum/bulletin board Umbraco 7.1 upwards. It is a semi port of [MVCForum](http://www.mvcforum.com) and has some features similar to Stack Overflow.
 
-It's built to use Umbraco API's as much as possible, but also relies on Entity Framework v6.1 for dealing with the main forum. It has only been tested with SQLExpress.
+It's built to use Umbraco API's as much as possible, but also relies on Entity Framework v6.1 for dealing with the main forum. 
+
+**Database**
+
+Please note that Dialogue is built to use SQLExpress or MSSQL Server only. It has not been tested against SQL CE and you would need the SQL CE EntityFramework package too.
 
 **Current Features Include**
 
@@ -79,12 +83,14 @@ Fire it up and login to the backoffice using
 
 All members registered have a password of Testing too. Or just register your own member.
 
-## ServiceFactory / UnitOfWork ##
+## ServiceResolver / UnitOfWork ##
 
-There is a ServiceFactory that you should be able to use anywhere in your site after installation, so you can query data from the forum and use it as you wish.
+There is a ServiceResolver that you should be able to use anywhere in your site after installation, so you can query data from the forum and use it as you wish.
 
     ServiceFactory.PostService.Whatever...  
     ServiceFactory.TopicService.Whatever...
+
+But all services are already available from the BaseController, so if you inherit from that (Or create a partial class) you can use the services straight away i.e. PostService.SomeMethod
 
 etc...
 

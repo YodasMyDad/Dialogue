@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class PrivateMessageService
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Application;
+    using Data.Context;
+    using Mapping;
+    using Models;
+
+    public partial class PrivateMessageService : IRequestCachedService
     {
         public void PopulateMembers(IList<PrivateMessage> entityList)
         {

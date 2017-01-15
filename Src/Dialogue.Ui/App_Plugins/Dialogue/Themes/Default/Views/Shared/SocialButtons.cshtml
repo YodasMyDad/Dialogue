@@ -6,12 +6,17 @@
     @if (!string.IsNullOrEmpty(Html.Settings().FacebookAppId) && !string.IsNullOrEmpty(Html.Settings().FacebookAppSecret))
     {
         showOr = true;
-        <p><a href="@Urls.GenerateUrl(Urls.UrlType.FacebookLogin)" class="btn btn-default btn-fullwidth">Facebook Login</a></p>
+        <p><a href="@Urls.GenerateUrl(Urls.UrlType.FacebookLogin)" class="btn btn-default btn-fullwidth">@Html.Lang("Buttons.FacebookLogin")</a></p>
     }
     @if (!string.IsNullOrEmpty(Html.Settings().GoogleClientId) && !string.IsNullOrEmpty(Html.Settings().GoogleClientSecret))
     {
         showOr = true;
-        <p><a href="@Urls.GenerateUrl(Urls.UrlType.GoogleLogin)" class="btn btn-default btn-fullwidth">Google Login</a></p>
+        <p><a href="@Urls.GenerateUrl(Urls.UrlType.GoogleLogin)" class="btn btn-default btn-fullwidth">@Html.Lang("Buttons.GoogleLogin")</a></p>
+    }
+    @if (!string.IsNullOrEmpty(Html.Settings().MicrosoftAppId) && !string.IsNullOrEmpty(Html.Settings().MicrosoftAppSecret))
+    {
+        showOr = true;
+        <p><a href="@Urls.GenerateUrl(Urls.UrlType.MicrosoftLogin)" class="btn btn-default btn-fullwidth">@Html.Lang("Buttons.MicrosoftLogin")</a></p>
     }
 
     @if (showOr)

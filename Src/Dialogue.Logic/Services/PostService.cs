@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.Entity;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class PostService
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Data.Entity;
+    using Application;
+    using Constants;
+    using Data.Context;
+    using Data.UnitOfWork;
+    using Mapping;
+    using Models;
+
+    public partial class PostService : IRequestCachedService
     {
 
         #region Populate Methods
@@ -47,18 +49,6 @@ namespace Dialogue.Logic.Services
                 .Where(x => x.Topic.Id == topicId && x.IsTopicStarter).Include(x => x.Topic).FirstOrDefault();
             PopulateMembers(new List<Post> { topicStarter });
             return topicStarter;
-        }
-
-        public void SyncMembersPostCount(List<Member> members)
-        {
-            var memberIds = members.Select(x => x.Id);
-            var memberPoints = ContextPerRequest.Db.Post.AsNoTracking().Where(x => memberIds.Contains(x.MemberId));
-            foreach (var m in members)
-            {
-                var member = m;
-                var mPoints = memberPoints.Count(x => x.MemberId == member.Id);
-                ServiceFactory.MemberService.RefreshMemberPosts(member, mPoints);
-            }
         }
 
         /// <summary>
@@ -315,53 +305,109 @@ namespace Dialogue.Logic.Services
         /// <summary>
         /// Delete a post
         /// </summary>
+        /// <param name="unitOfWork"></param>
         /// <param name="post"></param>
-        /// <returns> True if parent topic should now be deleted (caller's responsibility)</returns>
-        public bool Delete(Post post)
+        /// <param name="memberService"></param>
+        /// <param name="memberPointsService"></param>
+        /// <param name="topicNotificationService"></param>
+        /// <returns> True if parent was deleted too</returns>
+        public bool Delete(UnitOfWork unitOfWork, Post post, MemberService memberService, MemberPointsService memberPointsService, TopicNotificationService topicNotificationService)
         {
-            // Here is where we can check for reasons not to delete the post
-            // And change the value below if not
-            var deleteTopic = false;
-
-            // Get the member who made this post
-            var postMember = ServiceFactory.MemberService.Get(post.MemberId);
-
-            // Before we delete the post, we need to check if this is the last post in the topic
-            // and if so update the topic
+            // Get the topic
             var topic = post.Topic;
-            var lastPost = topic.Posts.OrderByDescending(x => x.DateCreated).FirstOrDefault();
-            if (lastPost != null && lastPost.Id == post.Id)
+
+            // The member who created this post
+            var postMember = memberService.Get(post.MemberId);
+
+            var topicDeleted = false;
+
+            // See if we need to delete the topic or not
+            if (post.IsTopicStarter)
             {
-                // Get the new last post and update the topic
-                topic.LastPost = topic.Posts.Where(x => x.Id != post.Id).OrderByDescending(x => x.DateCreated).FirstOrDefault();
+                topic.LastPost = null;
+
+                // Delete all posts
+                if (topic.Posts != null)
+                {
+                    var postsToDelete = new List<Post>();
+                    postsToDelete.AddRange(topic.Posts);
+                    var memberIds = postsToDelete.Select(x => x.MemberId).Distinct().ToList();
+                    foreach (var postFromTopic in postsToDelete)
+                    {
+                        post.Files.Clear();
+                        DeleteIndividualPost(topic, postFromTopic, memberPointsService, false);
+                        unitOfWork.SaveChanges();
+                    }
+
+                    // Sync the members post count. For all members who had a post deleted.
+                    var members = memberService.GetAllById(memberIds);
+                    memberService.SyncMembersPostCount(members);
+                }
+
+                if (topic.TopicNotifications != null)
+                {
+                    var notificationsToDelete = new List<TopicNotification>();
+                    notificationsToDelete.AddRange(topic.TopicNotifications);
+                    foreach (var topicNotification in notificationsToDelete)
+                    {
+                        topicNotificationService.Delete(topicNotification);
+                    }
+                }
+                topic.Posts?.Clear();
+                topic.TopicNotifications?.Clear();
+                topic.Category = null;
+                topic.LastPost = null;
+                ContextPerRequest.Db.Topic.Remove(topic);
+
+                // Set to true
+                topicDeleted = true;
+            }
+            else
+            {
+                DeleteIndividualPost(topic, post, memberPointsService);
+                memberService.SyncMembersPostCount(new List<Member> { postMember });
             }
 
-            // Mark topic as not solved if the post we are deleting was the solution
-            if (topic.Solved && post.IsSolution)
+            return topicDeleted;
+        }
+
+        /// <summary>
+        /// Deletes an individual post
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <param name="post"></param>
+        /// <param name="memberPointsService"></param>
+        /// <param name="resetLastPost"></param>
+        private static void DeleteIndividualPost(Topic topic, Post post, MemberPointsService memberPointsService, bool resetLastPost = true)
+        {
+            if (resetLastPost)
             {
-                topic.Solved = false;
+                var lastPost = topic.Posts.OrderByDescending(x => x.DateCreated).FirstOrDefault();
+                if (lastPost != null && lastPost.Id == post.Id && topic.Posts.Count > 1)
+                {
+                    // Get the new last post and update the topic
+                    topic.LastPost = topic.Posts.Where(x => x.Id != post.Id).OrderByDescending(x => x.DateCreated).FirstOrDefault();
+                }
+                else if(lastPost != null && lastPost.Id == post.Id && topic.Posts.Count <= 1)
+                {
+                    topic.LastPost = null;
+                }
+
+                // Mark topic as not solved if the post we are deleting was the solution
+                if (topic.Solved && post.IsSolution)
+                {
+                    topic.Solved = false;
+                }
             }
 
             // Remove this post from the topic so we can delete it without any errors
             topic.Posts.Remove(post);
 
-            // Topic should be deleted, so make sure it has no last post to avoid circular dependency
-            deleteTopic = post.IsTopicStarter;
-            if (deleteTopic)
-            {
-                topic.LastPost = null;
-            }
-
             // Delete all the points the memeber who made this post has gained
-            ServiceFactory.MemberPointsService.DeletePostPoints(post);
+            memberPointsService.DeletePostPoints(post);
 
             // now delete the post
             ContextPerRequest.Db.Post.Remove(post);
-
-            // Sync this members post count, so it's always accurate
-            ServiceFactory.PostService.SyncMembersPostCount(new List<Member> { postMember });
-
-            return deleteTopic;
         }
 
 
@@ -371,12 +417,17 @@ namespace Dialogue.Logic.Services
         /// <param name="postContent"> </param>
         /// <param name="topic"> </param>
         /// <param name="user"></param>
+        /// <param name="permissionService"></param>
+        /// <param name="categoryPermissionService"></param>
+        /// <param name="memberPointsService"></param>
         /// <param name="permissions"> </param>
+        /// <param name="memberService"></param>
         /// <returns>True if post added</returns>
-        public Post AddNewPost(string postContent, Topic topic, Member user, out PermissionSet permissions)
+        public Post AddNewPost(string postContent, Topic topic, Member user, PermissionService permissionService, MemberService memberService, 
+                                    CategoryPermissionService categoryPermissionService, MemberPointsService memberPointsService, out PermissionSet permissions)
         {
             // Get the permissions for the category that this topic is in
-            permissions = ServiceFactory.PermissionService.GetPermissions(topic.Category, user.Groups.FirstOrDefault());
+            permissions = permissionService.GetPermissions(topic.Category, user.Groups.FirstOrDefault(), memberService, categoryPermissionService);
 
             // Check this users role has permission to create a post
             if (permissions[AppConstants.PermissionDenyAccess].IsTicked || permissions[AppConstants.PermissionReadOnly].IsTicked)
@@ -409,7 +460,7 @@ namespace Dialogue.Logic.Services
             Add(newPost);
 
             // Update the users points score and post count for posting
-            ServiceFactory.MemberPointsService.Add(new MemberPoints
+            memberPointsService.Add(new MemberPoints
             {
                 Points = Dialogue.Settings().PointsAddedPerNewPost,
                 MemberId = user.Id,
@@ -420,7 +471,7 @@ namespace Dialogue.Logic.Services
             topic.LastPost = newPost;
 
             // Add post to members count
-            ServiceFactory.MemberService.AddPostCount(user);
+            memberService.AddPostCount(user);
 
             return newPost;
         }

@@ -1,15 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Web;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Models;
-using umbraco;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class EmailService
+    using System.Text;
+    using Constants;
+    using Umbraco.Core.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Web;
+    using Application;
+    using Interfaces;
+    using Models;
+    using umbraco;
+    using File = System.IO.File;
+
+    public partial class EmailService : IRequestCachedService
     {
+        /// <summary>
+        /// Send the email confirmations
+        /// </summary>
+        /// <param name="userToSave"></param>
+        /// <param name="settings"></param>
+        public void SendEmailConfirmationEmail(IMember userToSave, DialogueSettings settings)
+        {
+            // Ensure we have an umbraco context
+            ContextHelper.EnsureUmbracoContext();
+
+            // Make sure correct culture on Ajax Call
+            ContextHelper.EnsureCorrectCulture();
+
+            var manuallyAuthoriseMembers = settings.ManuallyAuthoriseNewMembers;
+            var memberEmailAuthorisationNeeded = settings.NewMembersMustConfirmAccountsViaEmail;
+            if (manuallyAuthoriseMembers == false && memberEmailAuthorisationNeeded)
+            {
+                if (!string.IsNullOrEmpty(userToSave.Email))
+                {
+                    // SEND AUTHORISATION EMAIL
+                    var sb = new StringBuilder();
+                    var confirmationLink = string.Concat(AppHelpers.ReturnCurrentDomain(), Urls.GenerateUrl(Urls.UrlType.EmailConfirmation), "?id=", userToSave.Id);
+                    sb.AppendFormat("<p>{0}</p>", string.Format(AppHelpers.Lang("Members.MemberEmailAuthorisation.EmailBody"),
+                                                settings.ForumName,
+                                                string.Format("<p><a href=\"{0}\">{0}</a></p>", confirmationLink)));
+                    var email = new Email
+                    {
+                        EmailFrom = settings.NotificationReplyEmailAddress,
+                        EmailTo = userToSave.Email,
+                        NameTo = userToSave.Username,
+                        Subject = AppHelpers.Lang("Members.MemberEmailAuthorisation.Subject")
+                    };
+
+                    email.Body = EmailTemplate(email.NameTo, sb.ToString());
+                    SendMail(email);
+
+                    // ADD COOKIE
+                    // We add a cookie for 7 days, which will display the resend email confirmation button
+                    // This cookie is removed when they click the confirmation link and they are logged in
+                    var myCookie = new HttpCookie(AppConstants.MemberEmailConfirmationCookieName)
+                    {
+                        Value = $"{userToSave.Id}#{userToSave.Username}",
+                        Expires = DateTime.Now.AddDays(7)
+                    };
+                    // Add the cookie.
+                    HttpContext.Current.Response.Cookies.Add(myCookie);
+                }
+            }
+        }
+
         /// <summary>
         /// Returns the HTML email template with values replaced
         /// </summary>
@@ -27,7 +81,7 @@ namespace Dialogue.Logic.Services
                 sb = sb.Replace("#SITEURL#", AppHelpers.ReturnCurrentDomain());
                 if (!string.IsNullOrEmpty(to))
                 {
-                    to = string.Format("<p>{0},</p>", to);
+                    to = $"<p>{to},</p>";
                     sb = sb.Replace("#TO#", to);
                 }
 

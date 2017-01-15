@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web.Http;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Data.UnitOfWork;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Services;
-using Umbraco.Core.IO;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.WebApi;
-using Dialogue.Logic.Mapping;
-
-namespace Dialogue.Logic.Controllers.ApiControllers
+﻿namespace Dialogue.Logic.Controllers.ApiControllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Web.Http;
+    using Application;
+    using Constants;
+    using Data.Context;
+    using Data.UnitOfWork;
+    using Models;
+    using Models.ViewModels;
+    using Services;
+    using Umbraco.Core.IO;
+    using Umbraco.Web.Mvc;
+    using Umbraco.Web.WebApi;
+    using Mapping;
+
     [PluginController("Dialogue")]
     public class PropertyEditorsController : UmbracoAuthorizedApiController
     {
@@ -25,9 +25,18 @@ namespace Dialogue.Logic.Controllers.ApiControllers
         //UmbracoAuthorizedJsonController
 
         private readonly UnitOfWorkManager _unitOfWorkManager;
+        private readonly CategoryService _categoryService;
+        private readonly PermissionService _permissionService;
+        private readonly MemberService _memberService;
+        private readonly CategoryPermissionService _categoryPermissionService;
+
         public PropertyEditorsController()
         {
             _unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
+            _categoryService = ServiceResolver.Current.Instance<CategoryService>();
+            _permissionService = ServiceResolver.Current.Instance<PermissionService>();
+            _memberService = ServiceResolver.Current.Instance<MemberService>();
+            _categoryPermissionService = ServiceResolver.Current.Instance<CategoryPermissionService>();
         }
 
         #region Themes
@@ -47,25 +56,25 @@ namespace Dialogue.Logic.Controllers.ApiControllers
             {
                 var permViewModel = new EditPermissionsViewModel
                 {
-                    Category = ServiceFactory.CategoryService.Get(categoryId).ToViewModel(),
-                    Permissions = ServiceFactory.PermissionService.GetAll().ToList(),
-                    Groups = ServiceFactory.MemberService.GetAll().Where(x => x.Name != AppConstants.AdminRoleName).ToList(),
+                    Category = _categoryService.Get(categoryId).ToViewModel(),
+                    Permissions = _permissionService.GetAll().ToList(),
+                    Groups = _memberService.GetAll().Where(x => x.Name != AppConstants.AdminRoleName).ToList(),
                     GuestGroupName = AppConstants.GuestRoleName
                 };
 
-                var currentPermissions = ServiceFactory.CategoryPermissionService.GetAll()
+                var currentPermissions = _categoryPermissionService.GetAll()
                                         .Where(x => x.IsTicked && x.CategoryId == categoryId).ToList();
                 var currentPermissionList = new List<string>();
 
                 foreach (var catPerm in currentPermissions)
                 {
-                    currentPermissionList.Add(string.Format("{0}_{1}_{2}", catPerm.Permission.Id, catPerm.CategoryId, catPerm.MemberGroupId));
+                    currentPermissionList.Add($"{catPerm.Permission.Id}_{catPerm.CategoryId}_{catPerm.MemberGroupId}");
                 }
 
                 permViewModel.CurrentPermissions = currentPermissionList;
 
                 //Do i need this?
-                permViewModel.FullPermissionTable = ServiceFactory.PermissionService.GetFullPermissionTable(ServiceFactory.CategoryPermissionService.GetAll().ToList());
+                permViewModel.FullPermissionTable = _permissionService.GetFullPermissionTable(_categoryPermissionService.GetAll().ToList());
                 return permViewModel;
             }
         }
@@ -81,10 +90,10 @@ namespace Dialogue.Logic.Controllers.ApiControllers
                     {
                         CategoryId = ajaxEditPermissionViewModel.Category,
                         MemberGroupId = ajaxEditPermissionViewModel.MemberGroup,
-                        Permission = ServiceFactory.PermissionService.Get(ajaxEditPermissionViewModel.Permission),
+                        Permission = _permissionService.Get(ajaxEditPermissionViewModel.Permission),
                         IsTicked = ajaxEditPermissionViewModel.HasPermission
                     };
-                    ServiceFactory.CategoryPermissionService.UpdateOrCreateNew(mappedItem);
+                    _categoryPermissionService.UpdateOrCreateNew(mappedItem);
 
                     unitOfWork.Commit();
                 }

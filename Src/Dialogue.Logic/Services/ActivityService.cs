@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Data.Context;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.Activity;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class ActivityService
-    {       
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Application;
+    using Constants;
+    using Data.Context;
+    using Models;
+    using Models.Activity;
+
+    public partial class ActivityService : IRequestCachedService
+    {
+
         #region There are the methods that power the activity service
 
         /// <summary>
@@ -89,13 +91,13 @@ namespace Dialogue.Logic.Services
         }
 
 
-
         /// <summary>
         /// Make a badge activity object from the more generic database activity object
         /// </summary>
         /// <param name="activity"></param>
+        /// <param name="badgeService"></param>
         /// <returns></returns>
-        private BadgeActivity GenerateBadgeActivity(Activity activity)
+        private BadgeActivity GenerateBadgeActivity(Activity activity, BadgeService badgeService, MemberService memberService)
         {
             // Get the corresponding badge
             var dataPairs = ActivityBase.UnpackData(activity);
@@ -103,29 +105,27 @@ namespace Dialogue.Logic.Services
             if (!dataPairs.ContainsKey(AppConstants.KeyBadgeId))
             {
                 // Log the problem then skip
-                AppHelpers.LogError(string.Format("A badge activity record with id '{0}' has no badge id in its data.", activity.Id));
+                AppHelpers.LogError($"A badge activity record with id '{activity.Id}' has no badge id in its data.");
                 return null;
             }
 
             var badgeId = dataPairs[AppConstants.KeyBadgeId];
-            var badge = ServiceFactory.BadgeService.Get(new Guid(badgeId));
+            var badge = badgeService.Get(new Guid(badgeId));
 
             if (badge == null)
             {
                 // Log the problem then skip
-                AppHelpers.LogError(string.Format("A badge activity record with id '{0}' has a badge id '{1}' that is not found in the badge table.",
-                    activity.Id, badgeId));
+                AppHelpers.LogError($"A badge activity record with id '{activity.Id}' has a badge id '{badgeId}' that is not found in the badge table.");
                 return null;
             }
 
             var userId = dataPairs[AppConstants.KeyUserId];
-            var user = ServiceFactory.MemberService.Get(Convert.ToInt32(userId));
+            var user = memberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
             {
                 // Log the problem then skip
-                AppHelpers.LogError(string.Format("A badge activity record with id '{0}' has a user id '{1}' that is not found in the user table.",
-                    activity.Id, userId));
+                AppHelpers.LogError($"A badge activity record with id '{activity.Id}' has a user id '{userId}' that is not found in the user table.");
                 return null;
             }
 
@@ -136,26 +136,26 @@ namespace Dialogue.Logic.Services
         /// Make a profile updated joined activity object from the more generic database activity object
         /// </summary>
         /// <param name="activity"></param>
+        /// <param name="memberService"></param>
         /// <returns></returns>
-        private ProfileUpdatedActivity GenerateProfileUpdatedActivity(Activity activity)
+        private ProfileUpdatedActivity GenerateProfileUpdatedActivity(Activity activity, MemberService memberService)
         {
             var dataPairs = ActivityBase.UnpackData(activity);
 
             if (!dataPairs.ContainsKey(AppConstants.KeyUserId))
             {
                 // Log the problem then skip
-                AppHelpers.LogError(string.Format("A profile updated activity record with id '{0}' has no user id in its data.", activity.Id));
+                AppHelpers.LogError($"A profile updated activity record with id '{activity.Id}' has no user id in its data.");
                 return null;
             }
 
             var userId = dataPairs[AppConstants.KeyUserId];
-            var user = ServiceFactory.MemberService.Get(Convert.ToInt32(userId));
+            var user = memberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
             {
                 // Log the problem then skip
-                AppHelpers.LogError(string.Format("A profile updated activity record with id '{0}' has a user id '{1}' that is not found in the user table.",
-                    activity.Id, userId));
+                AppHelpers.LogError($"A profile updated activity record with id '{activity.Id}' has a user id '{userId}' that is not found in the user table.");
                 return null;
             }
 
@@ -166,26 +166,26 @@ namespace Dialogue.Logic.Services
         /// Make a member joined activity object from the more generic database activity object
         /// </summary>
         /// <param name="activity"></param>
+        /// <param name="memberService"></param>
         /// <returns></returns>
-        private MemberJoinedActivity GenerateMemberJoinedActivity(Activity activity)
+        private MemberJoinedActivity GenerateMemberJoinedActivity(Activity activity, MemberService memberService)
         {
             var dataPairs = ActivityBase.UnpackData(activity);
 
             if (!dataPairs.ContainsKey(AppConstants.KeyUserId))
             {
                 // Log the problem then skip
-                AppHelpers.LogError(string.Format("A member joined activity record with id '{0}' has no user id in its data.", activity.Id));
+                AppHelpers.LogError($"A member joined activity record with id '{activity.Id}' has no user id in its data.");
                 return null;
             }
 
             var userId = dataPairs[AppConstants.KeyUserId];
-            var user = ServiceFactory.MemberService.Get(Convert.ToInt32(userId));
+            var user = memberService.Get(Convert.ToInt32(userId));
 
             if (user == null)
             {
                 // Log the problem then skip
-                AppHelpers.LogError(string.Format("A member joined activity record with id '{0}' has a user id '{1}' that is not found in the user table.",
-                    activity.Id, userId));
+                AppHelpers.LogError($"A member joined activity record with id '{activity.Id}' has a user id '{userId}' that is not found in the user table.");
                 return null;
             }
 
@@ -198,10 +198,12 @@ namespace Dialogue.Logic.Services
         /// <param name="activities">Paged list of activities where each member may be a specific activity instance e.g. a profile updated activity</param>
         /// <param name="pageIndex"> </param>
         /// <param name="pageSize"> </param>
+        /// <param name="badgeService"></param>
+        /// <param name="memberService"></param>
         /// <returns></returns>
-        private PagedList<ActivityBase> ConvertToSpecificActivities(PagedList<Activity> activities, int pageIndex, int pageSize)
+        private PagedList<ActivityBase> ConvertToSpecificActivities(PagedList<Activity> activities, int pageIndex, int pageSize, BadgeService badgeService, MemberService memberService)
         {
-            var listedResults = ConvertToSpecificActivities(activities);
+            var listedResults = ConvertToSpecificActivities(activities, badgeService, memberService);
 
             return new PagedList<ActivityBase>(listedResults, pageIndex, pageSize, activities.Count);
         }
@@ -210,15 +212,17 @@ namespace Dialogue.Logic.Services
         /// Converts a paged list of generic activities into a list of more specific activity instances
         /// </summary>
         /// <param name="activities"></param>
+        /// <param name="badgeService"></param>
+        /// <param name="memberService"></param>
         /// <returns></returns>
-        private IEnumerable<ActivityBase> ConvertToSpecificActivities(IEnumerable<Activity> activities)
+        private IEnumerable<ActivityBase> ConvertToSpecificActivities(IEnumerable<Activity> activities, BadgeService badgeService, MemberService memberService)
         {
             var listedResults = new List<ActivityBase>();
             foreach (var activity in activities)
             {
                 if (activity.Type == ActivityType.BadgeAwarded.ToString())
                 {
-                    var badgeActivity = GenerateBadgeActivity(activity);
+                    var badgeActivity = GenerateBadgeActivity(activity, badgeService, memberService);
 
                     if (badgeActivity != null)
                     {
@@ -228,7 +232,7 @@ namespace Dialogue.Logic.Services
                 }
                 else if (activity.Type == ActivityType.MemberJoined.ToString())
                 {
-                    var memberJoinedActivity = GenerateMemberJoinedActivity(activity);
+                    var memberJoinedActivity = GenerateMemberJoinedActivity(activity, memberService);
 
                     if (memberJoinedActivity != null)
                     {
@@ -238,7 +242,7 @@ namespace Dialogue.Logic.Services
                 else if (activity.Type == ActivityType.ProfileUpdated.ToString())
                 {
 
-                    var profileUpdatedActivity = GenerateProfileUpdatedActivity(activity);
+                    var profileUpdatedActivity = GenerateProfileUpdatedActivity(activity, memberService);
 
                     if (profileUpdatedActivity != null)
                     {
@@ -254,8 +258,10 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="badgeService"></param>
+        /// <param name="memberService"></param>
         /// <returns></returns>
-        public PagedList<ActivityBase> GetPagedGroupedActivities(int pageIndex, int pageSize)
+        public PagedList<ActivityBase> GetPagedGroupedActivities(int pageIndex, int pageSize, BadgeService badgeService, MemberService memberService)
         {
             // Read the database for all activities and convert each to a more specialised activity type
 
@@ -270,13 +276,13 @@ namespace Dialogue.Logic.Services
                   .ThenByDescending(x => x.Timestamp.TimeOfDay);
             
             var activities = new PagedList<Activity>(results, pageIndex, pageSize, totalCount);
-            var specificActivities = ConvertToSpecificActivities(activities, pageIndex, pageSize);
+            var specificActivities = ConvertToSpecificActivities(activities, pageIndex, pageSize, badgeService, memberService);
 
             return specificActivities;
         }
 
 
-        public PagedList<ActivityBase> SearchPagedGroupedActivities(string search, int pageIndex, int pageSize)
+        public PagedList<ActivityBase> SearchPagedGroupedActivities(string search, int pageIndex, int pageSize, BadgeService badgeService, MemberService memberService)
         {
             // Read the database for all activities and convert each to a more specialised activity type
 
@@ -294,13 +300,13 @@ namespace Dialogue.Logic.Services
 
             var activities = new PagedList<Activity>(results, pageIndex, pageSize, totalCount);
 
-            return ConvertToSpecificActivities(activities, pageIndex, pageSize); ;
+            return ConvertToSpecificActivities(activities, pageIndex, pageSize, badgeService, memberService);
         }
 
-        public IEnumerable<ActivityBase> GetAll(int howMany)
+        public IEnumerable<ActivityBase> GetAll(int howMany, BadgeService badgeService, MemberService memberService)
         {
             var activities = ContextPerRequest.Db.Activity.AsNoTracking().Take(howMany);
-            var specificActivities = ConvertToSpecificActivities(activities);
+            var specificActivities = ConvertToSpecificActivities(activities, badgeService, memberService);
             return specificActivities;
         }
 

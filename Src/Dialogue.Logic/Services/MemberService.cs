@@ -1,28 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Data.UnitOfWork;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-using Umbraco.Core.Models;
-using Umbraco.Core.Persistence.Querying;
-using Umbraco.Core.Services;
-using Umbraco.Web.Security;
-using Member = Dialogue.Logic.Models.Member;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class MemberService
+    using Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Web;
+    using System.Web.Security;
+    using Application;
+    using Constants;
+    using Data.Context;
+    using Data.UnitOfWork;
+    using Mapping;
+    using Models;
+    using Umbraco.Core.Models;
+    using Umbraco.Core.Persistence.Querying;
+    using Umbraco.Core.Services;
+    using Umbraco.Web.Security;
+    using Member = Models.Member;
+
+    public partial class MemberService : IRequestCachedService
     {
         private readonly IMemberService _memberService;
         private readonly IMemberGroupService _memberGroupService;
         private readonly IMemberTypeService _memberTypeService;
         private readonly IDataTypeService _dataTypeService;
         private readonly MembershipHelper _membershipHelper;
+
         public MemberService()
         {
             _memberService = AppHelpers.UmbServices().MemberService;
@@ -32,7 +36,69 @@ namespace Dialogue.Logic.Services
             _dataTypeService = AppHelpers.UmbServices().DataTypeService;
         }
 
+
         #region Members
+
+        /// <summary>
+        /// Gets the members upload path
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public string GetMemberUploadPath(int memberId)
+        {
+            var uploadFolderPath = HttpContext.Current.Server.MapPath(string.Concat(AppConstants.UploadFolderPath, memberId));
+            if (!Directory.Exists(uploadFolderPath))
+            {
+                Directory.CreateDirectory(uploadFolderPath);
+            }
+            return uploadFolderPath;
+        }
+
+        /// <summary>
+        /// Gets the ID of the members media folder
+        /// </summary>
+        /// <returns></returns>
+        public int ConfirmMemberAvatarMediaFolder()
+        {
+            // We want to look for the 'Member Avatars' folder in the media section
+            // If it doesn't exist then we create it
+            var rootMediaId = -1;
+            const string folderName = "Dialogue Members Avatars";
+
+            // Media Service
+            var ms = AppHelpers.UmbServices().MediaService;
+
+            // Check main media folder
+            var mediaFolder = ms.GetRootMedia().FirstOrDefault(x => x.Name == folderName);
+            if (mediaFolder == null)
+            {
+                // Doesn't exist, so create it
+                mediaFolder = ms.CreateMedia(folderName, rootMediaId, "Folder");
+                ms.Save(mediaFolder);
+            }
+
+            // Set id
+            rootMediaId = mediaFolder.Id;
+
+            // Check current user has a folder
+            var cUser = CurrentMember();
+            if (cUser != null)
+            {
+                // Get the members folder
+                var memberFolder = mediaFolder.Children().FirstOrDefault(x => x.Name == cUser.UserName);
+                if (memberFolder == null)
+                {
+                    // Doesn't exist, so create it
+                    memberFolder = ms.CreateMedia(cUser.UserName, mediaFolder.Id, "Folder");
+                    ms.Save(memberFolder);
+                }
+
+                // reset id
+                rootMediaId = memberFolder.Id;
+            }
+
+            return rootMediaId;
+        }
 
         public IList<Member> GetActiveMembers()
         {
@@ -64,7 +130,7 @@ namespace Dialogue.Logic.Services
         public Member GetUserBySlug(string slug, bool getFullMember = false)
         {
             var safeSlug = AppHelpers.SafePlainText(slug);
-            var key = string.Format("umb-member-{0}-{1}", safeSlug, getFullMember);
+            var key = $"umb-member-{safeSlug}-{getFullMember}";
             if (!HttpContext.Current.Items.Contains(key))
             {
                 var member = MemberMapper.MapMember(_memberService.GetMembersByPropertyValue(AppConstants.PropMemberSlug, slug).FirstOrDefault(), getFullMember);
@@ -97,7 +163,7 @@ namespace Dialogue.Logic.Services
         {
             if (HttpContext.Current.User.Identity.IsAuthenticated)
             {
-                var key = string.Format("pub-memb-{0}-{1}", HttpContext.Current.User.Identity.Name, populateFull);
+                var key = $"pub-memb-{HttpContext.Current.User.Identity.Name}-{populateFull}";
                 if (!HttpContext.Current.Items.Contains(key))
                 {
                     HttpContext.Current.Items.Add(key, GetByUsername(HttpContext.Current.User.Identity.Name, populateFull));
@@ -135,9 +201,12 @@ namespace Dialogue.Logic.Services
         }
 
         #region Deleting Member Stuff
-        public bool Delete(Member member, UnitOfWork unitOfWork)
+        public bool Delete(Member member, UnitOfWork unitOfWork, UploadedFileService uploadedFileService, PostService postService,
+            MemberPointsService memberPointsService, PollService pollService, TopicService topicService, TopicNotificationService topicNotificationService,
+            ActivityService activityService, PrivateMessageService privateMessageService, BadgeService badgeService, VoteService voteService, CategoryNotificationService categoryNotificationService)
         {
-            if (DeleteAllAssociatedMemberInfo(member.Id, unitOfWork))
+            if (DeleteAllAssociatedMemberInfo(member.Id, unitOfWork, uploadedFileService, postService, memberPointsService, pollService, 
+                topicService, topicNotificationService, activityService, privateMessageService, badgeService, voteService, categoryNotificationService))
             {
                 var baseMember = _memberService.GetById(member.Id);
                 _memberService.Delete(baseMember);
@@ -154,13 +223,26 @@ namespace Dialogue.Logic.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="unitOfWork"></param>
+        /// <param name="uploadedFileService"></param>
+        /// <param name="postService"></param>
+        /// <param name="memberPointsService"></param>
+        /// <param name="pollService"></param>
+        /// <param name="topicService"></param>
+        /// <param name="topicNotificationService"></param>
+        /// <param name="activityService"></param>
+        /// <param name="privateMessageService"></param>
+        /// <param name="badgeService"></param>
+        /// <param name="voteService"></param>
+        /// <param name="categoryNotificationService"></param>
         /// <returns></returns>
-        public bool DeleteAllAssociatedMemberInfo(int userId, UnitOfWork unitOfWork)
+        public bool DeleteAllAssociatedMemberInfo(int userId, UnitOfWork unitOfWork, UploadedFileService uploadedFileService, PostService postService, 
+            MemberPointsService memberPointsService, PollService pollService, TopicService topicService, TopicNotificationService topicNotificationService,
+            ActivityService activityService, PrivateMessageService privateMessageService, BadgeService badgeService, VoteService voteService, CategoryNotificationService categoryNotificationService)
         {
             try
             {
                 // Delete all file uploads
-                var files = ServiceFactory.UploadedFileService.GetAllByUser(userId);
+                var files = uploadedFileService.GetAllByUser(userId);
                 var filesList = new List<UploadedFile>();
                 filesList.AddRange(files);
                 foreach (var file in filesList)
@@ -169,40 +251,74 @@ namespace Dialogue.Logic.Services
                     var filePath = file.FilePath;
 
                     // Now delete it
-                    ServiceFactory.UploadedFileService.Delete(file);
+                    uploadedFileService.Delete(file);
 
                     // And finally delete from the file system
                     System.IO.File.Delete(HttpContext.Current.Server.MapPath(filePath));
                 }
 
-                // Delete all posts
-                var posts = ServiceFactory.PostService.GetAllByMember(userId);
-                var postList = new List<Post>();
-                postList.AddRange(posts);
-                foreach (var post in postList)
+                // Delete all posts - exlcuding topic starters as they are about to be deleted
+                var groupedPosts = postService.GetAllByMember(userId).Where(x => !x.IsTopicStarter).GroupBy(x => x.Topic);
+
+                // Loop through all posts per topic
+                foreach (var group in groupedPosts)
                 {
-                    post.Files.Clear();
-                    ServiceFactory.PostService.Delete(post);
+                    var postList = new List<Post>();
+                    postList.AddRange(group);
+
+                    // The Topic
+                    var topic = group.Key;
+
+                    // The last post
+                    var lastPost = group.Key.Posts.OrderByDescending(x => x.DateCreated).FirstOrDefault();
+
+                    // Loop through the posts
+                    foreach (var post in postList)
+                    {
+                        post.Files.Clear();
+
+                        if (lastPost != null && lastPost.Id == post.Id)
+                        {
+                            // Get the new last post and update the topic
+                            topic.LastPost = topic.Posts.Where(x => x.Id != post.Id).OrderByDescending(x => x.DateCreated).FirstOrDefault();
+                        }
+
+                        // Mark topic as not solved if the post we are deleting was the solution
+                        if (topic.Solved && post.IsSolution)
+                        {
+                            topic.Solved = false;
+                        }
+
+                        // Remove this post from the topic so we can delete it without any errors
+                        topic.Posts.Remove(post);
+
+                        // Delete all the points the memeber who made this post has gained
+                        memberPointsService.DeletePostPoints(post);
+
+                        // now delete the post
+                        ContextPerRequest.Db.Post.Remove(post);
+                    }
+
+                    unitOfWork.SaveChanges();
                 }
 
-                unitOfWork.SaveChanges();
 
                 // Also clear their poll votes
-                var userPollVotes = ServiceFactory.PollService.GetMembersPollVotes(userId);
+                var userPollVotes = pollService.GetMembersPollVotes(userId);
                 if (userPollVotes.Any())
                 {
                     var pollList = new List<PollVote>();
                     pollList.AddRange(userPollVotes);
                     foreach (var vote in pollList)
                     {
-                        ServiceFactory.PollService.Delete(vote);
+                        pollService.Delete(vote);
                     }
                 }
 
                 unitOfWork.SaveChanges();
 
                 // Also clear their polls
-                var userPolls = ServiceFactory.PollService.GetMembersPolls(userId);
+                var userPolls = pollService.GetMembersPolls(userId);
                 if (userPolls.Any())
                 {
                     var polls = new List<Poll>();
@@ -218,86 +334,118 @@ namespace Dialogue.Logic.Services
                             foreach (var answer in pollAnswersList)
                             {
                                 answer.Poll = null;
-                                ServiceFactory.PollService.Delete(answer);
+                                pollService.Delete(answer);
                             }
                         }
 
                         poll.PollAnswers.Clear();
-                        ServiceFactory.PollService.Delete(poll);
+                        pollService.Delete(poll);
                     }
                 }
 
                 unitOfWork.SaveChanges();
 
                 // Delete all topics
-                var topics = ServiceFactory.TopicService.GetAllTopicsByUser(userId);
+                var topics = topicService.GetAllTopicsByUser(userId);
                 var topicList = new List<Topic>();
                 topicList.AddRange(topics);
+                var memberIds = new List<int>();
                 foreach (var topic in topicList)
                 {
-                    ServiceFactory.TopicService.Delete(topic);
+                    //var topicStarterPost = topic.Posts.FirstOrDefault(x => x.IsTopicStarter);
+                    //postService.Delete(topicStarterPost, postService, , memberPointsService, topicNotificationService);
+
+                    var postsToDelete = new List<Post>();
+                    postsToDelete.AddRange(topic.Posts);
+                    memberIds.AddRange(postsToDelete.Select(x => x.MemberId).Distinct());
+                    foreach (var postFromTopic in postsToDelete)
+                    {
+                        postFromTopic.Files.Clear();
+
+                        // Remove this post from the topic so we can delete it without any errors
+                        topic.Posts.Remove(postFromTopic);
+
+                        // Delete all the points the memeber who made this post has gained
+                        memberPointsService.DeletePostPoints(postFromTopic);
+                    }
+
+                    if (topic.TopicNotifications != null)
+                    {
+                        var notificationsToDelete = new List<TopicNotification>();
+                        notificationsToDelete.AddRange(topic.TopicNotifications);
+                        foreach (var topicNotification in notificationsToDelete)
+                        {
+                            topicNotificationService.Delete(topicNotification);
+                        }
+                    }
+
+                    ContextPerRequest.Db.Topic.Remove(topic);
                 }
 
+                // Sync the members post count. For all members who had a post deleted.
+                var members = GetAllById(memberIds);
+                SyncMembersPostCount(members);
+
                 // Now clear all activities for this user
-                var usersActivities = ServiceFactory.ActivityService.GetDataByUserId(userId);
-                ServiceFactory.ActivityService.Delete(usersActivities.ToList());
+                var usersActivities = activityService.GetDataByUserId(userId);
+                activityService.Delete(usersActivities.ToList());
 
 
                 // Delete all private messages from this user
                 var msgsToDelete = new List<PrivateMessage>();
-                msgsToDelete.AddRange(ServiceFactory.PrivateMessageService.GetAllByUserSentOrReceived(userId));
+                msgsToDelete.AddRange(privateMessageService.GetAllByUserSentOrReceived(userId));
                 foreach (var msgToDelete in msgsToDelete)
                 {
-                    ServiceFactory.PrivateMessageService.DeleteMessage(msgToDelete);
+                    privateMessageService.DeleteMessage(msgToDelete);
                 }
 
 
                 // Delete all badge times last checked
                 var badgeTypesTimeLastCheckedToDelete = new List<BadgeTypeTimeLastChecked>();
-                badgeTypesTimeLastCheckedToDelete.AddRange(ServiceFactory.BadgeService.BadgeTypeTimeLastCheckedByMember(userId));
+                badgeTypesTimeLastCheckedToDelete.AddRange(badgeService.BadgeTypeTimeLastCheckedByMember(userId));
                 foreach (var badgeTypeTimeLastCheckedToDelete in badgeTypesTimeLastCheckedToDelete)
                 {
-                    ServiceFactory.BadgeService.DeleteTimeLastChecked(badgeTypeTimeLastCheckedToDelete);
+                    badgeService.DeleteTimeLastChecked(badgeTypeTimeLastCheckedToDelete);
                 }
 
                 // Delete all points from this user
                 var pointsToDelete = new List<MemberPoints>();
-                pointsToDelete.AddRange(ServiceFactory.MemberPointsService.GetByUser(userId));
+                pointsToDelete.AddRange(memberPointsService.GetByUser(userId));
                 foreach (var pointToDelete in pointsToDelete)
                 {
-                    ServiceFactory.MemberPointsService.Delete(pointToDelete);
+                    memberPointsService.Delete(pointToDelete);
                 }
 
                 // Delete all topic notifications
                 var topicNotificationsToDelete = new List<TopicNotification>();
-                topicNotificationsToDelete.AddRange(ServiceFactory.TopicNotificationService.GetByUser(userId));
+                topicNotificationsToDelete.AddRange(topicNotificationService.GetByUser(userId));
                 foreach (var topicNotificationToDelete in topicNotificationsToDelete)
                 {
-                    ServiceFactory.TopicNotificationService.Delete(topicNotificationToDelete);
+                    topicNotificationService.Delete(topicNotificationToDelete);
                 }
 
                 // Delete all user's votes
                 var votesToDelete = new List<Vote>();
-                votesToDelete.AddRange(ServiceFactory.VoteService.GetAllVotesByUser(userId));
+                votesToDelete.AddRange(voteService.GetAllVotesByUser(userId));
                 foreach (var voteToDelete in votesToDelete)
                 {
-                    ServiceFactory.VoteService.Delete(voteToDelete);
+                    voteService.Delete(voteToDelete);
                 }
 
                 // Delete all user's badges
                 var badgesToDelete = new List<BadgeToMember>();
-                badgesToDelete.AddRange(ServiceFactory.BadgeService.GetAllBadgeToMembers(userId));
+                badgesToDelete.AddRange(badgeService.GetAllBadgeToMembers(userId));
                 foreach (var badgeToDelete in badgesToDelete)
                 {
-                    ServiceFactory.BadgeService.DeleteBadgeToMember(badgeToDelete);
+                    badgeService.DeleteBadgeToMember(badgeToDelete);
                 }
 
                 // Delete all user's category notifications
                 var categoryNotificationsToDelete = new List<CategoryNotification>();
-                categoryNotificationsToDelete.AddRange(ServiceFactory.CategoryNotificationService.GetByUser(userId));
+                categoryNotificationsToDelete.AddRange(categoryNotificationService.GetByUser(userId));
                 foreach (var categoryNotificationToDelete in categoryNotificationsToDelete)
                 {
-                    ServiceFactory.CategoryNotificationService.Delete(categoryNotificationToDelete);
+                    categoryNotificationService.Delete(categoryNotificationToDelete);
                 }
 
                 unitOfWork.Commit();
@@ -310,6 +458,7 @@ namespace Dialogue.Logic.Services
             }
             return false;
         }
+
         #endregion
 
         /// <summary>
@@ -333,6 +482,18 @@ namespace Dialogue.Logic.Services
             var baseMember = _memberService.GetById(member.Id);
             baseMember.Properties[AppConstants.PropMemberPostCount].Value = amount;
             _memberService.Save(baseMember);
+        }
+
+        public void SyncMembersPostCount(List<Member> members)
+        {
+            var memberIds = members.Select(x => x.Id);
+            var memberPoints = ContextPerRequest.Db.Post.AsNoTracking().Where(x => memberIds.Contains(x.MemberId));
+            foreach (var m in members)
+            {
+                var member = m;
+                var mPoints = memberPoints.Count(x => x.MemberId == member.Id);
+                RefreshMemberPosts(member, mPoints);
+            }
         }
 
         public void ReducePostCount(Member member, int amount)
@@ -699,13 +860,6 @@ namespace Dialogue.Logic.Services
             });
             socialGroup.PropertyTypes.Add(new PropertyType(textstring)
             {
-                Name = "Facebook Id",
-                Alias = "facebookId",
-                SortOrder = 0,
-                Description = ""
-            });
-            socialGroup.PropertyTypes.Add(new PropertyType(textstring)
-            {
                 Name = "Google Access Token",
                 Alias = "googleAccessToken",
                 SortOrder = 0,
@@ -713,8 +867,8 @@ namespace Dialogue.Logic.Services
             });
             socialGroup.PropertyTypes.Add(new PropertyType(textstring)
             {
-                Name = "Google Id",
-                Alias = "googleId",
+                Name = "Microsoft Access Token",
+                Alias = "microsoftAccessToken",
                 SortOrder = 0,
                 Description = ""
             });

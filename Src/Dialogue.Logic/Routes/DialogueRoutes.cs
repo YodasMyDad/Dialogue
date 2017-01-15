@@ -19,7 +19,6 @@ namespace Dialogue.Logic.Routes
         public const string MemberRouteName = "dialogue_member_{0}";
         public const string DialoguePageRouteName = "dialogue_page_{0}";
 
-
         public static void MapRoutes(RouteCollection routes, ContextualPublishedCache umbracoCache, UrlProvider umbracoUrlProvider)
         {
             //find all dialogue root nodes

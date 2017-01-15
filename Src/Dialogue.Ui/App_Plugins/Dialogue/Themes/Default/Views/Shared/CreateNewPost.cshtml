@@ -16,7 +16,7 @@
 @if (!Model.DisablePosting)
 {
     <div id="createpostholder">
-        @using (Ajax.BeginForm("CreatePost", "DialoguePostSurface", null, new AjaxOptions
+        @using (Ajax.BeginForm("CreatePost", "DialoguePost", null, new AjaxOptions
         {
             HttpMethod = "POST",
             LoadingElementId = "createpostwait",

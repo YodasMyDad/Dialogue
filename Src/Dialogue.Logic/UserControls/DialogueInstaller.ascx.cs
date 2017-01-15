@@ -68,6 +68,8 @@ namespace Dialogue.Logic.UserControls
         {
             InstallerResult = new InstallerResult();
 
+            var memberService = ServiceResolver.Current.Instance<MemberService>();
+
             try
             {
 
@@ -75,13 +77,13 @@ namespace Dialogue.Logic.UserControls
                 var memberTypeResult = new ResultItem
                 {
                     CompletedSuccessfully = false,
-                    Name = string.Format("Creating the Member Type {0}", AppConstants.MemberTypeAlias)
+                    Name = $"Creating the Member Type {AppConstants.MemberTypeAlias}"
                 };
-                var typeExists = ServiceFactory.MemberService.MemberTypeExists(AppConstants.MemberTypeAlias);
+                var typeExists = memberService.MemberTypeExists(AppConstants.MemberTypeAlias);
                 if (!typeExists)
                 {
                     // create the Dialogue membertype
-                    ServiceFactory.MemberService.AddDialogueMemberType();
+                    memberService.AddDialogueMemberType();
                     memberTypeResult.Description = "Done successfully";
                     memberTypeResult.CompletedSuccessfully = true;
                 }
@@ -97,13 +99,13 @@ namespace Dialogue.Logic.UserControls
                 var adminRoleResult = new ResultItem
                 {
                     CompletedSuccessfully = false,
-                    Name = string.Format("Creating the role: {0}", AppConstants.AdminRoleName)
+                    Name = $"Creating the role: {AppConstants.AdminRoleName}"
                 };
-                var adminExists = ServiceFactory.MemberService.MemberGroupExists(AppConstants.AdminRoleName);
+                var adminExists = memberService.MemberGroupExists(AppConstants.AdminRoleName);
                 if (!adminExists)
                 {
                     // Create it
-                    ServiceFactory.MemberService.CreateMemberGroup(AppConstants.AdminRoleName);
+                    memberService.CreateMemberGroup(AppConstants.AdminRoleName);
                     adminRoleResult.Description = "Done successfully";
                     adminRoleResult.CompletedSuccessfully = true;
                 }
@@ -118,13 +120,13 @@ namespace Dialogue.Logic.UserControls
                 var guestRoleResult = new ResultItem
                 {
                     CompletedSuccessfully = false,
-                    Name = string.Format("Creating the role: {0}", AppConstants.GuestRoleName)
+                    Name = $"Creating the role: {AppConstants.GuestRoleName}"
                 };
-                var guestExists = ServiceFactory.MemberService.MemberGroupExists(AppConstants.GuestRoleName);
+                var guestExists = memberService.MemberGroupExists(AppConstants.GuestRoleName);
                 if (!guestExists)
                 {
                     // Create it
-                    ServiceFactory.MemberService.CreateMemberGroup(AppConstants.GuestRoleName);
+                    memberService.CreateMemberGroup(AppConstants.GuestRoleName);
                     guestRoleResult.Description = "Done successfully";
                     guestRoleResult.CompletedSuccessfully = true;
                 }
@@ -141,11 +143,11 @@ namespace Dialogue.Logic.UserControls
                     CompletedSuccessfully = false,
                     Name = string.Format("Creating the role: {0}", AppConstants.MemberGroupDefault)
                 };
-                var standardExists = ServiceFactory.MemberService.MemberGroupExists(AppConstants.MemberGroupDefault);
+                var standardExists = memberService.MemberGroupExists(AppConstants.MemberGroupDefault);
                 if (!standardExists)
                 {
                     // Create it
-                    ServiceFactory.MemberService.CreateMemberGroup(AppConstants.MemberGroupDefault);
+                    memberService.CreateMemberGroup(AppConstants.MemberGroupDefault);
                     standardRoleResult.Description = "Done successfully";
                     standardRoleResult.CompletedSuccessfully = true;
                 }
@@ -274,13 +276,13 @@ namespace Dialogue.Logic.UserControls
 
         private static bool AppSettingsExists(XmlDocument webconfig, string key)
         {
-            var appSettingsClientVal = webconfig.SelectSingleNode(string.Format("configuration/appSettings/add[@key='{0}']", key));
+            var appSettingsClientVal = webconfig.SelectSingleNode($"configuration/appSettings/add[@key='{key}']");
             return appSettingsClientVal != null;
         }
 
         private static bool DashboardExists(XmlDocument dbconfig, string tabCaption)
         {
-            var tab = dbconfig.SelectSingleNode(string.Format("dashBoard/section/tab[@caption='{0}']", tabCaption));
+            var tab = dbconfig.SelectSingleNode($"dashBoard/section/tab[@caption='{tabCaption}']");
             return tab != null;
         }
 
@@ -292,13 +294,13 @@ namespace Dialogue.Logic.UserControls
         /// <param name="tabCaption"></param>
         /// <param name="dbconfig"></param>
         /// <returns></returns>
-        private ResultItem AddDashboard(List<string> usercontrols, string section, string tabCaption, XmlDocument dbconfig)
+        private static ResultItem AddDashboard(List<string> usercontrols, string section, string tabCaption, XmlDocument dbconfig)
         {
             var rs = new ResultItem
             {
                 Name = "Adding Dashboard",
                 CompletedSuccessfully = true,
-                Description = string.Format("Successfully added {0} Dashboard", tabCaption),
+                Description = $"Successfully added {tabCaption} Dashboard",
                 RequiresConfigUpdate = true
             };
 
@@ -315,7 +317,7 @@ namespace Dialogue.Logic.UserControls
                     //  </tab>
 
                     // App settings root
-                    var dbSection = dbconfig.SelectSingleNode(string.Format("dashBoard/section[@alias='{0}']", section));
+                    var dbSection = dbconfig.SelectSingleNode($"dashBoard/section[@alias='{section}']");
 
                     // Create new tab
                     var tab = dbconfig.CreateNode(XmlNodeType.Element, "tab", null);
@@ -343,27 +345,27 @@ namespace Dialogue.Logic.UserControls
                 }
                 catch (Exception ex)
                 {
-                    rs.Description = string.Format("Failed to add {0} to dashboard config, error: {1}", tabCaption, ex.InnerException);
+                    rs.Description = $"Failed to add {tabCaption} to dashboard config, error: {ex.InnerException}";
                     rs.CompletedSuccessfully = false;
                     rs.RequiresConfigUpdate = false;
                 }
             }
             else
             {
-                rs.Description = string.Format("Skipped adding {0} to dashboard config, already exists", tabCaption);
+                rs.Description = $"Skipped adding {tabCaption} to dashboard config, already exists";
                 rs.CompletedSuccessfully = true;
                 rs.RequiresConfigUpdate = false;
             }
             return rs;
         }
 
-        private ResultItem AddAppSetting(string key, string value, XmlDocument webconfig)
+        private static ResultItem AddAppSetting(string key, string value, XmlDocument webconfig)
         {
             var rs = new ResultItem
             {
                 Name = "Adding AppSetting",
                 CompletedSuccessfully = true,
-                Description = string.Format("Successfully added {0} appsetting", key),
+                Description = $"Successfully added {key} appsetting",
                 RequiresConfigUpdate = true
             };
 
@@ -394,14 +396,14 @@ namespace Dialogue.Logic.UserControls
                 }
                 catch (Exception ex)
                 {
-                    rs.Description = string.Format("Failed to add {0} to config, error: {1}", key, ex.InnerException);
+                    rs.Description = $"Failed to add {key} to config, error: {ex.InnerException}";
                     rs.CompletedSuccessfully = false;
                     rs.RequiresConfigUpdate = false;
                 }
             }
             else
             {
-                rs.Description = string.Format("Skipped adding {0} to config, already exists", key);
+                rs.Description = $"Skipped adding {key} to config, already exists";
                 rs.CompletedSuccessfully = true;
                 rs.RequiresConfigUpdate = false;
             }

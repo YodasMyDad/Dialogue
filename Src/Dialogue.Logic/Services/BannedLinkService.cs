@@ -1,9 +1,10 @@
-﻿using System;
-using System.Linq;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class BannedLinkService
+    using Interfaces;
+    using System;
+    using System.Linq;
+
+    public partial class BannedLinkService : IRequestCachedService
     {
         /// <summary>
         /// If true is means this peice of text/content contains a banned link

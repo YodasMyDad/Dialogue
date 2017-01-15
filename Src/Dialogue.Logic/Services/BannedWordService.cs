@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Dialogue.Logic.Application;
-
-namespace Dialogue.Logic.Services
+﻿namespace Dialogue.Logic.Services
 {
-    public partial class BannedWordService
+    using Interfaces;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Application;
+
+    public partial class BannedWordService : IRequestCachedService
     {
 
         public string SanitiseBannedWords(string content)

@@ -1,4 +1,4 @@
-﻿@model Dialogue.Logic.Models.MasterModel
+﻿
 @{
     Layout = "Master.cshtml";
 }
@@ -24,10 +24,10 @@
     <div class="col-sm-4">
         @if (User.Identity.IsAuthenticated)
         {
-            @Html.Action("CreateTopicButton", "DialogueTopicSurface")
+            @Html.Action("CreateTopicButton", "DialogueTopic")
         }
-        @Html.Action("ListCategorySideMenu", "DialogueCategorySurface")
-        @Html.Action("CurrentWeekHighPointUsers", "DialogueSurface")
+        @Html.Action("ListCategorySideMenu", "DialogueCategory")
+        @Html.Action("CurrentWeekHighPointUsers", "Dialogue")
     </div>
 </div>
 

@@ -10,7 +10,7 @@
 @Html.ThemedPartial("SocialButtons")
 
 
-@using (Html.BeginUmbracoForm<DialogueLoginRegisterSurfaceController>("LogOn", FormMethod.Post, new { @class = "form", role = "form" }))
+@using (Html.BeginUmbracoForm<DialogueLoginController>("LogOn", FormMethod.Post, new { @class = "form", role = "form" }))
 {
     @Html.ValidationSummary(false)
 

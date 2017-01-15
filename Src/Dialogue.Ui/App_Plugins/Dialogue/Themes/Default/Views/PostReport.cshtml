@@ -14,7 +14,7 @@
 }
 <h2>@Model.PageTitle</h2>
 
-@using (Html.BeginForm("Report", "DialoguePostSurface", FormMethod.Post, new { @class = "form", role = "form" }))
+@using (Html.BeginForm("Report", "DialoguePost", FormMethod.Post, new { @class = "form", role = "form" }))
 {
     @Html.HiddenFor(x => Model.PostId)
     @Html.ValidationSummary(false)

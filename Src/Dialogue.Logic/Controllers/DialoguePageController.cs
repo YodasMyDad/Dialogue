@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Security;
-using Dialogue.Logic.Application;
-using Dialogue.Logic.Constants;
-using Dialogue.Logic.Mapping;
-using Dialogue.Logic.Models;
-using Dialogue.Logic.Models.Activity;
-using Dialogue.Logic.Models.ViewModels;
-using Dialogue.Logic.Routes;
-using Dialogue.Logic.Services;
-using Umbraco.Core.Models;
-using Umbraco.Web.Models;
-
-namespace Dialogue.Logic.Controllers
+﻿namespace Dialogue.Logic.Controllers
 {
-    public partial class DialoguePageController : BaseRenderController
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Web;
+    using System.Web.Mvc;
+    using System.Web.Security;
+    using Application;
+    using Constants;
+    using Mapping;
+    using Models;
+    using Models.Activity;
+    using Models.ViewModels;
+    using Routes;
+    using Umbraco.Core.Models;
+    using Umbraco.Web.Models;
+
+    public partial class DialoguePageController : DialogueBaseController
     {
         private readonly IMemberGroup _membersGroup;
 
         public DialoguePageController()
         {
-            _membersGroup = (CurrentMember == null ? ServiceFactory.MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
+            _membersGroup = (CurrentMember == null ? MemberService.GetGroupByName(AppConstants.GuestRoleName) : CurrentMember.Groups.FirstOrDefault());
         }
 
         /// <summary>
@@ -121,9 +120,9 @@ namespace Dialogue.Logic.Controllers
                 var viewModel = new AuthoriseViewModel
                 {
                     PageTitle = Lang("Authorise.PageTitle"),
-                    Members = ServiceFactory.MemberService.GetUnAuthorisedMembers(),
-                    Posts = ServiceFactory.PostService.GetAllPendingPosts(),
-                    Topics = ServiceFactory.TopicService.GetAllPendingTopics()
+                    Members = MemberService.GetUnAuthorisedMembers(),
+                    Posts = PostService.GetAllPendingPosts(),
+                    Topics = TopicService.GetAllPendingTopics()
                 };
 
                 return View(PathHelper.GetThemeViewPath("Authorise"), viewModel);
@@ -137,8 +136,8 @@ namespace Dialogue.Logic.Controllers
             {
                 var viewModel = new SpamOverviewModel
                 {
-                    DodgyMembers = ServiceFactory.MemberPointsService.GetLatestNegativeUsers(Settings.PostsPerPage),
-                    DodgyPosts = ServiceFactory.PostService.GetLowestVotedPost(Settings.PostsPerPage),
+                    DodgyMembers = MemberPointsService.GetLatestNegativeUsers(Settings.PostsPerPage),
+                    DodgyPosts = PostService.GetLowestVotedPost(Settings.PostsPerPage),
                     PageTitle = Lang("Spam.OverViewPageTitle")
                 };
 
@@ -155,7 +154,7 @@ namespace Dialogue.Logic.Controllers
             {
                     try
                     {
-                        var user = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                        var user = MemberService.Get(Convert.ToInt32(id));
 
                         // Checkconfirmation
                         if (user != null)
@@ -201,7 +200,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var allowedCategories = ServiceFactory.CategoryService.GetAllowedCategories(_membersGroup).ToList();
+                    var allowedCategories = CategoryService.AllowedCreateCategories(_membersGroup, PermissionService, MemberService, CategoryPermissionService).ToList();
                     if (allowedCategories.Any() && CurrentMember.DisablePosting != true)
                     {
                         var viewModel = new CreateTopic(page)
@@ -260,7 +259,7 @@ namespace Dialogue.Logic.Controllers
                     }
 
                     //// Get all the topics based on the search value
-                    var posts = ServiceFactory.PostService.SearchPosts(pageIndex,
+                    var posts = PostService.SearchPosts(pageIndex,
                                                          Settings.PostsPerPage,
                                                          AppConstants.ActiveTopicsListSize,
                                                          term);
@@ -269,7 +268,7 @@ namespace Dialogue.Logic.Controllers
                     // Get all the categories for this topic collection
                     var topics = posts.Select(x => x.Topic).Distinct().ToList();
                     var categoryIds = topics.Select(x => x.CategoryId).Distinct().ToList();
-                    var categories = ServiceFactory.CategoryService.Get(categoryIds);
+                    var categories = CategoryService.Get(categoryIds);
 
                     // create the view model
                     viewModel = new SearchViewModel(page)
@@ -285,17 +284,17 @@ namespace Dialogue.Logic.Controllers
                     var favourites = new List<Favourite>();
                     if (CurrentMember != null)
                     {
-                        favourites = ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id);
+                        favourites = FavouriteService.GetAllByMember(CurrentMember.Id);
                     }
 
                     // Get all votes for all the posts
                     var postIds = posts.Select(x => x.Id).ToList();
-                    var allPostVotes = ServiceFactory.VoteService.GetAllVotesForPosts(postIds);
+                    var allPostVotes = VoteService.GetAllVotesForPosts(postIds);
 
                     // loop through the categories and get the permissions
                     foreach (var category in categories)
                     {
-                        var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                        var permissionSet = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
                         viewModel.AllPermissionSets.Add(category, permissionSet);
                     }
 
@@ -337,7 +336,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var user = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                    var user = MemberService.Get(Convert.ToInt32(id));
                     var viewModel = new PageMemberEditViewModel(page)
                     {
                         MemberEditViewModel = new MemberEditViewModel
@@ -381,7 +380,7 @@ namespace Dialogue.Logic.Controllers
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var user = ServiceFactory.MemberService.Get(Convert.ToInt32(id));
+                    var user = MemberService.Get(Convert.ToInt32(id));
                     var viewModel = new PageReportMemberViewModel(page)
                     {
                         MemberId = user.Id, 
@@ -410,7 +409,7 @@ namespace Dialogue.Logic.Controllers
             using (UnitOfWorkManager.NewUnitOfWork())
             {
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
-                var pagedMessages = ServiceFactory.PrivateMessageService.GetPagedReceivedMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
+                var pagedMessages = PrivateMessageService.GetPagedReceivedMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
                 var viewModel = new PageListPrivateMessageViewModel(page)
                 {
                     ListPrivateMessageViewModel = new ListPrivateMessageViewModel
@@ -436,7 +435,7 @@ namespace Dialogue.Logic.Controllers
                     return ErrorToHomePage(Lang("Errors.GenericMessage"));
                 }
 
-                var message = ServiceFactory.PrivateMessageService.Get(new Guid(id));
+                var message = PrivateMessageService.Get(new Guid(id));
 
                 if (message.MemberToId == CurrentMember.Id | message.MemberFromId == CurrentMember.Id)
                 {
@@ -447,7 +446,7 @@ namespace Dialogue.Logic.Controllers
                         message.IsRead = true;
 
                         // Get the sent version and update that too
-                        var sentMessage = ServiceFactory.PrivateMessageService.GetMatchingSentPrivateMessage(message.Subject, message.DateSent, message.MemberFromId, message.MemberToId);
+                        var sentMessage = PrivateMessageService.GetMatchingSentPrivateMessage(message.Subject, message.DateSent, message.MemberFromId, message.MemberToId);
                         if (sentMessage != null)
                         {
                             sentMessage.IsRead = true;
@@ -481,7 +480,7 @@ namespace Dialogue.Logic.Controllers
             using (UnitOfWorkManager.NewUnitOfWork())
             {
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
-                var pagedMessages = ServiceFactory.PrivateMessageService.GetPagedSentMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
+                var pagedMessages = PrivateMessageService.GetPagedSentMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
                 var viewModel = new PageListPrivateMessageViewModel(page)
                 {
                     ListPrivateMessageViewModel = new ListPrivateMessageViewModel
@@ -507,7 +506,7 @@ namespace Dialogue.Logic.Controllers
             }
 
             // Check flood control
-            var lastMessage = ServiceFactory.PrivateMessageService.GetLastSentPrivateMessage(CurrentMember.Id);
+            var lastMessage = PrivateMessageService.GetLastSentPrivateMessage(CurrentMember.Id);
             if (lastMessage != null && AppHelpers.TimeDifferenceInMinutes(DateTime.UtcNow, lastMessage.DateSent) < Settings.PrivateMessageFloodControl)
             {
                 ShowMessage(new GenericMessageViewModel
@@ -519,7 +518,7 @@ namespace Dialogue.Logic.Controllers
             }
 
             // Check outbox size
-            var senderCount = ServiceFactory.PrivateMessageService.GetAllSentByUser(CurrentMember.Id).Count;
+            var senderCount = PrivateMessageService.GetAllSentByUser(CurrentMember.Id).Count;
             if (senderCount > Settings.PrivateMessageInboxSize)
             {
                 ShowMessage(new GenericMessageViewModel
@@ -539,14 +538,14 @@ namespace Dialogue.Logic.Controllers
             // add the username to the to box if available
             if (to != null)
             {
-                var userTo = ServiceFactory.MemberService.Get(Convert.ToInt32(to));
+                var userTo = MemberService.Get(Convert.ToInt32(to));
                 viewModel.CreatePrivateMessageViewModel.UserToUsername = userTo.UserName;
             }
 
             // See if this is a reply or not
             if (id != null)
             {
-                var previousMessage = ServiceFactory.PrivateMessageService.Get(new Guid(id));
+                var previousMessage = PrivateMessageService.Get(new Guid(id));
                 // Its a reply, get the details
                 viewModel.CreatePrivateMessageViewModel.UserToUsername = previousMessage.MemberFrom.UserName;
                 viewModel.CreatePrivateMessageViewModel.Subject = previousMessage.Subject;
@@ -567,14 +566,14 @@ namespace Dialogue.Logic.Controllers
                 {
                     return ErrorToHomePage(Lang("Errors.GenericMessage"));
                 }
-                var post = ServiceFactory.PostService.Get(new Guid(id));
+                var post = PostService.Get(new Guid(id));
 
                 // Get the topic
                 var topic = post.Topic;
-                var category = ServiceFactory.CategoryService.Get(topic.CategoryId);
+                var category = CategoryService.Get(topic.CategoryId);
 
                 // get the users permissions
-                var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                var permissions = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
 
                 if (post.MemberId == CurrentMember.Id || permissions[AppConstants.PermissionModerate].IsTicked)
                 {
@@ -590,7 +589,7 @@ namespace Dialogue.Logic.Controllers
 
 
                         viewModel.Name = topic.Name;
-                        viewModel.Categories = ServiceFactory.CategoryService.GetAllowedCategories(_membersGroup).ToList();
+                        viewModel.Categories = CategoryService.GetAllowedCategories(_membersGroup, PermissionService, MemberService, CategoryPermissionService).ToList();
                         if (topic.Poll != null && topic.Poll.PollAnswers.Any())
                         {
                             // Has a poll so add it to the view model
@@ -620,7 +619,7 @@ namespace Dialogue.Logic.Controllers
                     var id = Request["id"];
                     if (!string.IsNullOrEmpty(id))
                     {
-                        var post = ServiceFactory.PostService.Get(new Guid(id));
+                        var post = PostService.Get(new Guid(id));
                         var viewModel = new ReportPostPageViewModel(page)
                         {
                             PostId = post.Id,
@@ -645,8 +644,8 @@ namespace Dialogue.Logic.Controllers
                     PageTitle = Lang("Favourites.PageTitle")
                 };
 
-                var postIds = ServiceFactory.FavouriteService.GetAllByMember(CurrentMember.Id).Select(x => x.PostId);
-                var allPosts = ServiceFactory.PostService.Get(postIds.ToList());
+                var postIds = FavouriteService.GetAllByMember(CurrentMember.Id).Select(x => x.PostId);
+                var allPosts = PostService.Get(postIds.ToList());
                 viewModel.Posts = allPosts;           
                 return View(PathHelper.GetThemeViewPath("Favourites"), viewModel);
             }
@@ -656,7 +655,7 @@ namespace Dialogue.Logic.Controllers
         {
             using (UnitOfWorkManager.NewUnitOfWork())
             {
-                var allBadges = ServiceFactory.BadgeService.GetallBadges();
+                var allBadges = BadgeService.GetallBadges();
 
                 var badgesListModel = new AllBadgesViewModel(page)
                 {
@@ -683,7 +682,7 @@ namespace Dialogue.Logic.Controllers
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
 
                 // Get the topics
-                var activities = ServiceFactory.ActivityService.GetPagedGroupedActivities(pageIndex, Settings.ActivitiesPerPage);
+                var activities = ActivityService.GetPagedGroupedActivities(pageIndex, Settings.ActivitiesPerPage, BadgeService, MemberService);
 
                 // create the view model
                 var viewModel = new AllRecentActivitiesViewModel(page)
@@ -709,10 +708,10 @@ namespace Dialogue.Logic.Controllers
                 var rssTopics = new List<RssItem>();
 
                 // Get only the cats from this forum
-                var cats = ServiceFactory.CategoryService.GetAll();
+                var cats = CategoryService.GetAll();
 
                 // Get the latest topics
-                var topics = ServiceFactory.TopicService.GetRecentRssTopics(AppConstants.ActiveTopicsListSize, cats.Select(x => x.Id).ToList());
+                var topics = TopicService.GetRecentRssTopics(AppConstants.ActiveTopicsListSize, cats.Select(x => x.Id).ToList());
 
                 // Get all the categories for this topic collection
                 var categories = topics.Select(x => x.Category).Distinct();
@@ -723,7 +722,7 @@ namespace Dialogue.Logic.Controllers
                 // loop through the categories and get the permissions
                 foreach (var category in categories)
                 {
-                    var permissionSet = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                    var permissionSet = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
                     permissions.Add(category, permissionSet);
                 }
 
@@ -763,14 +762,14 @@ namespace Dialogue.Logic.Controllers
                 {
 
                     // Get the category
-                    var category = ServiceFactory.CategoryService.Get(Convert.ToInt32(catId));
+                    var category = CategoryService.Get(Convert.ToInt32(catId));
 
                     // check the user has permission to this category
-                    var permissions = ServiceFactory.PermissionService.GetPermissions(category, _membersGroup);
+                    var permissions = PermissionService.GetPermissions(category, _membersGroup, MemberService, CategoryPermissionService);
 
                     if (!permissions[AppConstants.PermissionDenyAccess].IsTicked)
                     {
-                        var topics = ServiceFactory.TopicService.GetRssTopicsByCategory(AppConstants.ActiveTopicsListSize, category.Id);
+                        var topics = TopicService.GetRssTopicsByCategory(AppConstants.ActiveTopicsListSize, category.Id);
 
                         rssTopics.AddRange(topics.Select(x =>
                         {
@@ -805,7 +804,7 @@ namespace Dialogue.Logic.Controllers
                 // get an rss lit ready
                 var rssActivities = new List<RssItem>();
 
-                var activities = ServiceFactory.ActivityService.GetAll(20).OrderByDescending(x => x.ActivityMapped.Timestamp);
+                var activities = ActivityService.GetAll(20, BadgeService, MemberService).OrderByDescending(x => x.ActivityMapped.Timestamp);
 
                 var activityLink = Urls.GenerateUrl(Urls.UrlType.Activity);
 

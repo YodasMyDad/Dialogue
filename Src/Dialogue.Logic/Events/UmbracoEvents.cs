@@ -52,12 +52,13 @@ namespace Dialogue.Logic.Events
             {
                 try
                 {
-                    ServiceFactory.BadgeService.SyncBadges();
+                    var badgeService = ServiceResolver.Current.Instance<BadgeService>();
+                    badgeService.SyncBadges();
                     unitOfWork.Commit();
                 }
                 catch (Exception ex)
                 {
-                    AppHelpers.LogError(string.Format("Error processing badge classes: {0}", ex.Message));
+                    AppHelpers.LogError($"Error processing badge classes: {ex.Message}");
                 }
             }
 
@@ -66,22 +67,24 @@ namespace Dialogue.Logic.Events
 
         private static void ContentService_Trashing(IContentService sender, MoveEventArgs<IContent> e)
         {
-            // TODO - Stop Categories being deleted if they have topics still using them
-            // TODO - Log it, notifications don't work
+            var topicService = ServiceResolver.Current.Instance<TopicService>();
+
+            // Stop Categories being deleted if they have topics still using them
+            // Log it, notifications don't work
             foreach (var item in e.MoveInfoCollection)
             {
                 if (item.Entity.ContentType.Alias == AppConstants.DocTypeForumCategory)
                 {
                     // This is a category attempting to be moved to the Recycle bin
                     // See if any topics are currently using the category
-                    var topics = ServiceFactory.TopicService.GetPagedTopicsByCategory(1, int.MaxValue, int.MaxValue, item.Entity.Id);
+                    var topics = topicService.GetPagedTopicsByCategory(1, int.MaxValue, int.MaxValue, item.Entity.Id);
                     if (topics.Any())
                     {
                         // We have topics using it, so stop the move
                         e.Cancel = true;
 
-                        //TODO - Still can't create a notification so just log it
-                        AppHelpers.LogError(string.Format("Unable to delete Category, it's currently being used by {0} topic(s)", topics.Count));
+                        // Log the issue
+                        AppHelpers.LogError($"Unable to delete Category, it's currently being used by {topics.Count} topic(s)");
                     }
                 }
             }
@@ -152,7 +155,7 @@ namespace Dialogue.Logic.Events
                     if (content.ContentType.Alias.InvariantEquals("Dialogue"))
                     {
                         //add the unpublished entities to the request cache
-                        UmbracoContext.Current.Application.ApplicationCache.RequestCache.GetCacheItem("dialogue-refresh-routes", () => true);
+                        ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem("dialogue-refresh-routes", () => true);
                     }
                     break;
             }
@@ -163,20 +166,34 @@ namespace Dialogue.Logic.Events
 
             var memberService = new Services.MemberService();
             var unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
+
+            var uploadedFileService = new UploadedFileService();
+            var postService = new PostService();
+            var memberPointsService = new MemberPointsService();
+            var pollService = new PollService();
+            var topicService = new TopicService();
+            var topicNotificationService = new TopicNotificationService();
+            var activityService = new ActivityService();
+            var privateMessageService = new PrivateMessageService();
+            var badgeService = new BadgeService();
+            var voteService = new VoteService();
+            var categoryNotificationService = new CategoryNotificationService();
+
             using (var unitOfWork = unitOfWorkManager.NewUnitOfWork())
             {
                 try
                 {
                     foreach (var member in deleteEventArgs.DeletedEntities)
                     {
-                        var canDelete = memberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork);
+                        var canDelete = memberService.DeleteAllAssociatedMemberInfo(member.Id, unitOfWork, uploadedFileService, postService, memberPointsService, pollService, topicService,
+                                                                                    topicNotificationService, activityService, privateMessageService, badgeService, voteService, categoryNotificationService);
                         if (!canDelete)
                         {
                             deleteEventArgs.Cancel = true;
                             //TODO - THIS DOESN'T WORK - JUST LOG IT
                             //var clientTool = new ClientTools((Page)HttpContext.Current.CurrentHandler);
                             //clientTool.ShowSpeechBubble(SpeechBubbleIcon.Error, "Error", "Unable to delete member. Check logfile for further information");
-                            AppHelpers.LogError(string.Format("There was an error attemping to delete member {0} and all of their associated data (Posts, Topics etc...)", member.Name));
+                            AppHelpers.LogError($"There was an error attemping to delete member {member.Name} and all of their associated data (Posts, Topics etc...)");
 
                             break;
 

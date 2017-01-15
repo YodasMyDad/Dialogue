@@ -123,9 +123,8 @@ namespace Dialogue.Logic.Constants
         public const string PropMemberDisableFileUploads = "disableFileUploads";
         public const string PropMemberPostCount = "postCount";
         public const string PropMemberFacebookAccessToken = "facebookAccessToken";
-        public const string PropMemberFacebookId = "facebookId";
         public const string PropMemberGoogleAccessToken = "googleAccessToken";
-        public const string PropMemberGoogleId = "googleId";
+        public const string PropMemberMicrosoftAccessToken = "microsoftAccessToken";
         public const string PropMemberUmbracoMemberApproved = "umbracoMemberApproved";
         public const string PropMemberUmbracoMemberLockedOut = "umbracoMemberLockedOut";
         public const string PropMemberUmbracoMemberLastLockoutDate = "umbracoMemberLastLockoutDate";
