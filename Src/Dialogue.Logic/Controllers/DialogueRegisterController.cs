@@ -209,7 +209,7 @@
 
                         if (homeRedirect && !string.IsNullOrEmpty(forumReturnUrl))
                         {
-                            if (Url.IsLocalUrl(userModel.ReturnUrl) && userModel.ReturnUrl.Length > 1 && userModel.ReturnUrl.StartsWith("/")
+                            if (Url.IsLocalUrl(userModel.ReturnUrl) && userModel.ReturnUrl.Length >= 1 && userModel.ReturnUrl.StartsWith("/")
                             && !userModel.ReturnUrl.StartsWith("//") && !userModel.ReturnUrl.StartsWith("/\\"))
                             {
                                 return Redirect(userModel.ReturnUrl);
