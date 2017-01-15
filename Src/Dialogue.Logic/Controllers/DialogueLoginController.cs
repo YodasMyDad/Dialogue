@@ -73,7 +73,7 @@
                         user = MemberService.Get(model.UserName);
                         if (user.IsApproved && !user.IsLockedOut)
                         {
-                            if (Url.IsLocalUrl(model.ReturnUrl) && model.ReturnUrl.Length > 1 && model.ReturnUrl.StartsWith("/")
+                            if (Url.IsLocalUrl(model.ReturnUrl) && model.ReturnUrl.Length >= 1 && model.ReturnUrl.StartsWith("/")
                                 && !model.ReturnUrl.StartsWith("//") && !model.ReturnUrl.StartsWith("/\\"))
                             {
                                 return Redirect(model.ReturnUrl);
