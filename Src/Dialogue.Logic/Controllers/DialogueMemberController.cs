@@ -189,7 +189,7 @@
                     {
                         unitOfWork.Rollback();
                         ModelState.AddModelError(string.Empty, Lang("Error.EmailIsBanned"));
-                        // TODO - SHOW MOdel messages
+                        ShowMessage();
                         return Redirect(userEditUrl);
                     }
 
@@ -198,7 +198,7 @@
                     {
                         unitOfWork.Rollback();
                         ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateEmail"));
-                        // TODO - SHOW MOdel messages
+                        ShowMessage();
                         return Redirect(userEditUrl);
                     }
 
@@ -215,7 +215,7 @@
                     {
                         unitOfWork.Rollback();
                         ModelState.AddModelError(string.Empty, Lang("Members.Errors.DuplicateUserName"));
-                        // TODO - SHOW MOdel messages
+                        ShowMessage();
                         return Redirect(userEditUrl);
                     }
 
@@ -279,7 +279,7 @@
                     ModelState.AddModelError(string.Empty, Lang("Errors.GenericMessage"));
                 }
 
-                // TODO - SHOW MOdel messages
+                ShowMessage();
                 return Redirect(userEditUrl);
             }
         }

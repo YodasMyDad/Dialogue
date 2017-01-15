@@ -77,3 +77,5 @@ Src/Dialogue.Logic/bin/*
 Src/Dialogue.Ui/Bin/*
 Src/Dialogue.Logic/bin/*
 Src/Dialogue.Ui/App_Data/NuGetBackup/*
+Src/Dialogue.Ui/App_Data/cache/*
+Src/Dialogue.Ui/Media/MemberUploads/*

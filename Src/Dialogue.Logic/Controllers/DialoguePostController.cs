@@ -141,10 +141,8 @@
 
                 if (post.MemberId == CurrentMember.Id || permissions[AppConstants.PermissionModerate].IsTicked)
                 {
-                    topicWasDeleted = PostService.Delete(post, MemberService, MemberPointsService, TopicNotificationService);
-                   
-                    unitOfWork.SaveChanges();
-
+                    topicWasDeleted = PostService.Delete(unitOfWork, post, MemberService, MemberPointsService, TopicNotificationService);
+                                   
                     try
                     {
                         // Commit changes
@@ -163,20 +161,20 @@
             if (topicWasDeleted)
             {
                 // Redirect to root as this was a topic and deleted
-                TempData[AppConstants.MessageViewBagName] = new GenericMessageViewModel
+                ShowMessage(new GenericMessageViewModel
                 {
                     Message = Lang("Topic.Deleted"),
                     MessageType = GenericMessages.Success
-                };
+                });
                 return Redirect(Settings.ForumRootUrl);
             }
 
             // Show message that post is deleted
-            TempData[AppConstants.MessageViewBagName] = new GenericMessageViewModel
+            ShowMessage(new GenericMessageViewModel
             {
                 Message = Lang("Post.Deleted"),
                 MessageType = GenericMessages.Success
-            };
+            });
 
             return Redirect(topic.Url);
         }

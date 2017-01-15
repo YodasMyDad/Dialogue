@@ -8,6 +8,7 @@
     using Application;
     using Constants;
     using Data.Context;
+    using Data.UnitOfWork;
     using Mapping;
     using Models;
 
@@ -304,12 +305,13 @@
         /// <summary>
         /// Delete a post
         /// </summary>
+        /// <param name="unitOfWork"></param>
         /// <param name="post"></param>
         /// <param name="memberService"></param>
         /// <param name="memberPointsService"></param>
         /// <param name="topicNotificationService"></param>
         /// <returns> True if parent was deleted too</returns>
-        public bool Delete(Post post, MemberService memberService, MemberPointsService memberPointsService, TopicNotificationService topicNotificationService)
+        public bool Delete(UnitOfWork unitOfWork, Post post, MemberService memberService, MemberPointsService memberPointsService, TopicNotificationService topicNotificationService)
         {
             // Get the topic
             var topic = post.Topic;
@@ -334,6 +336,7 @@
                     {
                         post.Files.Clear();
                         DeleteIndividualPost(topic, postFromTopic, memberPointsService, false);
+                        unitOfWork.SaveChanges();
                     }
 
                     // Sync the members post count. For all members who had a post deleted.
@@ -350,7 +353,10 @@
                         topicNotificationService.Delete(topicNotification);
                     }
                 }
-
+                topic.Posts?.Clear();
+                topic.TopicNotifications?.Clear();
+                topic.Category = null;
+                topic.LastPost = null;
                 ContextPerRequest.Db.Topic.Remove(topic);
 
                 // Set to true
@@ -377,10 +383,14 @@
             if (resetLastPost)
             {
                 var lastPost = topic.Posts.OrderByDescending(x => x.DateCreated).FirstOrDefault();
-                if (lastPost != null && lastPost.Id == post.Id)
+                if (lastPost != null && lastPost.Id == post.Id && topic.Posts.Count > 1)
                 {
                     // Get the new last post and update the topic
                     topic.LastPost = topic.Posts.Where(x => x.Id != post.Id).OrderByDescending(x => x.DateCreated).FirstOrDefault();
+                }
+                else if(lastPost != null && lastPost.Id == post.Id && topic.Posts.Count <= 1)
+                {
+                    topic.LastPost = null;
                 }
 
                 // Mark topic as not solved if the post we are deleting was the solution

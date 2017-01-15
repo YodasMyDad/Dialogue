@@ -322,24 +322,6 @@
         }
 
 
-        //// POST: /Customer/Create
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> Create([Bind(Include = "CustomerID,CompanyName,ContactName,ContactTitle,Address,City,Region,PostalCode,Country,Phone,Fax")] Customer customer)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _customerService.Add(customer);
-        //        await _unitOfWork.SaveAsync();
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    return View(customer);
-        //}
-
-
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -361,6 +343,8 @@
 
                 using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
                 {
+
+
                     // Before we do anything DB wise, check it contains no bad links
                     if (BannedLinkService.ContainsBannedLink(topicViewModel.TopicContent))
                     {
@@ -406,7 +390,7 @@
                             topicViewModel.TopicContent = BannedWordService.SanitiseBannedWords(topicViewModel.TopicContent, Dialogue.Settings().BannedWords);
 
                             // See if this is a poll and add it to the topic
-                            if (topicViewModel.PollAnswers != null && topicViewModel.PollAnswers.Count > 0)
+                            if (topicViewModel.PollAnswers != null && topicViewModel.PollAnswers.Any(x => !string.IsNullOrEmpty(x.Answer)))
                             {
                                 // Do they have permission to create a new poll
                                 if (permissions[AppConstants.PermissionCreatePolls].IsTicked)
@@ -535,7 +519,7 @@
                         NotifyNewTopics(category);
 
                         // Redirect to the newly created topic
-                        return Redirect(string.Format("{0}?postbadges=true", topic.Url));
+                        return Redirect($"{topic.Url}?postbadges=true");
                     }
                     if (moderate)
                     {
@@ -545,7 +529,8 @@
                     }
                 }
             }
-            //TODO - SHOW MODEL ERRORS
+
+            ShowMessage();
             return Redirect(Urls.GenerateUrl(Urls.UrlType.TopicCreate));
         }
 

@@ -35,7 +35,7 @@
                             MemberFrom = CurrentMember,
                             MemberFromId = CurrentMember.Id,
                             Subject = createPrivateMessageViewModel.Subject,
-                            Message = createPrivateMessageViewModel.Message,
+                            Message = createPrivateMessageViewModel.Message
                         };
                         // now get the user its being sent to
                         var memberTo = MemberService.Get(userTo);
@@ -107,7 +107,7 @@
                         ModelState.AddModelError(string.Empty, Lang("PM.TalkToSelf"));
                     }
                 }
-                // TODO SHOW MODEL MESSAGES
+                ShowMessage();
                 return Redirect(Urls.GenerateUrl(Urls.UrlType.MessageCreate));
             }
         }

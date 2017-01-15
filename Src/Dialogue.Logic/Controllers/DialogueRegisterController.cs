@@ -81,7 +81,7 @@
 
                     if (userModel.LoginType != LoginType.Standard)
                     {
-                        //TODO - Add ShowMessage
+                        ShowMessage();
                         return Redirect(Settings.RegisterUrl);
                     }
                     return CurrentUmbracoPage();
@@ -227,7 +227,7 @@
                 }
                 if (userModel.LoginType != LoginType.Standard)
                 {
-                    // TODO - Add Error Message
+                    ShowMessage();
                     return Redirect(Settings.RegisterUrl);
                 }
                 return CurrentUmbracoPage();

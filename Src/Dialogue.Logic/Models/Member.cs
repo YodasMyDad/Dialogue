@@ -36,7 +36,7 @@ namespace Dialogue.Logic.Models
         {
             get
             {
-                return Points != null ? Points.Select(x => x.Points).Sum() : 0;
+                return Points?.Select(x => x.Points).Sum() ?? 0;
             }
         }
         public int PostCount { get; set; }
@@ -45,10 +45,7 @@ namespace Dialogue.Logic.Models
         public IList<Badge> Badges { get; set; }
         // Populated only when full populate marked as true
 
-        public string Url
-        {
-            get { return Urls.GenerateUrl(Urls.UrlType.Member, Slug); }
-        }
+        public string Url => Urls.GenerateUrl(Urls.UrlType.Member, Slug);
 
         public string MemberImage(int size)
         {

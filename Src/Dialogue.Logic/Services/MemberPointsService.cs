@@ -50,9 +50,8 @@
 
         public void DeletePostPoints(Post post)
         {
-            // Gets all points the member who made the post has gained from this post
-            var membersPointsForThisPost =
-                ContextPerRequest.Db.MemberPoints.Where(x => x.RelatedPostId == post.Id && x.MemberId == post.MemberId);
+            // Gets all points from this post and selete
+            var membersPointsForThisPost = ContextPerRequest.Db.MemberPoints.Where(x => x.RelatedPostId == post.Id);
 
             // Now loop through and remove them
             foreach (var points in membersPointsForThisPost)

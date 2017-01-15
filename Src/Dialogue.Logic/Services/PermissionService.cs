@@ -195,7 +195,7 @@
 
             // Pass the role in to see select which permissions to apply
             // Going to cache this per request, just to help with performance
-            var objectContextKey = string.Concat(HttpContext.Current.GetHashCode().ToString("x"), "-", category.Id, "-", memberGroup.Id);
+            var objectContextKey = string.Concat("GetPermissions", "-", category.Id, "-", memberGroup.Id);
             if (!HttpContext.Current.Items.Contains(objectContextKey))
             {
                 switch (memberGroup.Name)

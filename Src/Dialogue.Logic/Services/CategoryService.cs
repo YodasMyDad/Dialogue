@@ -8,6 +8,7 @@
     using Constants;
     using Mapping;
     using Models;
+    using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Web;
 
@@ -44,7 +45,11 @@
         /// <returns></returns>
         public IEnumerable<Category> GetAll()
         {
-            return CategoryMapper.MapCategory(_forumRootNode.Descendants(AppConstants.DocTypeForumCategory).ToList());
+            const string cacheKey = "GetAllCategories";
+            return (IEnumerable<Category>)ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem(cacheKey, () =>
+            {
+                return CategoryMapper.MapCategory(_forumRootNode.Descendants(AppConstants.DocTypeForumCategory).ToList());
+            });
         }
 
         /// <summary>
@@ -71,28 +76,80 @@
 
         }
 
+        public List<Category> GetAllowedCategories(IMemberGroup role, PermissionService permissionService, MemberService memberService, CategoryPermissionService categoryPermissionService)
+        {
+            return GetAllowedCategories(role, AppConstants.PermissionDenyAccess, permissionService, memberService, categoryPermissionService);
+        }
+
+
+        public List<Category> GetAllowedCategories(IMemberGroup role, string actionType, PermissionService permissionService, MemberService memberService, CategoryPermissionService categoryPermissionService)
+        {
+            var cacheKey = string.Concat("GetAllowedCategoriesCode-", role.Id, "-", actionType);
+            return (List<Category>)ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem(cacheKey, () =>
+            {
+                var filteredCats = new List<Category>();
+                var allCats = GetAll();
+                foreach (var category in allCats)
+                {
+                    var permissionSet = permissionService.GetPermissions(category, role, memberService, categoryPermissionService);
+                    if (!permissionSet[actionType].IsTicked)
+                    {
+                        // TODO Only add it category is NOT locked
+                        filteredCats.Add(category);
+                    }
+                }
+                return filteredCats;
+            });          
+        }
+
         /// <summary>
-        /// Return allowed categories based on the users role
+        /// The allowed Categories of a member
         /// </summary>
-        /// <param name="role"></param>
+        /// <param name="memberGroup"></param>
         /// <param name="permissionService"></param>
         /// <param name="memberService"></param>
         /// <param name="categoryPermissionService"></param>
         /// <returns></returns>
-        public IEnumerable<Category> GetAllowedCategories(IMemberGroup role, PermissionService permissionService, MemberService memberService, CategoryPermissionService categoryPermissionService)
+        public List<Category> AllowedCreateCategories(IMemberGroup memberGroup, PermissionService permissionService, MemberService memberService, CategoryPermissionService categoryPermissionService)
         {
-            var filteredCats = new List<Category>();
-            var allCats = GetAll().Where(x => !x.LockCategory);
-            foreach (var category in allCats)
+            var allowedAccessCategories = GetAllowedCategories(memberGroup, permissionService, memberService, categoryPermissionService);
+            var allowedCreateTopicCategories = GetAllowedCategories(memberGroup, AppConstants.PermissionCreateTopics, permissionService, memberService, categoryPermissionService);
+            var allowedCreateTopicCategoryIds = allowedCreateTopicCategories.Select(x => x.Id);
+            if (allowedAccessCategories.Any())
             {
-                var permissionSet = permissionService.GetPermissions(category, role, memberService, categoryPermissionService);
-                if (!permissionSet[AppConstants.PermissionDenyAccess].IsTicked && !permissionSet[AppConstants.PermissionReadOnly].IsTicked)
-                {
-                    filteredCats.Add(category);
-                }
+                allowedAccessCategories.RemoveAll(x => allowedCreateTopicCategoryIds.Contains(x.Id));
+                allowedAccessCategories.RemoveAll(x => memberGroup.Name != AppConstants.AdminRoleName && x.LockCategory);
             }
-            return filteredCats;
+            return allowedAccessCategories;
         }
+
+        ///// <summary>
+        ///// Return allowed categories based on the users role
+        ///// </summary>
+        ///// <param name="role"></param>
+        ///// <param name="permissionService"></param>
+        ///// <param name="memberService"></param>
+        ///// <param name="categoryPermissionService"></param>
+        ///// <returns></returns>
+        //public IEnumerable<Category> GetAllowedCategories(IMemberGroup role, PermissionService permissionService, MemberService memberService, CategoryPermissionService categoryPermissionService)
+        //{
+        //    var cacheKey = 
+        //    return ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem("", () =>
+        //    {
+
+        //    });
+        //    var filteredCats = new List<Category>();
+        //    var allCats = GetAll().Where(x => !x.LockCategory);
+        //    foreach (var category in allCats)
+        //    {
+        //        var permissionSet = permissionService.GetPermissions(category, role, memberService, categoryPermissionService);
+        //        if (!permissionSet[AppConstants.PermissionDenyAccess].IsTicked && !permissionSet[AppConstants.PermissionReadOnly].IsTicked)
+        //        {
+        //            filteredCats.Add(category);
+        //        }
+        //    }
+        //    return filteredCats;
+        //}
 
     }
 }

@@ -200,7 +200,7 @@
             {
                 using (UnitOfWorkManager.NewUnitOfWork())
                 {
-                    var allowedCategories = CategoryService.GetAllowedCategories(_membersGroup, PermissionService, MemberService, CategoryPermissionService).ToList();
+                    var allowedCategories = CategoryService.AllowedCreateCategories(_membersGroup, PermissionService, MemberService, CategoryPermissionService).ToList();
                     if (allowedCategories.Any() && CurrentMember.DisablePosting != true)
                     {
                         var viewModel = new CreateTopic(page)

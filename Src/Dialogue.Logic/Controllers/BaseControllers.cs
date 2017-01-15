@@ -3,6 +3,7 @@
     using Umbraco.Core.Logging;
     using Umbraco.Web.Models;
     using System;
+    using System.Text;
     using System.Web.Mvc;
     using Application;
     using Constants;
@@ -52,11 +53,48 @@
 
         #region Messages
 
+        /// <summary>
+        /// Shows a specific message when the page is redirects
+        /// </summary>
+        /// <param name="messageViewModel"></param>
         public void ShowMessage(GenericMessageViewModel messageViewModel)
         {
             // We have to put it on two because some umbraco redirects only work with ViewData!!
             ViewData[AppConstants.MessageViewBagName] = messageViewModel;
             TempData[AppConstants.MessageViewBagName] = messageViewModel;
+        }
+
+        /// <summary>
+        /// Takes the errors from the Model state and displays them
+        /// </summary>
+        public void ShowMessage()
+        {
+            if (!ModelState.IsValid)
+            {
+                var messageViewModel = new GenericMessageViewModel
+                {
+                    MessageType = GenericMessages.Danger
+                };
+                var sb = new StringBuilder();
+
+                // Collate the errors
+                sb.Append("<ul>");
+                foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        sb.Append($"<li>{error.ErrorMessage}</li>");
+                    }
+                }
+                sb.Append("<ul>");
+
+                // Add the message
+                messageViewModel.Message = sb.ToString();
+
+                // We have to put it on two because some umbraco redirects only work with ViewData!!
+                ViewData[AppConstants.MessageViewBagName] = messageViewModel;
+                TempData[AppConstants.MessageViewBagName] = messageViewModel;
+            }
         }
 
         #endregion
