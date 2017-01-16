@@ -480,8 +480,11 @@
         public void RefreshMemberPosts(Member member, int amount)
         {
             var baseMember = _memberService.GetById(member.Id);
-            baseMember.Properties[AppConstants.PropMemberPostCount].Value = amount;
-            _memberService.Save(baseMember);
+            if (baseMember != null && baseMember.Properties.Contains(AppConstants.PropMemberPostCount))
+            {
+                baseMember.Properties[AppConstants.PropMemberPostCount].Value = amount;
+                _memberService.Save(baseMember);
+            }
         }
 
         public void SyncMembersPostCount(List<Member> members)
