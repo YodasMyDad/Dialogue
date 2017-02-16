@@ -87,7 +87,7 @@
                     return CurrentUmbracoPage();
                 }
 
-                var userToSave = AppHelpers.UmbMemberHelper().CreateRegistrationModel(AppConstants.MemberTypeAlias);
+                var userToSave = AppHelpers.UmbMemberHelper().CreateRegistrationModel(DialogueConfiguration.Instance.MemberTypeAlias);
                 userToSave.Username = BannedWordService.SanitiseBannedWords(userModel.UserName);
                 userToSave.Name = userToSave.Username;
                 userToSave.UsernameIsEmail = false;

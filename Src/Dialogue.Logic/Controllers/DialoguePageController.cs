@@ -182,6 +182,9 @@
                                 Message = Lang("Members.NowApproved"),
                                 MessageType = GenericMessages.Success
                             });
+
+                            // Redirects to the forum home page
+                            return RedirectToUmbracoPage(Settings.ForumId);
                         }
                     }
                     catch (Exception ex)

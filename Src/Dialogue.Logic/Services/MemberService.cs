@@ -575,7 +575,7 @@
 
         public int MemberCount()
         {
-            return _memberService.GetMembersByMemberType(AppConstants.MemberTypeAlias).Count(x => x.IsApproved && !x.IsLockedOut);
+            return _memberService.GetMembersByMemberType(DialogueConfiguration.Instance.MemberTypeAlias).Count(x => x.IsApproved && !x.IsLockedOut);
         }
 
         public bool Login(string username, string password)
@@ -585,7 +585,7 @@
 
         public IList<Member> GetLatestUsers(int amountToTake)
         {
-            var ids = _memberService.GetMembersByMemberType(AppConstants.MemberTypeAlias)
+            var ids = _memberService.GetMembersByMemberType(DialogueConfiguration.Instance.MemberTypeAlias)
               .OrderByDescending(x => x.CreateDate)
               .Take(amountToTake)
               .Select(x => x.Id);
@@ -744,7 +744,7 @@
             // Create the member Type
             var memType = new MemberType(-1)
             {
-                Alias = AppConstants.MemberTypeAlias,
+                Alias = DialogueConfiguration.Instance.MemberTypeAlias,
                 Name = "Dialogue Member"
             };
 

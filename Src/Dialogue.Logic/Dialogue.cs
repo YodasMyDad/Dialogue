@@ -100,7 +100,7 @@ namespace Dialogue.Logic
                 }
                 else
                 {
-                    settings.Group = memberGroupService.GetByName(AppConstants.MemberGroupDefault);
+                    settings.Group = memberGroupService.GetByName(DialogueConfiguration.Instance.MemberGroupDefault);
                 }
 
                 // Spam
@@ -145,13 +145,20 @@ namespace Dialogue.Logic
             if (!HttpContext.Current.Items.Contains(AppConstants.SiteSettingsKey))
             {
                 var currentPage = AppHelpers.CurrentPage();
-                var forumNode = currentPage.AncestorOrSelf(AppConstants.DocTypeForumRoot);
-                if (forumNode == null)
+                if (currentPage != null)
                 {
-                    // Only do this is if we can't find the forum normally
-                    forumNode = currentPage.DescendantOrSelf(AppConstants.DocTypeForumRoot);
+                    var forumNode = currentPage.AncestorOrSelf(AppConstants.DocTypeForumRoot);
+                    if (forumNode == null)
+                    {
+                        // Only do this is if we can't find the forum normally
+                        forumNode = currentPage.DescendantOrSelf(AppConstants.DocTypeForumRoot);
+                    }
+                    HttpContext.Current.Items.Add(AppConstants.SiteSettingsKey, Settings(forumNode));
                 }
-                HttpContext.Current.Items.Add(AppConstants.SiteSettingsKey, Settings(forumNode));
+                else
+                {
+                    return null;
+                }
             }
             return HttpContext.Current.Items[AppConstants.SiteSettingsKey] as DialogueSettings;
         }

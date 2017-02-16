@@ -52,7 +52,7 @@ namespace Dialogue.Logic.UserControls
                     var memHelper = AppHelpers.UmbMemberHelper();
 
                     var memberGroupService = AppHelpers.UmbServices().MemberGroupService;
-                    var startingGroup = memberGroupService.GetByName(AppConstants.MemberGroupDefault);
+                    var startingGroup = memberGroupService.GetByName(DialogueConfiguration.Instance.MemberGroupDefault);
                     var adminGroup = memberGroupService.GetByName(AppConstants.AdminRoleName);
 
                     var unitOfWorkManager = new UnitOfWorkManager(ContextPerRequest.Db);
@@ -66,7 +66,7 @@ namespace Dialogue.Logic.UserControls
                             {
                                 //var m = memService.CreateMemberWithIdentity("username", "email", "name", AppConstants.MemberTypeAlias);
 
-                                var userToSave = memHelper.CreateRegistrationModel(AppConstants.MemberTypeAlias);
+                                var userToSave = memHelper.CreateRegistrationModel(DialogueConfiguration.Instance.MemberTypeAlias);
                                 userToSave.Username = bannedWordService.SanitiseBannedWords(newmem.Username);
                                 userToSave.Name = userToSave.Username;
                                 userToSave.UsernameIsEmail = false;

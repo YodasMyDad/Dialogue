@@ -22,7 +22,7 @@ namespace Dialogue.Logic.Constants
         public const string AssetsImagePath = "~/App_Plugins/Dialogue/Content/Images/";
 
         // Paths
-        public static string MemberUploadPath = String.Concat(UploadFolderPath, "{0}/{1}");
+        public static string MemberUploadPath = string.Concat(UploadFolderPath, "{0}/{1}");
 
         // Default Image Sizes
         public const int GravatarPostSize = 50;
@@ -84,11 +84,6 @@ namespace Dialogue.Logic.Constants
         public const string PageUrlEmailConfirmation = "emailconfirmation";
         public const string PageUrlSpamOverview = "spamoverview";
         public const string PageUrlAuthorise = "authorise";
-
-        // Default Member Group
-        public const string MemberGroupDefault = "Dialogue Standard";
-        public const string MemberTypeAlias = "DialogueMember";
-        public const string MemberTypeName = "Dialogue Member";
 
         // QueryStrings
         public const string LogOut = "logout";
