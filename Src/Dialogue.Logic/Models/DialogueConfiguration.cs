@@ -1,5 +1,6 @@
 ﻿namespace Dialogue.Logic.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Web.Hosting;
     using System.Xml;
@@ -54,25 +55,71 @@
 
         #region Urls
 
+        // Page Names
+        public string PageUrlLeaderboard = GetConfig("PageUrlLeaderboard");
+        public string PageUrlActivity = GetConfig("PageUrlActivity");
+        public string PageUrlFavourites = GetConfig("PageUrlFavourites");
+        public string PageUrlPostReport = GetConfig("PageUrlPostReport");
+        public string PageUrlEditPost = GetConfig("PageUrlEditPost");
+        public string PageUrlMessageInbox = GetConfig("PageUrlMessageInbox");
+        public string PageUrlMessageOutbox = GetConfig("PageUrlMessageOutbox");
+        public string PageUrlCreatePrivateMessage = GetConfig("PageUrlCreatePrivateMessage");
+        public string PageUrlViewPrivateMessage = GetConfig("PageUrlViewPrivateMessage");
+        public string PageUrlViewReportMember = GetConfig("PageUrlViewReportMember");
+        public string PageUrlEditMember = GetConfig("PageUrlEditMember");
+        public string PageUrlChangePassword = GetConfig("PageUrlChangePassword");
+        public string PageUrlSearch = GetConfig("PageUrlSearch");
+        public string PageUrlTopicsRss = GetConfig("PageUrlTopicsRss");
+        public string PageUrlActivityRss = GetConfig("PageUrlActivityRss");
+        public string PageUrlCategoryRss = GetConfig("PageUrlCategoryRss");
+        public string PageUrlCreateTopic = GetConfig("PageUrlCreateTopic");
+        public string PageUrlBadges = GetConfig("PageUrlBadges");
+        public string PageUrlEmailConfirmation = GetConfig("PageUrlEmailConfirmation");
+        public string PageUrlSpamOverview = GetConfig("PageUrlSpamOverview");
+        public string PageUrlAuthorise = GetConfig("PageUrlAuthorise");
+
         #endregion
 
         #region DocTypes
+
+        public string DocTypeForumRoot = GetConfig("DocTypeForumRoot");
+        public string DocTypeForumCategory = GetConfig("DocTypeForumCategory");
+        public string DocTypeLogin = GetConfig("DocTypeLogin");
+        public string DocTypeRegister = GetConfig("DocTypeRegister");
+        public string DocTypeCreateTopic = GetConfig("DocTypeCreateTopic");
+        public string DocTypeEditMember = GetConfig("DocTypeEditMember");
+        public string DocTypeSearchMembers = GetConfig("DocTypeSearchMembers");
+        public string DocTypeSendPrivateMessage = GetConfig("DocTypeSendPrivateMessage");
 
         #endregion
 
         #region Image Sizes
 
+        public int GravatarPostSize = Convert.ToInt32(GetConfig("GravatarPostSize"));
+        public int GravatarTopicSize = Convert.ToInt32(GetConfig("GravatarTopicSize"));
+        public int GravatarProfileSize = Convert.ToInt32(GetConfig("GravatarProfileSize"));
+        public int GravatarLeaderboardSize = Convert.ToInt32(GetConfig("GravatarLeaderboardSize"));
+
         #endregion
 
         #region Page Sizes
+
+        public int ActiveTopicsListSize = Convert.ToInt32(GetConfig("ActiveTopicsListSize"));
+        public int PagingGroupSize = Convert.ToInt32(GetConfig("PagingGroupSize"));
+        public int PrivateMessageListSize = Convert.ToInt32(GetConfig("PrivateMessageListSize"));
 
         #endregion
 
         #region Activity Time Checks    
 
+        public int TimeSpanInMinutesToDoCheck = Convert.ToInt32(GetConfig("TimeSpanInMinutesToDoCheck"));
+        public int TimeSpanInMinutesToShowMembers = Convert.ToInt32(GetConfig("TimeSpanInMinutesToShowMembers"));
+
         #endregion
 
-        #region Editors
+        #region Editor
+
+        public string EditorType = GetConfig("EditorType");
 
         #endregion
 

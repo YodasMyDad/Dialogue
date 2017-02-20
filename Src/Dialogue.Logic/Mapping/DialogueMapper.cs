@@ -20,7 +20,7 @@ namespace Dialogue.Logic.Mapping
                     MainCategories = new List<Category>()
                 };
 
-            var mainCategories = model.Children.Where(x => x.DocumentTypeAlias == AppConstants.DocTypeForumCategory).ToList();
+            var mainCategories = model.Children.Where(x => x.DocumentTypeAlias == DialogueConfiguration.Instance.DocTypeForumCategory).ToList();
             if (mainCategories.Any())
             {
                 foreach (var publishedContent in mainCategories)

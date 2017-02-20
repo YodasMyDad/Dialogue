@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Dialogue.Logic.Constants
+﻿namespace Dialogue.Logic.Constants
 {
     public static class AppConstants
     {
@@ -24,73 +22,27 @@ namespace Dialogue.Logic.Constants
         // Paths
         public static string MemberUploadPath = string.Concat(UploadFolderPath, "{0}/{1}");
 
-        // Default Image Sizes
-        public const int GravatarPostSize = 50;
-        public const int GravatarTopicSize = 35;
-        public const int GravatarProfileSize = 85;
-        public const int GravatarLeaderboardSize = 25;
-
         /// <summary>
         /// A short cache time to help with speeding up the site
         /// </summary>
         public const int DefaultCacheLengthInSeconds = 600;
-
-        // Doctypes
-        public const string DocTypeForumRoot = "Dialogue";
-        public const string DocTypeForumCategory = "DialogueCategory";
-        public const string DocTypeLogin = "Dialoguelogin";
-        public const string DocTypeRegister = "DialogueRegister";
-        public const string DocTypeCreateTopic = "DialogueCreateTopic";
-        public const string DocTypeEditMember = "DialogueEditMember";
-        public const string DocTypeSearchMembers = "DialogueSearchMembers";
-        public const string DocTypeSendPrivateMessage = "DialogueSendPrivateMessage";
         
         // Pages and Paging
-        public const int ActiveTopicsListSize = 20;
-        public const int PagingGroupSize = 10;
-        public const int PrivateMessageListSize = 20;
         public const string PagingUrlFormat = "{0}?p={1}";
 
         //Querystring names
         public const string PostOrderBy = "order";
         public const string AllPosts = "all";
 
-        // Last Activity Time Check
-        public const int TimeSpanInMinutesToDoCheck = 10;
-        public const int TimeSpanInMinutesToShowMembers = 20;
+        public const string EditorType = "forumeditor";
 
         //Uploads
         public const string UploadFolderPath = "~/media/MemberUploads/";
-
-        // Page Names
-        public const string PageUrlLeaderboard = "leaderboard";
-        public const string PageUrlActivity = "activity";
-        public const string PageUrlFavourites = "favourite";
-        public const string PageUrlPostReport = "postreport";
-        public const string PageUrlEditPost = "editpost";
-        public const string PageUrlMessageInbox = "messageinbox";
-        public const string PageUrlMessageOutbox = "messageoutbox";
-        public const string PageUrlCreatePrivateMessage = "createmessage";
-        public const string PageUrlViewPrivateMessage = "viewmessage";
-        public const string PageUrlViewReportMember = "reportmember";
-        public const string PageUrlEditMember = "editmember";
-        public const string PageUrlChangePassword = "changepassword";
-        public const string PageUrlSearch = "search";
-        public const string PageUrlTopicsRss = "topicsrss";
-        public const string PageUrlActivityRss = "activityrss";
-        public const string PageUrlCategoryRss = "categoryrss";
-        public const string PageUrlCreateTopic = "create";
-        public const string PageUrlBadges = "badges";
-        public const string PageUrlEmailConfirmation = "emailconfirmation";
-        public const string PageUrlSpamOverview = "spamoverview";
-        public const string PageUrlAuthorise = "authorise";
 
         // QueryStrings
         public const string LogOut = "logout";
 
         // Editor
-        //public const string EditorType = "tinymceeditor";
-        public const string EditorType = "markdowneditor";
 
         ///-------------------
         /// Node Property Keys

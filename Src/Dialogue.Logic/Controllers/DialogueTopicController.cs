@@ -296,7 +296,7 @@
                 // Get the topics
                 var topics = TopicService.GetRecentTopics(pageIndex,
                                                            Dialogue.Settings().TopicsPerPage,
-                                                           AppConstants.ActiveTopicsListSize);
+                                                           DialogueConfiguration.Instance.ActiveTopicsListSize);
 
                 // Get all the categories for this topic collection
                 var categories = topics.Select(x => x.Category).Distinct();
@@ -605,7 +605,7 @@
                     }
 
                     // Now check current page
-                    if (AppHelpers.CurrentPage().DocumentTypeAlias == AppConstants.DocTypeForumCategory)
+                    if (AppHelpers.CurrentPage().DocumentTypeAlias == DialogueConfiguration.Instance.DocTypeForumCategory)
                     {
                         // In a category - So pass id to create button
                         viewModel.CategoryId = CurrentPage.Id;

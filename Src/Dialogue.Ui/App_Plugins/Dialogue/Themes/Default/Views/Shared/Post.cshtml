@@ -1,4 +1,5 @@
 ﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
 @model Dialogue.Logic.Models.ViewModels.ViewPostViewModel
 @{
     var postId = Model.Post.Id;
@@ -105,7 +106,7 @@
     <div class="postinfo col-md-2">
 
         <a href="@Html.Raw(Model.Post.Member.Url)" class="postmemberavatar">
-            <img src="@Model.Post.Member.MemberImage(AppConstants.GravatarPostSize)" alt="@Model.Post.Member.UserName" title="@Model.Post.Member.UserName">
+            <img src="@Model.Post.Member.MemberImage(DialogueConfiguration.Instance.GravatarPostSize)" alt="@Model.Post.Member.UserName" title="@Model.Post.Member.UserName">
         </a>
 
         <div class="postadminui">

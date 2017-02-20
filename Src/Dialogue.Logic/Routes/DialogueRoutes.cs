@@ -10,6 +10,7 @@ using Umbraco.Web.PublishedCache;
 
 namespace Dialogue.Logic.Routes
 {
+    using Models;
     using Umbraco.Core.Logging;
     using Umbraco.Web.Routing;
 
@@ -22,7 +23,7 @@ namespace Dialogue.Logic.Routes
         public static void MapRoutes(RouteCollection routes, ContextualPublishedCache umbracoCache, UrlProvider umbracoUrlProvider)
         {
             //find all dialogue root nodes
-            var dialogueNodes = umbracoCache.GetByXPath(string.Concat("//", AppConstants.DocTypeForumRoot)).ToArray();
+            var dialogueNodes = umbracoCache.GetByXPath(string.Concat("//", DialogueConfiguration.Instance.DocTypeForumRoot)).ToArray();
 
             LogHelper.Info(typeof(DialogueRoutes), () => $"Mapping routes for {dialogueNodes.Length} Dialogue root nodes");
 

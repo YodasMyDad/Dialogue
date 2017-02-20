@@ -518,7 +518,7 @@
                 var span = rightNow.Subtract(usersDate);
                 var totalMins = span.TotalMinutes;
 
-                if (totalMins > AppConstants.TimeSpanInMinutesToDoCheck)
+                if (totalMins > DialogueConfiguration.Instance.TimeSpanInMinutesToDoCheck)
                 {
                     // Update users last activity date so we can show the latest users online
                     CurrentMember.LastActiveDate = DateTime.UtcNow;

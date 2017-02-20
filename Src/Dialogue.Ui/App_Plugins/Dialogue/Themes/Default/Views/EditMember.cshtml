@@ -1,4 +1,5 @@
 ﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
 @model Dialogue.Logic.Models.ViewModels.PageMemberEditViewModel
 @{
     Layout = "OneColThin.cshtml";
@@ -31,7 +32,7 @@
     {
         <div class="row membereditavatar">
             <div class="col-md-2">
-                <img src="@AppHelpers.MemberImage(Model.MemberEditViewModel.Avatar, Model.MemberEditViewModel.Email, Model.MemberEditViewModel.Id, AppConstants.GravatarProfileSize)" alt="@Model.MemberEditViewModel.UserName">
+                <img src="@AppHelpers.MemberImage(Model.MemberEditViewModel.Avatar, Model.MemberEditViewModel.Email, Model.MemberEditViewModel.Id, DialogueConfiguration.Instance.GravatarProfileSize)" alt="@Model.MemberEditViewModel.UserName">
             </div>
             <div class="col-md-10">
                 <div class="form-group">

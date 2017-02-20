@@ -103,7 +103,7 @@
         public IList<Member> GetActiveMembers()
         {
             // Get members that last activity date is valid
-            var date = DateTime.UtcNow.AddMinutes(-AppConstants.TimeSpanInMinutesToShowMembers);
+            var date = DateTime.UtcNow.AddMinutes(-DialogueConfiguration.Instance.TimeSpanInMinutesToShowMembers);
             var ids = _memberService.GetMembersByPropertyValue(AppConstants.PropMemberLastActiveDate, date, ValuePropertyMatchType.GreaterThan)
                 .Where(x => x.IsApproved && !x.IsLockedOut)
                 .Select(x => x.Id);
