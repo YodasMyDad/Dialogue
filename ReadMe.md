@@ -143,6 +143,12 @@ Then to check a permission you just look it up by name and check `.IsTicked`. We
 
 There are also some property based permissions at a member level (Such as disable posting, Private Messages etc...), which you can edit via the members section on the member itself.
 
+###Configuration###
+
+There is a now a dialogue.config file in Dialogue/Config/ folder. This has a number or configurable options, but some of which will break the forum if you are not careful. For example, you can change the memberType and group.
+
+If you do that, you need to make sure you have the same properties as the dialogie ones or you'll get an error when users try and register or post on the forum.
+
 ###Adding a new permission###
 
 This is pretty simple too. Just create a constant with the name of the permission. For example, if I wanted to add a permission called `Can See Unicorns` I'd just create a constant like so.
