@@ -1,7 +1,9 @@
 ﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
 @model Dialogue.Logic.Models.ViewModels.AuthoriseViewModel
 @{
     Layout = "TwoCol.cshtml";
+    
 }
 
 @section PageTitle {
@@ -23,7 +25,7 @@
                     {
                         <tr>
                             <td>
-                                <img src="@member.MemberImage(AppConstants.GravatarTopicSize)" alt="@member.UserName" />
+                                <img src="@member.MemberImage(DialogueConfiguration.Instance.GravatarTopicSize)" alt="@member.UserName" />
                             </td>
                             <td>
                                 <strong>

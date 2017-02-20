@@ -109,7 +109,7 @@ namespace Dialogue.Logic.Mapping
                             var allNodes =
                                 AppHelpers.UmbHelper()
                                     .TypedContent(catIds)
-                                    .Where(x => x != null && x.DocumentTypeAlias == AppConstants.DocTypeForumCategory);
+                                    .Where(x => x != null && x.DocumentTypeAlias == DialogueConfiguration.Instance.DocTypeForumCategory);
                             foreach (var cat in allNodes)
                             {
                                 pageModel.ParentCategories.Add(MapCategory(cat));

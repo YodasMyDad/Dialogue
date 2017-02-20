@@ -48,7 +48,7 @@
             const string cacheKey = "GetAllCategories";
             return (IEnumerable<Category>)ApplicationContext.Current.ApplicationCache.RequestCache.GetCacheItem(cacheKey, () =>
             {
-                return CategoryMapper.MapCategory(_forumRootNode.Descendants(AppConstants.DocTypeForumCategory).ToList());
+                return CategoryMapper.MapCategory(_forumRootNode.Descendants(DialogueConfiguration.Instance.DocTypeForumCategory).ToList());
             });
         }
 
@@ -59,8 +59,8 @@
         /// <returns></returns>
         public IEnumerable<Category> GetAllSubCategories(Guid parentId)
         {
-            return CategoryMapper.MapCategory(_forumRootNode.Descendants(AppConstants.DocTypeForumCategory)
-                                                .Where(x => x.Parent.DocumentTypeAlias != AppConstants.DocTypeForumCategory)
+            return CategoryMapper.MapCategory(_forumRootNode.Descendants(DialogueConfiguration.Instance.DocTypeForumCategory)
+                                                .Where(x => x.Parent.DocumentTypeAlias != DialogueConfiguration.Instance.DocTypeForumCategory)
                                                 .ToList());
         }
 
@@ -70,8 +70,8 @@
         /// <returns></returns>
         public IEnumerable<Category> GetAllMainCategories()
         {
-            return CategoryMapper.MapCategory(_forumRootNode.Descendants(AppConstants.DocTypeForumCategory)
-                                                .Where(x => x.Parent.DocumentTypeAlias != AppConstants.DocTypeForumCategory).ToList());
+            return CategoryMapper.MapCategory(_forumRootNode.Descendants(DialogueConfiguration.Instance.DocTypeForumCategory)
+                                                .Where(x => x.Parent.DocumentTypeAlias != DialogueConfiguration.Instance.DocTypeForumCategory).ToList());
 
 
         }

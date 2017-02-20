@@ -26,7 +26,7 @@ namespace Dialogue.Logic.Mapping
         {
             if (member != null)
             {
-                var key = string.Format("umb-member{0}{1}", member.Id, populateAll);
+                var key = $"umb-member{member.Id}{populateAll}";
                 if (!HttpContext.Current.Items.Contains(key))
                 {
                     var siteMember = new Member();

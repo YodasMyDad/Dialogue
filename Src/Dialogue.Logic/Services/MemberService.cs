@@ -103,7 +103,7 @@
         public IList<Member> GetActiveMembers()
         {
             // Get members that last activity date is valid
-            var date = DateTime.UtcNow.AddMinutes(-AppConstants.TimeSpanInMinutesToShowMembers);
+            var date = DateTime.UtcNow.AddMinutes(-DialogueConfiguration.Instance.TimeSpanInMinutesToShowMembers);
             var ids = _memberService.GetMembersByPropertyValue(AppConstants.PropMemberLastActiveDate, date, ValuePropertyMatchType.GreaterThan)
                 .Where(x => x.IsApproved && !x.IsLockedOut)
                 .Select(x => x.Id);
@@ -480,8 +480,11 @@
         public void RefreshMemberPosts(Member member, int amount)
         {
             var baseMember = _memberService.GetById(member.Id);
-            baseMember.Properties[AppConstants.PropMemberPostCount].Value = amount;
-            _memberService.Save(baseMember);
+            if (baseMember != null && baseMember.Properties.Contains(AppConstants.PropMemberPostCount))
+            {
+                baseMember.Properties[AppConstants.PropMemberPostCount].Value = amount;
+                _memberService.Save(baseMember);
+            }
         }
 
         public void SyncMembersPostCount(List<Member> members)
@@ -575,7 +578,7 @@
 
         public int MemberCount()
         {
-            return _memberService.GetMembersByMemberType(AppConstants.MemberTypeAlias).Count(x => x.IsApproved && !x.IsLockedOut);
+            return _memberService.GetMembersByMemberType(DialogueConfiguration.Instance.MemberTypeAlias).Count(x => x.IsApproved && !x.IsLockedOut);
         }
 
         public bool Login(string username, string password)
@@ -585,7 +588,7 @@
 
         public IList<Member> GetLatestUsers(int amountToTake)
         {
-            var ids = _memberService.GetMembersByMemberType(AppConstants.MemberTypeAlias)
+            var ids = _memberService.GetMembersByMemberType(DialogueConfiguration.Instance.MemberTypeAlias)
               .OrderByDescending(x => x.CreateDate)
               .Take(amountToTake)
               .Select(x => x.Id);
@@ -744,7 +747,7 @@
             // Create the member Type
             var memType = new MemberType(-1)
             {
-                Alias = AppConstants.MemberTypeAlias,
+                Alias = DialogueConfiguration.Instance.MemberTypeAlias,
                 Name = "Dialogue Member"
             };
 

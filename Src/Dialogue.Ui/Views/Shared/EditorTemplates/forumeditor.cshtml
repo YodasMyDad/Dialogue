@@ -1,0 +1,10 @@
+﻿@using Dialogue.Logic.Models
+@if (DialogueConfiguration.Instance.EditorType == "tinymceeditor")
+{
+    @Html.Partial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("tinymceeditor"))
+}
+
+@if (DialogueConfiguration.Instance.EditorType == "markdowneditor")
+{
+    @Html.Partial(Dialogue.Logic.PathHelper.GetThemePartialViewPath("markdowneditor"))
+}

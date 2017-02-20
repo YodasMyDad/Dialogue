@@ -1,5 +1,6 @@
 ﻿@using Dialogue.Logic.Application.ExtensionMethods
 @using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
 @using Dialogue.Logic.Models.ViewModels
 @model ViewTopicViewModel
 @{
@@ -55,7 +56,7 @@
                 <p class="latesttext">@Html.Lang("Topic.LatestBy")</p>
                 <p class="topicrecentavatar">
                     <a href="@topic.LastPost.Member.Url">
-                        <img src="@topic.LastPost.Member.MemberImage(AppConstants.GravatarTopicSize)" alt="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName" title="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName">
+                        <img src="@topic.LastPost.Member.MemberImage(DialogueConfiguration.Instance.GravatarTopicSize)" alt="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName" title="@Html.Lang("Topic.LatestBy") @topic.LastPost.Member.UserName">
                     </a>
                 </p>
                 <p class="topicrecentdate">@DatesUI.GetPrettyDate(topic.LastPost.DateCreated.ToString())</p>

@@ -1,5 +1,6 @@
 ﻿
 @using System.Linq;
+@using Dialogue.Logic.Models
 @model Dialogue.Logic.Models.ViewModels.HighEarnersPointViewModel
 
 @if (Html.Settings().AllowPoints)
@@ -12,7 +13,7 @@
             {
                 <li>
                     <span class="earnername">
-                        <img src="@dict.Key.MemberImage(AppConstants.GravatarLeaderboardSize)" alt="@dict.Key.UserName">
+                        <img src="@dict.Key.MemberImage(DialogueConfiguration.Instance.GravatarLeaderboardSize)" alt="@dict.Key.UserName">
                         <a href="@dict.Key.Url">@dict.Key.UserName</a>
                     </span>
                     <span class="earneramount">@dict.Value</span>

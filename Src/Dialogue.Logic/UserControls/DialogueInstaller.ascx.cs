@@ -77,9 +77,9 @@ namespace Dialogue.Logic.UserControls
                 var memberTypeResult = new ResultItem
                 {
                     CompletedSuccessfully = false,
-                    Name = $"Creating the Member Type {AppConstants.MemberTypeAlias}"
+                    Name = $"Creating the Member Type {DialogueConfiguration.Instance.MemberTypeAlias}"
                 };
-                var typeExists = memberService.MemberTypeExists(AppConstants.MemberTypeAlias);
+                var typeExists = memberService.MemberTypeExists(DialogueConfiguration.Instance.MemberTypeAlias);
                 if (!typeExists)
                 {
                     // create the Dialogue membertype
@@ -141,13 +141,13 @@ namespace Dialogue.Logic.UserControls
                 var standardRoleResult = new ResultItem
                 {
                     CompletedSuccessfully = false,
-                    Name = string.Format("Creating the role: {0}", AppConstants.MemberGroupDefault)
+                    Name = string.Format("Creating the role: {0}", DialogueConfiguration.Instance.MemberGroupDefault)
                 };
-                var standardExists = memberService.MemberGroupExists(AppConstants.MemberGroupDefault);
+                var standardExists = memberService.MemberGroupExists(DialogueConfiguration.Instance.MemberGroupDefault);
                 if (!standardExists)
                 {
                     // Create it
-                    memberService.CreateMemberGroup(AppConstants.MemberGroupDefault);
+                    memberService.CreateMemberGroup(DialogueConfiguration.Instance.MemberGroupDefault);
                     standardRoleResult.Description = "Done successfully";
                     standardRoleResult.CompletedSuccessfully = true;
                 }

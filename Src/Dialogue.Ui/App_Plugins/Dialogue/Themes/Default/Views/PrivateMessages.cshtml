@@ -1,4 +1,5 @@
 ﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
 @model Dialogue.Logic.Models.ViewModels.PageListPrivateMessageViewModel
 
 @{
@@ -55,9 +56,9 @@
     </div>
 
 
-    if (Model.ListPrivateMessageViewModel.TotalCount > AppConstants.PrivateMessageListSize)
+    if (Model.ListPrivateMessageViewModel.TotalCount > DialogueConfiguration.Instance.PrivateMessageListSize)
     {
-        @Html.Pager(Convert.ToInt32(Model.ListPrivateMessageViewModel.PageIndex), AppConstants.PrivateMessageListSize, Convert.ToInt32(Model.ListPrivateMessageViewModel.TotalCount), new { })
+        @Html.Pager(Convert.ToInt32(Model.ListPrivateMessageViewModel.PageIndex), DialogueConfiguration.Instance.PrivateMessageListSize, Convert.ToInt32(Model.ListPrivateMessageViewModel.TotalCount), new { })
     }
 }
 else

@@ -32,7 +32,7 @@ namespace Dialogue.Logic.Application.ExtensionMethods
         public static MvcHtmlString Pager(this HtmlHelper helper, int currentPage, int pageSize, int totalItemCount, object routeValues)
         {
             // how many pages to display in each page group const  	
-            const int cGroupSize = AppConstants.PagingGroupSize;
+            var cGroupSize = DialogueConfiguration.Instance.PagingGroupSize;
             var thisPageUrl = HttpContext.Current.Request.Url.AbsolutePath;
             var pageCount = (int)Math.Ceiling(totalItemCount / (double)pageSize);
 

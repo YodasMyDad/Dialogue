@@ -29,10 +29,10 @@ namespace Dialogue.Logic
                 settings.MemberUrlName = forumRootNode.GetPropertyValue<string>(AppConstants.PropMemberUrlName);
                 settings.DialogueUrlName = forumRootNode.GetPropertyValue<string>(AppConstants.PropDialogueUrlName);
 
-                var loginPage = forumRootNode.Descendant(AppConstants.DocTypeLogin) ?? forumRootNode.Ancestor(AppConstants.DocTypeLogin);
+                var loginPage = forumRootNode.Descendant(DialogueConfiguration.Instance.DocTypeLogin) ?? forumRootNode.Ancestor(DialogueConfiguration.Instance.DocTypeLogin);
                 settings.LoginUrl = loginPage != null ? loginPage.Url : "/Unable-to-find-login-page";
 
-                var registerPage = forumRootNode.Descendant(AppConstants.DocTypeRegister) ?? forumRootNode.Ancestor(AppConstants.DocTypeRegister);
+                var registerPage = forumRootNode.Descendant(DialogueConfiguration.Instance.DocTypeRegister) ?? forumRootNode.Ancestor(DialogueConfiguration.Instance.DocTypeRegister);
                 settings.RegisterUrl = registerPage != null ? registerPage.Url : "/Unable-to-find-Register-page";
 
                 settings.BannedEmails = forumRootNode.GetPropertyValue<string[]>("bannedEmail").ToList();
@@ -100,7 +100,7 @@ namespace Dialogue.Logic
                 }
                 else
                 {
-                    settings.Group = memberGroupService.GetByName(AppConstants.MemberGroupDefault);
+                    settings.Group = memberGroupService.GetByName(DialogueConfiguration.Instance.MemberGroupDefault);
                 }
 
                 // Spam
@@ -134,7 +134,7 @@ namespace Dialogue.Logic
             if (!HttpContext.Current.Items.Contains(AppConstants.SiteSettingsKey))
             {
                 var currentPage = AppHelpers.GetNode(nodeId);
-                var forumNode = currentPage.AncestorOrSelf(AppConstants.DocTypeForumRoot);
+                var forumNode = currentPage.AncestorOrSelf(DialogueConfiguration.Instance.DocTypeForumRoot);
                 HttpContext.Current.Items.Add(AppConstants.SiteSettingsKey, Settings(forumNode));
             }
             return HttpContext.Current.Items[AppConstants.SiteSettingsKey] as DialogueSettings;
@@ -145,13 +145,20 @@ namespace Dialogue.Logic
             if (!HttpContext.Current.Items.Contains(AppConstants.SiteSettingsKey))
             {
                 var currentPage = AppHelpers.CurrentPage();
-                var forumNode = currentPage.AncestorOrSelf(AppConstants.DocTypeForumRoot);
-                if (forumNode == null)
+                if (currentPage != null)
                 {
-                    // Only do this is if we can't find the forum normally
-                    forumNode = currentPage.DescendantOrSelf(AppConstants.DocTypeForumRoot);
+                    var forumNode = currentPage.AncestorOrSelf(DialogueConfiguration.Instance.DocTypeForumRoot);
+                    if (forumNode == null)
+                    {
+                        // Only do this is if we can't find the forum normally
+                        forumNode = currentPage.DescendantOrSelf(DialogueConfiguration.Instance.DocTypeForumRoot);
+                    }
+                    HttpContext.Current.Items.Add(AppConstants.SiteSettingsKey, Settings(forumNode));
                 }
-                HttpContext.Current.Items.Add(AppConstants.SiteSettingsKey, Settings(forumNode));
+                else
+                {
+                    return null;
+                }
             }
             return HttpContext.Current.Items[AppConstants.SiteSettingsKey] as DialogueSettings;
         }

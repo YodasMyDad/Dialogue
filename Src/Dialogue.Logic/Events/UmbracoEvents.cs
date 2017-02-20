@@ -19,6 +19,7 @@ using System;
 
 namespace Dialogue.Logic.Events
 {
+    using Models;
 
     public class UmbracoEvents : ApplicationEventHandler
     {
@@ -73,7 +74,7 @@ namespace Dialogue.Logic.Events
             // Log it, notifications don't work
             foreach (var item in e.MoveInfoCollection)
             {
-                if (item.Entity.ContentType.Alias == AppConstants.DocTypeForumCategory)
+                if (item.Entity.ContentType.Alias == DialogueConfiguration.Instance.DocTypeForumCategory)
                 {
                     // This is a category attempting to be moved to the Recycle bin
                     // See if any topics are currently using the category

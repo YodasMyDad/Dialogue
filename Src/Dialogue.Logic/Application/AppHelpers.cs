@@ -22,6 +22,8 @@ using umbraco;
 
 namespace Dialogue.Logic.Application
 {
+    using Models;
+
     public static class AppHelpers
     {
 
@@ -578,7 +580,7 @@ namespace Dialogue.Logic.Application
             }
 
             // Not ideal - But if blank, return the first instance of a dialogue forum we can find
-            return UmbracoContext.Current.ContentCache.GetByXPath(string.Concat("//", AppConstants.DocTypeForumRoot)).FirstOrDefault();
+            return UmbracoContext.Current.ContentCache.GetByXPath(string.Concat("//", DialogueConfiguration.Instance.DocTypeForumRoot)).FirstOrDefault();
         }
 
 

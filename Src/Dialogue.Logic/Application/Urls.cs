@@ -1,8 +1,9 @@
 ﻿using System.Web;
-using Dialogue.Logic.Constants;
 
 namespace Dialogue.Logic.Application
 {
+    using Models;
+
     public static partial class Urls
     {
         //TODO - Refactor this, must be a better way?
@@ -59,47 +60,47 @@ namespace Dialogue.Logic.Application
                 case UrlType.Register:
                     return Dialogue.Settings().RegisterUrl;
                 case UrlType.TopicCreate:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCreateTopic);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlCreateTopic);
                 case UrlType.EmailConfirmation:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEmailConfirmation);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlEmailConfirmation);
                 case UrlType.Leaderboard:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlLeaderboard);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlLeaderboard);
                 case UrlType.Activity:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlActivity);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlActivity);
                 case UrlType.TopicsRss:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlTopicsRss);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlTopicsRss);
                 case UrlType.ActivityRss:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlActivityRss);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlActivityRss);
                 case UrlType.CategoryRss:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCategoryRss);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlCategoryRss);
                 case UrlType.Badges:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlBadges);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlBadges);
                 case UrlType.Favourites:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlFavourites);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlFavourites);
                 case UrlType.PostReport:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlPostReport);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlPostReport);
                 case UrlType.EditPost:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEditPost);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlEditPost);
                 case UrlType.MessageInbox:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlMessageInbox);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlMessageInbox);
                 case UrlType.MessageOutbox:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlMessageOutbox);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlMessageOutbox);
                 case UrlType.MessageCreate:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlCreatePrivateMessage);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlCreatePrivateMessage);
                 case UrlType.MessageView:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlViewPrivateMessage);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlViewPrivateMessage);
                 case UrlType.ReportMember:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlViewReportMember);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlViewReportMember);
                 case UrlType.EditMember:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlEditMember);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlEditMember);
                 case UrlType.ChangePassword:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlChangePassword);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlChangePassword);
                 case UrlType.Search:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlSearch);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlSearch);
                 case UrlType.SpamOverview:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlSpamOverview);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlSpamOverview);
                 case UrlType.Authorise:
-                    return GenerateUrl(UrlType.Dialogue, AppConstants.PageUrlAuthorise);
+                    return GenerateUrl(UrlType.Dialogue, DialogueConfiguration.Instance.PageUrlAuthorise);
                 case UrlType.GoogleLogin:
                     return VirtualPathUtility.ToAbsolute("~/umbraco/Surface/GoogleOAuth/GoogleLogin");
                 case UrlType.FacebookLogin:

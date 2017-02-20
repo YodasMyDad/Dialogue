@@ -1,4 +1,5 @@
 ﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
 @model Dialogue.Logic.Models.ViewModels.ViewFavouritesViewModel
 @{
     Layout = "TwoCol.cshtml";
@@ -49,7 +50,7 @@
         </div>
         <div class="postinfo col-md-2">
             <a href="@Html.Raw(post.Member.Url)" class="postmemberavatar">
-                <img src="@post.Member.MemberImage(AppConstants.GravatarPostSize)" alt="@post.Member.UserName">
+                <img src="@post.Member.MemberImage(DialogueConfiguration.Instance.GravatarPostSize)" alt="@post.Member.UserName">
             </a>
         </div>
 

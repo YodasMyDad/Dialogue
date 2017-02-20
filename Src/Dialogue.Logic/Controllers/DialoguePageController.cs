@@ -43,71 +43,68 @@
             var page = new DialoguePage(model.Content.Parent);
             var pageLowered = pagename.ToLower();
 
-            switch (pageLowered)
-            {
-                case AppConstants.PageUrlLeaderboard:
-                    return Leaderboard(page);
+            if (DialogueConfiguration.Instance.PageUrlSearch == pageLowered)
+                return Search(page);
 
-                case AppConstants.PageUrlTopicsRss:
-                    return TopicsRss(page);
+            if (DialogueConfiguration.Instance.PageUrlCreateTopic == pageLowered)
+                return Create(page);
 
-                case AppConstants.PageUrlActivityRss:
-                    return ActivityRss(page);
+            if (DialogueConfiguration.Instance.PageUrlLeaderboard == pageLowered)
+                return Leaderboard(page);
 
-                case AppConstants.PageUrlActivity:
-                    return Activity(page);
+            if (DialogueConfiguration.Instance.PageUrlTopicsRss == pageLowered)
+                return TopicsRss(page);
 
-                case AppConstants.PageUrlCategoryRss:
-                    return CategoryRss(page);
+            if (DialogueConfiguration.Instance.PageUrlActivityRss == pageLowered)
+                return ActivityRss(page);
 
-                case AppConstants.PageUrlBadges:
-                    return Badges(page);
+            if (DialogueConfiguration.Instance.PageUrlActivity == pageLowered)
+                return Activity(page);
 
-                case AppConstants.PageUrlFavourites:
-                    return Favourites(page);
+            if (DialogueConfiguration.Instance.PageUrlCategoryRss == pageLowered)
+                return CategoryRss(page);
 
-                case AppConstants.PageUrlPostReport:
-                    return Report(page);
+            if (DialogueConfiguration.Instance.PageUrlBadges == pageLowered)
+                return Badges(page);
 
-                case AppConstants.PageUrlEditPost:
-                    return EditPost(page);
+            if (DialogueConfiguration.Instance.PageUrlFavourites == pageLowered)
+                return Favourites(page);
 
-                case AppConstants.PageUrlMessageInbox:
-                    return PrivateMessages(page);
+            if (DialogueConfiguration.Instance.PageUrlPostReport == pageLowered)
+                return Report(page);
 
-                case AppConstants.PageUrlMessageOutbox:
-                    return PrivateMessagesSent(page);
+            if (DialogueConfiguration.Instance.PageUrlEditPost == pageLowered)
+                return EditPost(page);
 
-                case AppConstants.PageUrlCreatePrivateMessage:
-                    return PrivateMessagesCreate(page);
+            if (DialogueConfiguration.Instance.PageUrlMessageInbox == pageLowered)
+                return PrivateMessages(page);
 
-                case AppConstants.PageUrlViewPrivateMessage:
-                    return ViewPrivateMessage(page);
+            if (DialogueConfiguration.Instance.PageUrlMessageOutbox == pageLowered)
+                return PrivateMessagesSent(page);
 
-                case AppConstants.PageUrlViewReportMember:
-                    return ReportMember(page);
+            if (DialogueConfiguration.Instance.PageUrlCreatePrivateMessage == pageLowered)
+                return PrivateMessagesCreate(page);
 
-                case AppConstants.PageUrlEditMember:
-                    return EditMember(page);
+            if (DialogueConfiguration.Instance.PageUrlViewPrivateMessage == pageLowered)
+                return ViewPrivateMessage(page);
 
-                case AppConstants.PageUrlChangePassword:
-                    return ChangePassword(page);
+            if (DialogueConfiguration.Instance.PageUrlViewReportMember == pageLowered)
+                return ReportMember(page);
 
-                case AppConstants.PageUrlSearch:
-                    return Search(page);
+            if (DialogueConfiguration.Instance.PageUrlEditMember == pageLowered)
+                return EditMember(page);
 
-                case AppConstants.PageUrlCreateTopic:
-                    return Create(page);
+            if (DialogueConfiguration.Instance.PageUrlChangePassword == pageLowered)
+                return ChangePassword(page);
 
-                case AppConstants.PageUrlEmailConfirmation:
-                    return EmailConfirmation(page);
+            if (DialogueConfiguration.Instance.PageUrlEmailConfirmation == pageLowered)
+                return EmailConfirmation(page);
 
-                case AppConstants.PageUrlSpamOverview:
-                    return SpamOverview(page);
+            if (DialogueConfiguration.Instance.PageUrlSpamOverview == pageLowered)
+                return SpamOverview(page);
 
-                case AppConstants.PageUrlAuthorise:
-                    return Authorise(page);
-            }
+            if (DialogueConfiguration.Instance.PageUrlAuthorise == pageLowered)
+                return Authorise(page);
 
             return ErrorToHomePage(Lang("Errors.GenericMessage"));
 
@@ -141,7 +138,7 @@
                     PageTitle = Lang("Spam.OverViewPageTitle")
                 };
 
-                return View(PathHelper.GetThemeViewPath("SpamOverview"), viewModel);   
+                return View(PathHelper.GetThemeViewPath("SpamOverview"), viewModel);
             }
             return ErrorToHomePage(Lang("Errors.GenericMessage"));
         }
@@ -152,43 +149,46 @@
             var id = Request["id"];
             if (id != null)
             {
-                    try
-                    {
-                        var user = MemberService.Get(Convert.ToInt32(id));
+                try
+                {
+                    var user = MemberService.Get(Convert.ToInt32(id));
 
-                        // Checkconfirmation
-                        if (user != null)
+                    // Checkconfirmation
+                    if (user != null)
+                    {
+                        // Set the user to active
+                        user.IsApproved = true;
+
+                        // Delete Cookie and log them in if this cookie is present
+                        if (Request.Cookies[AppConstants.MemberEmailConfirmationCookieName] != null)
                         {
-                            // Set the user to active
-                            user.IsApproved = true;
-
-                            // Delete Cookie and log them in if this cookie is present
-                            if (Request.Cookies[AppConstants.MemberEmailConfirmationCookieName] != null)
+                            var myCookie = new HttpCookie(AppConstants.MemberEmailConfirmationCookieName)
                             {
-                                var myCookie = new HttpCookie(AppConstants.MemberEmailConfirmationCookieName)
-                                {
-                                    Expires = DateTime.Now.AddDays(-1)
-                                };
-                                Response.Cookies.Add(myCookie);
+                                Expires = DateTime.Now.AddDays(-1)
+                            };
+                            Response.Cookies.Add(myCookie);
 
-                                // Login code
-                                FormsAuthentication.SetAuthCookie(user.UserName, false);
-                            }
-
-                            // Show a new message
-                            // We use temp data because we are doing a redirect
-                            ShowMessage(new GenericMessageViewModel
-                            {
-                                Message = Lang("Members.NowApproved"),
-                                MessageType = GenericMessages.Success
-                            });
+                            // Login code
+                            FormsAuthentication.SetAuthCookie(user.UserName, false);
                         }
+
+                        // Show a new message
+                        // We use temp data because we are doing a redirect
+                        ShowMessage(new GenericMessageViewModel
+                        {
+                            Message = Lang("Members.NowApproved"),
+                            MessageType = GenericMessages.Success
+                        });
+
+                        // Redirects to the forum home page
+                        return RedirectToUmbracoPage(Settings.ForumId);
                     }
-                    catch (Exception ex)
-                    {
-                        LogError(ex);
-                    }
-     
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
+
             }
 
             return ErrorToHomePage(Lang("Errors.GenericMessage"));
@@ -261,7 +261,7 @@
                     //// Get all the topics based on the search value
                     var posts = PostService.SearchPosts(pageIndex,
                                                          Settings.PostsPerPage,
-                                                         AppConstants.ActiveTopicsListSize,
+                                                         DialogueConfiguration.Instance.ActiveTopicsListSize,
                                                          term);
 
 
@@ -383,7 +383,7 @@
                     var user = MemberService.Get(Convert.ToInt32(id));
                     var viewModel = new PageReportMemberViewModel(page)
                     {
-                        MemberId = user.Id, 
+                        MemberId = user.Id,
                         Username = user.UserName,
                         PageTitle = Lang("Report.MemberReport")
                     };
@@ -409,7 +409,7 @@
             using (UnitOfWorkManager.NewUnitOfWork())
             {
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
-                var pagedMessages = PrivateMessageService.GetPagedReceivedMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
+                var pagedMessages = PrivateMessageService.GetPagedReceivedMessagesByUser(pageIndex, DialogueConfiguration.Instance.PrivateMessageListSize, CurrentMember);
                 var viewModel = new PageListPrivateMessageViewModel(page)
                 {
                     ListPrivateMessageViewModel = new ListPrivateMessageViewModel
@@ -480,7 +480,7 @@
             using (UnitOfWorkManager.NewUnitOfWork())
             {
                 var pageIndex = AppHelpers.ReturnCurrentPagingNo();
-                var pagedMessages = PrivateMessageService.GetPagedSentMessagesByUser(pageIndex, AppConstants.PrivateMessageListSize, CurrentMember);
+                var pagedMessages = PrivateMessageService.GetPagedSentMessagesByUser(pageIndex, DialogueConfiguration.Instance.PrivateMessageListSize, CurrentMember);
                 var viewModel = new PageListPrivateMessageViewModel(page)
                 {
                     ListPrivateMessageViewModel = new ListPrivateMessageViewModel
@@ -646,7 +646,7 @@
 
                 var postIds = FavouriteService.GetAllByMember(CurrentMember.Id).Select(x => x.PostId);
                 var allPosts = PostService.Get(postIds.ToList());
-                viewModel.Posts = allPosts;           
+                viewModel.Posts = allPosts;
                 return View(PathHelper.GetThemeViewPath("Favourites"), viewModel);
             }
         }
@@ -670,8 +670,8 @@
         public ActionResult Leaderboard(DialoguePage page)
         {
             page.PageTitle = Lang("Page.Leaderboard.PageTitle");
- 
-           return View(PathHelper.GetThemeViewPath("Leaderboard"), page);
+
+            return View(PathHelper.GetThemeViewPath("Leaderboard"), page);
         }
 
         public ActionResult Activity(DialoguePage page)
@@ -711,7 +711,7 @@
                 var cats = CategoryService.GetAll();
 
                 // Get the latest topics
-                var topics = TopicService.GetRecentRssTopics(AppConstants.ActiveTopicsListSize, cats.Select(x => x.Id).ToList());
+                var topics = TopicService.GetRecentRssTopics(DialogueConfiguration.Instance.ActiveTopicsListSize, cats.Select(x => x.Id).ToList());
 
                 // Get all the categories for this topic collection
                 var categories = topics.Select(x => x.Category).Distinct();
@@ -769,7 +769,7 @@
 
                     if (!permissions[AppConstants.PermissionDenyAccess].IsTicked)
                     {
-                        var topics = TopicService.GetRssTopicsByCategory(AppConstants.ActiveTopicsListSize, category.Id);
+                        var topics = TopicService.GetRssTopicsByCategory(DialogueConfiguration.Instance.ActiveTopicsListSize, category.Id);
 
                         rssTopics.AddRange(topics.Select(x =>
                         {
@@ -831,7 +831,7 @@
                             Description = string.Empty,
                             Title = Lang("Activity.UserJoined"),
                             PublishedDate = memberJoinedActivity.ActivityMapped.Timestamp,
-                            RssImage = memberJoinedActivity.User.MemberImage(AppConstants.GravatarPostSize),
+                            RssImage = memberJoinedActivity.User.MemberImage(DialogueConfiguration.Instance.GravatarPostSize),
                             Link = activityLink
                         });
                     }
@@ -843,7 +843,7 @@
                             Description = string.Empty,
                             Title = Lang("Activity.ProfileUpdated"),
                             PublishedDate = profileUpdatedActivity.ActivityMapped.Timestamp,
-                            RssImage = profileUpdatedActivity.User.MemberImage(AppConstants.GravatarPostSize),
+                            RssImage = profileUpdatedActivity.User.MemberImage(DialogueConfiguration.Instance.GravatarPostSize),
                             Link = activityLink
                         });
                     }

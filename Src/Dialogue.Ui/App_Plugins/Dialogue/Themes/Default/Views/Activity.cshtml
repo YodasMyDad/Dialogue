@@ -1,9 +1,11 @@
 ﻿@using Dialogue.Logic.Application
+@using Dialogue.Logic.Models
 @using Dialogue.Logic.Models.Activity
 @model Dialogue.Logic.Models.ViewModels.AllRecentActivitiesViewModel
 @{
     Layout = "TwoCol.cshtml";
     var totalCount = Convert.ToInt32(Model.TotalCount);
+    var gravatarPostSize = DialogueConfiguration.Instance.GravatarPostSize;
 }
 
 @section PageTitle {
@@ -64,7 +66,7 @@
                 var memberJoinedActivity = activity as MemberJoinedActivity;
 
                 <div class="activitybadge col-md-1 col-xs-2">
-                    <img src="@memberJoinedActivity.User.MemberImage(AppConstants.GravatarPostSize)" alt="@memberJoinedActivity.User.UserName" />
+                    <img src="@memberJoinedActivity.User.MemberImage(gravatarPostSize)" alt="@memberJoinedActivity.User.UserName" />
                 </div>
 
                 <div class="activityinfo col-md-11 col-xs-10">
@@ -82,7 +84,7 @@
                 var profileUpdatedActivity = activity as ProfileUpdatedActivity;
 
                 <div class="activitybadge col-md-1 col-xs-2">
-                    <img src="@profileUpdatedActivity.User.MemberImage(AppConstants.GravatarPostSize)" alt="@profileUpdatedActivity.User.UserName" />
+                    <img src="@profileUpdatedActivity.User.MemberImage(gravatarPostSize)" alt="@profileUpdatedActivity.User.UserName" />
                 </div>
 
                 <div class="activityinfo col-md-11 col-xs-10">
